@@ -1,11 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!doctype html>
+<html lang="be">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Славутасці</title>
-</head>
-<body>
-    
-</body>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <a href="../index.html" class="back-btn">← Назад</a>
+
+    <div class="container">
+      <h1 class="title">Славутасці</h1>
+      <div id="list" class="buttons"></div>
+    </div>
+
+    <script>
+      fetch("../data/sights.json")
+        .then((r) => r.json())
+        .then((data) => {
+          const list = document.getElementById("list");
+
+          data
+            .filter((item) => item.id)
+            .forEach((item) => {
+              const link = document.createElement("a");
+              link.href = `object.html?id=${item.id}`;
+              link.className = "button";
+
+              const bg = document.createElement("div");
+              bg.className = "button-bg";
+              bg.style.backgroundImage = `url(${item.image.replace("../", "../")})`;
+
+              const title = document.createElement("h2");
+              title.className = "button-text";
+              title.textContent = item.title;
+
+              link.appendChild(bg);
+              link.appendChild(title);
+
+              list.appendChild(link);
+            });
+        });
+    </script>
+  </body>
 </html>
