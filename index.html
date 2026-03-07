@@ -1,11 +1,15 @@
 <!doctype html>
-<html lang="en">
+<html lang="be">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Інтэрактыўны аўдыёгід па Лідзе: славутасці, прадпрыемствы і вядомыя людзі ў адным зручным месцы."
+    />
     <title>Аўдыёгід па горадзе Ліда</title>
-    <link rel="stylesheet" href="./css/style.css" />
     <link rel="stylesheet" href="./css/normalize.css" />
+    <link rel="stylesheet" href="./css/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,27 +19,27 @@
   </head>
 
   <body>
-    <div class="container">
-      <h1 class="title">Аўдыёгід па горадзе Ліда</h1>
-      <div class="buttons">
+    <main class="container">
+      <header class="page-header">
+        <h1 class="title">Аўдыёгід па горадзе Ліда</h1>
+        <p class="subtitle">Абярыце раздзел і слухайце гісторыі пра горад у зручным фармаце.</p>
+        <p class="info-note">💡 Націсніце на картку, каб адкрыць падрабязнае апісанне і аўдыё.</p>
+      </header>
+
+      <section class="buttons" aria-label="Раздзелы аўдыёгіда">
         <a href="./html/sights.html" class="button">
-          <div class="button-bg" style="background-image: url(./assets/images/lidski_zamak.jpg);"></div>
+          <div class="button-bg" style="background-image: url(./assets/images/lidski_zamak.jpg)"></div>
           <h2 class="button-text">Славутасці</h2>
         </a>
-        <a href="./html/enterprices.html" class="button">
-          <div class="button-bg" style="background-image: url(./assets/images/zavod.jpg);"></div>
+        <a href="./html/enterprises.html" class="button">
+          <div class="button-bg" style="background-image: url(./assets/images/zavod.jpg)"></div>
           <h2 class="button-text">Прадпрыемствы</h2>
         </a>
         <a href="./html/people.html" class="button">
-          <img src="" alt="" class="button-bg" />
+          <div class="button-bg" style="background-image: url(./assets/images/kamandzirovaczny.jpg)"></div>
           <h2 class="button-text">Вядомыя людзі</h2>
         </a>
-      </div>
-      <!-- <iframe
-      src="https://www.google.com/maps/d/u/0/embed?mid=1S24caovn_XpYUaWduyCRw0Fc2dURHTg&ehbc=2E312F"
-      width="640"
-      height="480"
-    ></iframe> -->
-    </div>
+      </section>
+    </main>
   </body>
 </html>

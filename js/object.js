@@ -1,94 +1,83 @@
-// object.js з лагаваннем для адладкі
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-console.log("URL id:", id);
+const status = document.getElementById("status");
+const objectCard = document.getElementById("objectCard");
 
 if (!id) {
-  document.body.innerHTML = "<h2>Не перададзены id</h2>";
+  showError("Не перададзены id аб'екта. Перайдзіце са спісу.");
   throw new Error("No ID in URL");
 }
 
-// Загружаем усе JSON
 Promise.all([
-  fetch("../data/sights.json")
-    .then((r) => {
-      console.log("Sights JSON status:", r.status);
-      return r.json();
-    }),
-  fetch("../data/enterprises.json")
-    .then((r) => {
-      console.log("Enterprises JSON status:", r.status);
-      return r.json();
-    }),
-  fetch("../data/people.json")
-    .then((r) => {
-      console.log("People JSON status:", r.status);
-      return r.json();
-    }),
+  fetchJson("../data/sights.json"),
+  fetchJson("../data/enterprises.json"),
+  fetchJson("../data/people.json"),
 ])
   .then(([sights, enterprises, people]) => {
-    console.log("Sights loaded:", sights.length);
-    console.log("Enterprises loaded:", enterprises.length);
-    console.log("People loaded:", people.length);
-
     const allData = [...sights, ...enterprises, ...people];
-
     const object = allData.find((item) => item.id === id);
-    console.log("Found object:", object);
 
     if (!object) {
-      document.body.innerHTML = "<h2>Аб'ект не знойдзены</h2>";
+      showError("Аб'ект не знойдзены. Магчыма, ён быў выдалены або id некарэктны.");
       return;
     }
 
     renderObject(object);
   })
-  .catch((err) => {
-    console.error("Fetch error:", err);
-    document.body.innerHTML = "<h2>Памылка загрузкі дадзеных</h2>";
+  .catch(() => {
+    showError("Памылка загрузкі дадзеных. Паспрабуйце пазней.");
   });
 
+function fetchJson(path) {
+  return fetch(path).then((response) => {
+    if (!response.ok) throw new Error("Fetch failed");
+    return response.json();
+  });
+}
+
 function renderObject(object) {
-  console.log("Rendering object:", object);
-
-  // Загаловак
   const titleEl = document.getElementById("title");
-  if (titleEl && object.title) titleEl.textContent = object.title;
-
-  // Малюнак
-  if (object.image) {
-    const img = document.getElementById("image");
-    if (img) {
-      console.log("Setting image src:", object.image);
-      img.src = object.image; // без replace
-      img.alt = object.title || "";
-      img.style.display = "block";
-    }
-  }
-
-  // Апісанне
+  const img = document.getElementById("image");
   const descEl = document.getElementById("description");
-  if (descEl && object.description) {
-    console.log("Setting description HTML");
+  const audioContainer = document.getElementById("audioContainer");
+
+  titleEl.textContent = object.title || "Без назвы";
+
+  if (object.image) {
+    img.src = object.image;
+    img.alt = object.title || "Ілюстрацыя аб'екта";
+  } else {
+    img.remove();
+  }
+
+  if (object.description) {
     descEl.innerHTML = object.description;
+  } else {
+    descEl.innerHTML = "<p>Апісанне пакуль не дададзена.</p>";
   }
 
-  // Аўдыё
   if (object.audio) {
-    const audioContainer = document.getElementById("audioContainer");
-    if (audioContainer) {
-      console.log("Adding audio:", object.audio);
-      const audio = document.createElement("audio");
-      audio.controls = true;
-      audio.style.width = "100%";
+    const audio = document.createElement("audio");
+    audio.controls = true;
+    audio.style.width = "100%";
 
-      const source = document.createElement("source");
-      source.src = object.audio; // без replace
-      source.type = "audio/mpeg";
+    const source = document.createElement("source");
+    source.src = object.audio;
+    source.type = "audio/mpeg";
 
-      audio.appendChild(source);
-      audioContainer.appendChild(audio);
-    }
+    audio.appendChild(source);
+    audioContainer.appendChild(audio);
+  } else {
+    audioContainer.innerHTML = "<p class='obj-meta'>Аўдыязапіс пакуль не дададзены.</p>";
   }
+
+  status.style.display = "none";
+  objectCard.hidden = false;
+}
+
+function showError(message) {
+  status.innerHTML = `${message}<br><a class="home-link" href="../index.html">Вярнуцца на галоўную</a>`;
+  status.className = "loading error-state";
+  objectCard.hidden = true;
 }

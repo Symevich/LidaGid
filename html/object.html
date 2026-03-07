@@ -3,26 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Аб'ект</title>
+    <title>Аб'ект | Аўдыёгід па Лідзе</title>
+    <link rel="stylesheet" href="../css/normalize.css" />
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
-    <a
-      href="#"
-      class="back-btn"
-      onclick="
-        history.back();
-        return false;
-      "
-      >← Назад</a
-    >
+    <a href="#" class="back-btn" onclick="history.back(); return false;">← Назад</a>
 
-    <div class="obj-container">
-      <h1 id="title" class="title"></h1>
-      <img id="image" class="obj-image" src="" alt="" />
-      <div id="audioContainer" class="obj-audio"></div>
-      <div id="description" class="obj-text"></div>
-    </div>
+    <main class="obj-container">
+      <div id="status" class="loading">Загрузка матэрыялу...</div>
+
+      <article id="objectCard" class="obj-card" hidden>
+        <h1 id="title" class="title"></h1>
+        <p class="obj-meta">Аўдыёгід па горадзе Ліда</p>
+
+        <img id="image" class="obj-image" src="" alt="" />
+        <div id="audioContainer" class="obj-audio"></div>
+        <div id="description" class="obj-text"></div>
+      </article>
+    </main>
 
     <script src="../js/object.js"></script>
   </body>

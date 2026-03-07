@@ -3,44 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Прадпрыемствы</title>
+    <title>Прадпрыемствы | Аўдыёгід па Лідзе</title>
+    <link rel="stylesheet" href="../css/normalize.css" />
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
-    <a href="../index.html" class="back-btn">← Назад</a>
+    <a href="../index.html" class="back-btn">← На галоўную</a>
 
-    <div class="container">
-      <h1 class="title">Прадпрыемствы</h1>
-      <div id="list" class="buttons"></div>
-    </div>
+    <main class="container" data-list-page data-file="enterprises.json">
+      <header class="page-header">
+        <h1 class="title">Прадпрыемствы Ліды</h1>
+        <p class="subtitle">Прамысловасць і вытворчасці, якія фарміруюць эканоміку горада.</p>
+      </header>
 
-    <script>
-      fetch("../data/enterprices.json")
-        .then((r) => r.json())
-        .then((data) => {
-          const list = document.getElementById("list");
+      <div class="filters">
+        <label for="search" class="subtitle">Пошук па назве</label>
+        <input id="search" class="search-input" type="search" placeholder="Напрыклад: завод" />
+      </div>
 
-          data
-            .filter((item) => item.id)
-            .forEach((item) => {
-              const link = document.createElement("a");
-              link.href = `object.html?id=${item.id}`;
-              link.className = "button";
+      <div id="status" class="loading">Загрузка дадзеных...</div>
+      <section id="list" class="buttons" aria-label="Спіс прадпрыемстваў"></section>
+    </main>
 
-              const bg = document.createElement("div");
-              bg.className = "button-bg";
-              bg.style.backgroundImage = `url(${item.image.replace("../", "../")})`;
-
-              const title = document.createElement("h2");
-              title.className = "button-text";
-              title.textContent = item.title;
-
-              link.appendChild(bg);
-              link.appendChild(title);
-
-              list.appendChild(link);
-            });
-        });
-    </script>
+    <script src="../js/list-page.js"></script>
   </body>
 </html>
