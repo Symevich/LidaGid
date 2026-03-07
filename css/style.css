@@ -9,10 +9,8 @@
   --surface: #ffffff;
   --text: #1a2233;
   --muted: #58627a;
-  --accent: #2f6df6;
-  --accent-dark: #1c4dc0;
-  --shadow: 0 16px 40px rgba(16, 35, 74, 0.15);
-  --radius: 18px;
+  --shadow: 0 12px 30px rgba(16, 35, 74, 0.12);
+  --radius: 16px;
 }
 
 body {
@@ -39,48 +37,29 @@ img {
 
 .container,
 .obj-container {
-  width: min(1120px, 92vw);
-  margin: 32px auto 44px;
+  width: min(980px, 94vw);
+  margin: 24px auto 32px;
 }
 
 .page-header {
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 
 .title {
-  font-size: clamp(30px, 4vw, 46px);
+  font-size: clamp(28px, 3.2vw, 42px);
   line-height: 1.15;
   text-align: center;
 }
 
-.subtitle {
-  margin-top: 12px;
-  color: var(--muted);
-  text-align: center;
-  font-size: clamp(16px, 2vw, 20px);
-}
-
-.info-note {
-  margin: 20px auto 0;
-  width: fit-content;
-  max-width: 760px;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(47, 109, 246, 0.15);
-  border-radius: 999px;
-  padding: 10px 18px;
-  color: #324264;
-}
-
 .back-btn {
   position: sticky;
-  top: 18px;
-  left: 20px;
+  top: 14px;
+  left: 14px;
   z-index: 50;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-left: 20px;
-  margin-top: 20px;
+  margin: 14px 0 0 14px;
   padding: 10px 16px;
   background: rgba(26, 34, 51, 0.86);
   color: #fff;
@@ -95,43 +74,22 @@ img {
   transform: translateY(-1px);
 }
 
-.filters {
-  margin: 0 auto 20px;
-  width: min(680px, 100%);
-}
-
-.search-input {
-  width: 100%;
-  border: 1px solid #d2d8e8;
-  border-radius: 999px;
-  padding: 12px 18px;
-  font-size: 16px;
-  background: rgba(255, 255, 255, 0.95);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.14);
-}
-
 .buttons {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
 }
 
 .button {
   position: relative;
-  min-height: 260px;
+  min-height: 220px;
   border: none;
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
   display: flex;
   align-items: flex-end;
-  padding: 18px;
+  padding: 16px;
   color: #fff;
   isolation: isolate;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -147,14 +105,14 @@ img {
 
 .button:hover,
 .button:focus-visible {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
   box-shadow: 0 20px 42px rgba(16, 35, 74, 0.24);
 }
 
 .button-text {
   position: relative;
   z-index: 2;
-  font-size: clamp(21px, 2.4vw, 28px);
+  font-size: clamp(20px, 2.1vw, 26px);
   font-weight: 700;
   text-shadow: 0 3px 14px rgba(0, 0, 0, 0.35);
 }
@@ -170,18 +128,18 @@ img {
 
 .button:hover .button-bg,
 .button:focus-visible .button-bg {
-  transform: scale(1.06);
+  transform: scale(1.04);
 }
 
 .loading,
 .empty-state,
 .error-state {
-  margin: 26px auto;
+  margin: 20px auto;
   width: min(700px, 100%);
   background: var(--surface);
   border-radius: 14px;
   box-shadow: var(--shadow);
-  padding: 18px 20px;
+  padding: 16px 18px;
   color: var(--muted);
   text-align: center;
 }
@@ -193,33 +151,35 @@ img {
 
 .obj-container {
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .obj-card {
   background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 22px;
+  padding: 18px;
 }
 
 .obj-image {
   width: 100%;
   border-radius: 14px;
-  max-height: 500px;
+  max-height: 460px;
   object-fit: cover;
 }
 
 .obj-audio {
   width: 100%;
+  margin-top: 12px;
 }
 
 .obj-text {
-  font-size: clamp(17px, 2vw, 20px);
+  font-size: clamp(16px, 1.6vw, 19px);
+  margin-top: 12px;
 }
 
 .obj-text p {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .obj-meta {
@@ -235,12 +195,13 @@ img {
 }
 
 @media (max-width: 800px) {
-  .back-btn {
-    position: static;
-    margin: 14px 0 0 14px;
+  .container,
+  .obj-container {
+    width: min(980px, 92vw);
+    margin: 18px auto 24px;
   }
 
   .button {
-    min-height: 220px;
+    min-height: 200px;
   }
 }
