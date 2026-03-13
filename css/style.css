@@ -4,6 +4,7 @@
   margin: 0;
   padding: 0;
 }
+
 :root {
   --bg: #f3f6fb;
   --surface: #fff;
@@ -12,6 +13,7 @@
   --shadow: 0 12px 30px rgba(16, 35, 74, 0.12);
   --radius: 16px;
 }
+
 /* Асноўныя стылі цела */
 body {
   min-height: 100vh;
@@ -32,38 +34,43 @@ body {
     var(--bg);
   line-height: 1.5;
 }
+
 a {
   text-decoration: none;
   color: inherit;
 }
+
 img {
   display: block;
   max-width: 100%;
 }
+
 .container {
   width: 70%;
   margin: 24px auto 32px;
 }
-.obj-container {
-  width: 100%;
-  max-width: 980px;
-  margin: 24px auto 32px;
-  display: grid;
-  gap: 20px;
+
+.container[section-page] {
+  width: 65%;
 }
+
+.container[object-page] {
+  width: 60%;
+}
+
 .page-header {
   margin-bottom: 20px;
 }
+
 .title {
   font-size: clamp(28px, 3.2vw, 42px);
   line-height: 1.15;
   text-align: center;
 }
+
 /* Кнопка "назад" */
 .back-btn {
   position: sticky;
-  top: 14px;
-  left: 14px;
   z-index: 50;
   display: inline-flex;
   align-items: center;
@@ -76,18 +83,21 @@ img {
   box-shadow: var(--shadow);
   transition: 0.25s;
 }
+
 .back-btn:hover,
 .back-btn:focus-visible {
   background: rgba(26, 34, 51, 0.98);
   transform: translateY(-1px);
 }
-/* Сетка кнопак */
+
+/* Сетка кнопак на галоўнай старонцы */
 .buttons {
   display: grid;
   flex-direction: column;
   grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   gap: 16px;
 }
+
 /* Карткі кнопак */
 .button {
   position: relative;
@@ -102,6 +112,7 @@ img {
   box-shadow: var(--shadow);
   transition: 0.3s;
 }
+
 .button::after {
   content: "";
   position: absolute;
@@ -114,11 +125,13 @@ img {
   );
   z-index: 1;
 }
+
 .button:hover,
 .button:focus-visible {
   transform: translateY(-4px);
   box-shadow: 0 20px 42px rgba(16, 35, 74, 0.24);
 }
+
 .button-bg {
   position: absolute;
   inset: 0;
@@ -127,10 +140,12 @@ img {
   z-index: 0;
   transition: transform 0.35s ease;
 }
+
 .button:hover .button-bg,
 .button:focus-visible .button-bg {
   transform: scale(1.04);
 }
+
 .button-text {
   position: relative;
   z-index: 2;
@@ -138,6 +153,7 @@ img {
   font-weight: 700;
   text-shadow: 0 3px 14px rgba(0, 0, 0, 0.35);
 }
+
 /* Стэйты */
 .loading,
 .empty-state,
@@ -151,15 +167,18 @@ img {
   text-align: center;
   color: var(--muted);
 }
+
 .error-state {
   border: 1px solid rgba(224, 78, 78, 0.35);
   color: #8f2323;
 }
+
 /* Аб’екты */
 .obj-container {
   display: grid;
   gap: 14px;
 }
+
 .obj-card {
   background: var(--surface);
   border-radius: var(--radius);
@@ -169,6 +188,7 @@ img {
   flex-direction: column;
   gap: 16px;
 }
+
 .obj-image {
   width: 100%;
   max-width: 100%;
@@ -177,21 +197,39 @@ img {
   object-fit: cover;
   display: block;
 }
+
 .obj-audio {
   width: 100%;
   margin-top: 12px;
 }
+
 .obj-text {
   font-size: clamp(16px, 1.6vw, 19px);
   margin-top: 12px;
 }
+
 .obj-text p {
   margin-bottom: 12px;
 }
+
 .obj-meta {
   color: var(--muted);
   text-align: center;
 }
+
+/* Вертыкальны ліст толькі для старонак аб'ектаў */
+main[data-list-page] .buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+main[data-list-page] .button {
+  width: 100%;
+  /* max-width: 600px; */
+  margin: 0 auto; /* цэнтраванне карткі */
+}
+
 /* Мабільныя стылі */
 @media (max-width: 800px) {
   .container,
@@ -201,5 +239,70 @@ img {
   }
   .button {
     min-height: 200px;
+  }
+}
+
+/* Вертыкальны ліст */
+main[section-page] .buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Выцягнутая картка */
+.list-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  box-shadow: var(--shadow);
+  width: 100%;
+  margin: 0 auto;
+  transition: 0.25s;
+}
+
+.list-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(16, 35, 74, 0.22);
+}
+
+/* Круглая фотка */
+.list-card-image {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Тэкст */
+.list-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.list-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.list-card-desc {
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .list-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .list-card-image {
+    width: 64px;
+    height: 64px;
   }
 }

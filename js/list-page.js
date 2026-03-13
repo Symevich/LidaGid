@@ -1,8 +1,8 @@
-const page = document.querySelector("[data-list-page]");
+const page = document.querySelector("[section-page]");
 const list = document.getElementById("list");
 const status = document.getElementById("status");
-const statusBaseClass = "loading";
-const fallbackImage = "../assets/images/lidski_zamak.jpg";
+const statusBaseClass = "loading...";
+const fallbackImage = "../assets/images/lidski-zamak.jpg";
 
 if (!page || !list || !status) {
   throw new Error("List page elements are missing");
@@ -13,7 +13,7 @@ let items = [];
 
 fetch(`../data/${file}`)
   .then((response) => {
-    if (!response.ok) throw new Error("fetch failed");
+    if (response.Error) throw new Error("fetch failed");
     return response.json();
   })
   .then((data) => {
@@ -21,14 +21,20 @@ fetch(`../data/${file}`)
     render(items);
   })
   .catch(() => {
-    showStatus("Не ўдалося загрузіць дадзеныя. Паспрабуйце абнавіць старонку.", "error-state");
+    showStatus(
+      "Не ўдалося загрузіць дадзеныя. Паспрабуйце абнавіць старонку.",
+      "error-state"
+    );
   });
 
 function render(data) {
   list.innerHTML = "";
 
   if (!data.length && !items.length) {
-    showStatus("Пакуль у гэтым раздзеле няма матэрыялаў.", "empty-state");
+    showStatus(
+      "Пакуль у гэтым раздзеле няма матэрыялаў.",
+      "empty-state"
+    );
     return;
   }
 
@@ -37,17 +43,23 @@ function render(data) {
   data.forEach((item) => {
     const link = document.createElement("a");
     link.href = `object.html?id=${encodeURIComponent(item.id)}`;
-    link.className = "button";
+    link.className = "list-card";
 
-    const bg = document.createElement("div");
-    bg.className = "button-bg";
-    bg.style.backgroundImage = `url(${item.image || fallbackImage})`;
+    const img = document.createElement("img");
+    img.className = "list-card-image";
+    img.src = item.image || fallbackImage;
+    img.alt = item.title;
+
+    const textWrap = document.createElement("div");
+    textWrap.className = "list-card-text";
 
     const title = document.createElement("h2");
-    title.className = "button-text";
+    title.className = "list-card-title";
     title.textContent = item.title;
 
-    link.append(bg, title);
+    textWrap.append(title);
+    link.append(img, textWrap);
+
     list.appendChild(link);
   });
 }
