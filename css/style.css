@@ -1,38 +1,36 @@
-/* Скідаем адступы і каробкавыя мадэлі */
-* {
+/* ============================================================
+   RESET & VARIABLES
+   ============================================================ */
+
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 :root {
-  --bg: #f3f6fb;
+  --bg:      #f3f6fb;
   --surface: #fff;
-  --text: #1a2233;
-  --muted: #58627a;
-  --shadow: 0 12px 30px rgba(16, 35, 74, 0.12);
-  --radius: 16px;
+  --text:    #1a2233;
+  --muted:   #58627a;
+  --shadow:  0 12px 30px rgba(16, 35, 74, 0.12);
+  --radius:  16px;
 }
 
-/* Асноўныя стылі цела */
+/* ============================================================
+   BASE
+   ============================================================ */
+
 body {
   min-height: 100vh;
   font-family: "Roboto", sans-serif;
   font-size: 16px;
+  line-height: 1.5;
   color: var(--text);
   background:
-    radial-gradient(
-      circle at 10% 15%,
-      rgba(47, 109, 246, 0.12),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 90% 10%,
-      rgba(106, 69, 255, 0.09),
-      transparent 28%
-    ),
+    radial-gradient(circle at 10% 15%, rgba(47, 109, 246, 0.12), transparent 30%),
+    radial-gradient(circle at 90% 10%, rgba(106, 69, 255, 0.09), transparent 28%),
     var(--bg);
-  line-height: 1.5;
 }
 
 a {
@@ -45,18 +43,17 @@ img {
   max-width: 100%;
 }
 
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+
 .container {
   width: 70%;
   margin: 24px auto 32px;
 }
 
-.container[section-page] {
-  width: 65%;
-}
-
-.container[object-page] {
-  width: 60%;
-}
+.container[section-page] { width: 65%; }
+.container[object-page]  { width: 60%; }
 
 .page-header {
   margin-bottom: 20px;
@@ -68,20 +65,24 @@ img {
   text-align: center;
 }
 
-/* Кнопка "назад" */
+/* ============================================================
+   BACK BUTTON
+   ============================================================ */
+
 .back-btn {
-  position: sticky;
+  position: fixed;
+  top: 14px;
+  left: 14px;
   z-index: 50;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin: 14px 0 0 14px;
   padding: 10px 16px;
+  border-radius: 999px;
   background: rgba(26, 34, 51, 0.86);
   color: #fff;
-  border-radius: 999px;
   box-shadow: var(--shadow);
-  transition: 0.25s;
+  transition: background 0.25s, transform 0.25s;
 }
 
 .back-btn:hover,
@@ -90,40 +91,45 @@ img {
   transform: translateY(-1px);
 }
 
-/* Сетка кнопак на галоўнай старонцы */
+/* ============================================================
+   BUTTON GRID (home page)
+   ============================================================ */
+
 .buttons {
   display: grid;
-  flex-direction: column;
   grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   gap: 16px;
 }
 
-/* Карткі кнопак */
+/* ============================================================
+   BUTTON CARDS
+   ============================================================ */
+
 .button {
   position: relative;
   min-height: 300px;
-  border-radius: var(--radius);
-  overflow: hidden;
   display: flex;
   align-items: flex-end;
   padding: 16px;
-  color: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
   isolation: isolate;
+  color: #fff;
   box-shadow: var(--shadow);
-  transition: 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .button::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: linear-gradient(
     to top,
     rgba(6, 10, 25, 0.82),
     rgba(6, 10, 25, 0.15) 55%,
     rgba(6, 10, 25, 0.03)
   );
-  z-index: 1;
 }
 
 .button:hover,
@@ -135,9 +141,9 @@ img {
 .button-bg {
   position: absolute;
   inset: 0;
+  z-index: 0;
   background-size: cover;
   background-position: center;
-  z-index: 0;
   transition: transform 0.35s ease;
 }
 
@@ -154,12 +160,15 @@ img {
   text-shadow: 0 3px 14px rgba(0, 0, 0, 0.35);
 }
 
-/* Стэйты */
+/* ============================================================
+   STATES (loading / empty / error)
+   ============================================================ */
+
 .loading,
 .empty-state,
 .error-state {
-  margin: 20px auto;
   width: min(700px, 100%);
+  margin: 20px auto;
   padding: 16px 18px;
   border-radius: 14px;
   background: var(--surface);
@@ -173,29 +182,30 @@ img {
   color: #8f2323;
 }
 
-/* Аб’екты */
+/* ============================================================
+   OBJECT PAGE
+   ============================================================ */
+
 .obj-container {
   display: grid;
   gap: 14px;
 }
 
 .obj-card {
-  background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
 .obj-image {
   width: 100%;
-  max-width: 100%;
-  height: auto; /* каб прапорцыі заставаліся */
+  height: auto;
   border-radius: 14px;
   object-fit: cover;
-  display: block;
 }
 
 .obj-audio {
@@ -217,50 +227,36 @@ img {
   text-align: center;
 }
 
-/* Вертыкальны ліст толькі для старонак аб'ектаў */
-main[data-list-page] .buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+/* ============================================================
+   SECTION / LIST PAGE OVERRIDES
+   ============================================================ */
 
-main[data-list-page] .button {
-  width: 100%;
-  /* max-width: 600px; */
-  margin: 0 auto; /* цэнтраванне карткі */
-}
-
-/* Мабільныя стылі */
-@media (max-width: 800px) {
-  .container,
-  .obj-container {
-    width: min(980px, 92vw);
-    margin: 18px auto 24px;
-  }
-  .button {
-    min-height: 200px;
-  }
-}
-
-/* Вертыкальны ліст */
+main[data-list-page] .buttons,
 main[section-page] .buttons {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-/* Выцягнутая картка */
+main[data-list-page] .button {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   LIST CARD
+   ============================================================ */
+
 .list-card {
   display: flex;
   align-items: center;
   gap: 18px;
+  width: 100%;
+  padding: 14px 18px;
   background: var(--surface);
   border-radius: var(--radius);
-  padding: 14px 18px;
   box-shadow: var(--shadow);
-  width: 100%;
-  margin: 0 auto;
-  transition: 0.25s;
+  transition: transform 0.25s, box-shadow 0.25s;
 }
 
 .list-card:hover {
@@ -268,16 +264,14 @@ main[section-page] .buttons {
   box-shadow: 0 18px 40px rgba(16, 35, 74, 0.22);
 }
 
-/* Круглая фотка */
 .list-card-image {
   width: 84px;
   height: 84px;
+  flex-shrink: 0;
   border-radius: 50%;
   object-fit: cover;
-  flex-shrink: 0;
 }
 
-/* Тэкст */
 .list-card-text {
   display: flex;
   flex-direction: column;
@@ -294,7 +288,21 @@ main[section-page] .buttons {
   color: var(--muted);
 }
 
-/* Mobile */
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 800px) {
+  .container {
+    width: min(980px, 92vw);
+    margin: 18px auto 24px;
+  }
+
+  .button {
+    min-height: 200px;
+  }
+}
+
 @media (max-width: 600px) {
   .list-card {
     flex-direction: column;
