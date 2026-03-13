@@ -4,7 +4,6 @@
   margin: 0;
   padding: 0;
 }
-
 :root {
   --bg: #f3f6fb;
   --surface: #fff;
@@ -13,7 +12,6 @@
   --shadow: 0 12px 30px rgba(16, 35, 74, 0.12);
   --radius: 16px;
 }
-
 /* Асноўныя стылі цела */
 body {
   min-height: 100vh;
@@ -34,7 +32,6 @@ body {
     var(--bg);
   line-height: 1.5;
 }
-
 a {
   text-decoration: none;
   color: inherit;
@@ -43,12 +40,10 @@ img {
   display: block;
   max-width: 100%;
 }
-
 .container {
   width: 70%;
   margin: 24px auto 32px;
 }
-
 .obj-container {
   width: 100%;
   max-width: 980px;
@@ -56,7 +51,6 @@ img {
   display: grid;
   gap: 20px;
 }
-
 .page-header {
   margin-bottom: 20px;
 }
@@ -65,7 +59,6 @@ img {
   line-height: 1.15;
   text-align: center;
 }
-
 /* Кнопка "назад" */
 .back-btn {
   position: sticky;
@@ -88,18 +81,17 @@ img {
   background: rgba(26, 34, 51, 0.98);
   transform: translateY(-1px);
 }
-
 /* Сетка кнопак */
 .buttons {
   display: grid;
+  flex-direction: column;
   grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   gap: 16px;
 }
-
 /* Карткі кнопак */
 .button {
   position: relative;
-  min-height: 250px;
+  min-height: 300px;
   border-radius: var(--radius);
   overflow: hidden;
   display: flex;
@@ -146,7 +138,6 @@ img {
   font-weight: 700;
   text-shadow: 0 3px 14px rgba(0, 0, 0, 0.35);
 }
-
 /* Стэйты */
 .loading,
 .empty-state,
@@ -164,7 +155,6 @@ img {
   border: 1px solid rgba(224, 78, 78, 0.35);
   color: #8f2323;
 }
-
 /* Аб’екты */
 .obj-container {
   display: grid;
@@ -202,7 +192,6 @@ img {
   color: var(--muted);
   text-align: center;
 }
-
 /* Мабільныя стылі */
 @media (max-width: 800px) {
   .container,
