@@ -1,24 +1,21 @@
 <!doctype html>
 <html lang="be">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Вядомыя людзі | Аўдыёгід па Лідзе</title>
-    <link rel="stylesheet" href="../css/normalize.css" />
-    <link rel="stylesheet" href="../css/style.css" />
-  </head>
-  <body>
-    <a href="../index.html" class="back-btn">← На галоўную</a>
-
-    <main class="container" section-page data-file="people.json">
-      <header class="page-header">
-        <h1 class="title">Вядомыя людзі Лідчыны</h1>
-      </header>
-
-      <div id="status" class="loading">Загрузка дадзеных...</div>
-      <section id="list" class="buttons" aria-label="Спіс вядомых людзей"></section>
-    </main>
-
-    <script src="../js/list-page.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Вядомыя людзі | Аўдыёгід па Лідзе</title>
+  <link rel="stylesheet" href="../css/normalize.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <a href="../index.html" class="back-button">← На галоўную</a>
+  <main class="page page--section" data-file="people.json">
+    <header class="page__header">
+      <h1 class="page__title">Вядомыя людзі Лідчыны</h1>
+    </header>
+    <div id="status" class="status">Загрузка дадзеных...</div>
+    <section id="list" class="card-grid" aria-label="Спіс вядомых людзей"></section>
+  </main>
+  <script src="../js/list-page.js"></script>
+</body>
 </html>

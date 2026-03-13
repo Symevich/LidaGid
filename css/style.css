@@ -44,22 +44,22 @@ img {
 }
 
 /* ============================================================
-   LAYOUT
+   PAGE LAYOUT
    ============================================================ */
 
-.container {
+.page {
   width: 70%;
   margin: 24px auto 32px;
 }
 
-.container[section-page] { width: 65%; }
-.container[object-page]  { width: 60%; }
+.page--section { width: 65%; }
+.page--object  { width: 60%; }
 
-.page-header {
+.page__header {
   margin-bottom: 20px;
 }
 
-.title {
+.page__title {
   font-size: clamp(28px, 3.2vw, 42px);
   line-height: 1.15;
   text-align: center;
@@ -69,7 +69,7 @@ img {
    BACK BUTTON
    ============================================================ */
 
-.back-btn {
+.back-button {
   position: fixed;
   top: 14px;
   left: 14px;
@@ -85,27 +85,35 @@ img {
   transition: background 0.25s, transform 0.25s;
 }
 
-.back-btn:hover,
-.back-btn:focus-visible {
+.back-button:hover,
+.back-button:focus-visible {
   background: rgba(26, 34, 51, 0.98);
   transform: translateY(-1px);
 }
 
 /* ============================================================
-   BUTTON GRID (home page)
+   CARD GRID
    ============================================================ */
 
-.buttons {
+.card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   gap: 16px;
 }
 
+/* Section and list pages use a single column */
+.page--section .card-grid,
+.page--list .card-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 /* ============================================================
-   BUTTON CARDS
+   CARD (image card with overlay — home page & section pages)
    ============================================================ */
 
-.button {
+.card {
   position: relative;
   min-height: 300px;
   display: flex;
@@ -119,7 +127,7 @@ img {
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.button::after {
+.card::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -132,13 +140,13 @@ img {
   );
 }
 
-.button:hover,
-.button:focus-visible {
+.card:hover,
+.card:focus-visible {
   transform: translateY(-4px);
   box-shadow: 0 20px 42px rgba(16, 35, 74, 0.24);
 }
 
-.button-bg {
+.card__bg {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -147,12 +155,12 @@ img {
   transition: transform 0.35s ease;
 }
 
-.button:hover .button-bg,
-.button:focus-visible .button-bg {
+.card:hover .card__bg,
+.card:focus-visible .card__bg {
   transform: scale(1.04);
 }
 
-.button-text {
+.card__title {
   position: relative;
   z-index: 2;
   font-size: clamp(20px, 2.1vw, 26px);
@@ -161,93 +169,10 @@ img {
 }
 
 /* ============================================================
-   STATES (loading / empty / error)
+   LIST ITEM (horizontal card — section pages)
    ============================================================ */
 
-.loading,
-.empty-state,
-.error-state {
-  width: min(700px, 100%);
-  margin: 20px auto;
-  padding: 16px 18px;
-  border-radius: 14px;
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  text-align: center;
-  color: var(--muted);
-}
-
-.error-state {
-  border: 1px solid rgba(224, 78, 78, 0.35);
-  color: #8f2323;
-}
-
-/* ============================================================
-   OBJECT PAGE
-   ============================================================ */
-
-.obj-container {
-  display: grid;
-  gap: 14px;
-}
-
-.obj-card {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 20px;
-  background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-
-.obj-image {
-  width: 100%;
-  height: auto;
-  border-radius: 14px;
-  object-fit: cover;
-}
-
-.obj-audio {
-  width: 100%;
-  margin-top: 12px;
-}
-
-.obj-text {
-  font-size: clamp(16px, 1.6vw, 19px);
-  margin-top: 12px;
-}
-
-.obj-text p {
-  margin-bottom: 12px;
-}
-
-.obj-meta {
-  color: var(--muted);
-  text-align: center;
-}
-
-/* ============================================================
-   SECTION / LIST PAGE OVERRIDES
-   ============================================================ */
-
-main[data-list-page] .buttons,
-main[section-page] .buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-main[data-list-page] .button {
-  width: 100%;
-  margin: 0 auto;
-}
-
-/* ============================================================
-   LIST CARD
-   ============================================================ */
-
-.list-card {
+.list-item {
   display: flex;
   align-items: center;
   gap: 18px;
@@ -259,12 +184,12 @@ main[data-list-page] .button {
   transition: transform 0.25s, box-shadow 0.25s;
 }
 
-.list-card:hover {
+.list-item:hover {
   transform: translateY(-3px);
   box-shadow: 0 18px 40px rgba(16, 35, 74, 0.22);
 }
 
-.list-card-image {
+.list-item__image {
   width: 84px;
   height: 84px;
   flex-shrink: 0;
@@ -272,20 +197,80 @@ main[data-list-page] .button {
   object-fit: cover;
 }
 
-.list-card-text {
+.list-item__body {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.list-card-title {
+.list-item__title {
   font-size: 1.25rem;
   font-weight: 700;
 }
 
-.list-card-desc {
+.list-item__desc {
   font-size: 0.95rem;
   color: var(--muted);
+}
+
+/* ============================================================
+   OBJECT CARD (detail page)
+   ============================================================ */
+
+.object-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.object-card__image {
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.object-card__audio {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.object-card__text {
+  font-size: clamp(16px, 1.6vw, 19px);
+  margin-top: 12px;
+}
+
+.object-card__text p {
+  margin-bottom: 12px;
+}
+
+.object-card__meta {
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ============================================================
+   STATES
+   ============================================================ */
+
+.status {
+  width: min(700px, 100%);
+  margin: 20px auto;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  text-align: center;
+  color: var(--muted);
+}
+
+.status--error {
+  border: 1px solid rgba(224, 78, 78, 0.35);
+  color: #8f2323;
 }
 
 /* ============================================================
@@ -293,23 +278,23 @@ main[data-list-page] .button {
    ============================================================ */
 
 @media (max-width: 800px) {
-  .container {
+  .page {
     width: min(980px, 92vw);
     margin: 18px auto 24px;
   }
 
-  .button {
+  .card {
     min-height: 200px;
   }
 }
 
 @media (max-width: 600px) {
-  .list-card {
+  .list-item {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .list-card-image {
+  .list-item__image {
     width: 64px;
     height: 64px;
   }

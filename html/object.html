@@ -1,27 +1,23 @@
 <!doctype html>
 <html lang="be">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Аб'ект | Аўдыёгід па Лідзе</title>
-    <link rel="stylesheet" href="../css/normalize.css" />
-    <link rel="stylesheet" href="../css/style.css" />
-  </head>
-  <body>
-    <a href="#" class="back-btn" onclick="history.back(); return false;">← Назад</a>
-
-    <main class="container" object-page>
-      <div id="status" class="loading">Загрузка матэрыялу...</div>
-
-      <article id="objectCard" class="obj-card" hidden>
-        <h1 id="title" class="title"></h1>
-
-        <img id="image" class="obj-image" src="" alt="" />
-        <div id="audioContainer" class="obj-audio"></div>
-        <div id="description" class="obj-text"></div>
-      </article>
-    </main>
-
-    <script src="../js/object.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Аб'ект | Аўдыёгід па Лідзе</title>
+  <link rel="stylesheet" href="../css/normalize.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <a href="#" class="back-button" onclick="history.back(); return false;">← Назад</a>
+  <main class="page page--object">
+    <div id="status" class="status">Загрузка матэрыялу...</div>
+    <article id="objectCard" class="object-card" hidden>
+      <h1 id="title" class="page__title"></h1>
+      <img id="image" class="object-card__image" src="" alt="" />
+      <div id="audioContainer" class="object-card__audio"></div>
+      <div id="description" class="object-card__text"></div>
+    </article>
+  </main>
+  <script src="../js/object.js"></script>
+</body>
 </html>
