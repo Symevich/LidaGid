@@ -1,11 +1,10 @@
-const page = document.querySelector("[section-page]");
+const page = document.querySelector(".page--section");
 const list = document.getElementById("list");
 const status = document.getElementById("status");
-const statusBaseClass = "loading...";
 const fallbackImage = "../assets/images/lidski-zamak.jpg";
 
 if (!page || !list || !status) {
-  throw new Error("List page elements are missing");
+  throw new Error("Section page elements are missing");
 }
 
 const file = page.dataset.file;
@@ -13,7 +12,7 @@ let items = [];
 
 fetch(`../data/${file}`)
   .then((response) => {
-    if (response.Error) throw new Error("fetch failed");
+    if (!response.ok) throw new Error("Fetch failed");
     return response.json();
   })
   .then((data) => {
@@ -23,18 +22,15 @@ fetch(`../data/${file}`)
   .catch(() => {
     showStatus(
       "Не ўдалося загрузіць дадзеныя. Паспрабуйце абнавіць старонку.",
-      "error-state"
+      "status--error"
     );
   });
 
 function render(data) {
   list.innerHTML = "";
 
-  if (!data.length && !items.length) {
-    showStatus(
-      "Пакуль у гэтым раздзеле няма матэрыялаў.",
-      "empty-state"
-    );
+  if (!data.length) {
+    showStatus("Пакуль у гэтым раздзеле няма матэрыялаў.", "status--empty");
     return;
   }
 
@@ -43,29 +39,28 @@ function render(data) {
   data.forEach((item) => {
     const link = document.createElement("a");
     link.href = `object.html?id=${encodeURIComponent(item.id)}`;
-    link.className = "list-card";
+    link.className = "list-item";
 
     const img = document.createElement("img");
-    img.className = "list-card-image";
+    img.className = "list-item__image";
     img.src = item.image || fallbackImage;
     img.alt = item.title;
 
-    const textWrap = document.createElement("div");
-    textWrap.className = "list-card-text";
+    const body = document.createElement("div");
+    body.className = "list-item__body";
 
     const title = document.createElement("h2");
-    title.className = "list-card-title";
+    title.className = "list-item__title";
     title.textContent = item.title;
 
-    textWrap.append(title);
-    link.append(img, textWrap);
-
+    body.append(title);
+    link.append(img, body);
     list.appendChild(link);
   });
 }
 
-function showStatus(message, className) {
+function showStatus(message, modifier) {
   status.textContent = message;
-  status.className = `${statusBaseClass} ${className}`.trim();
+  status.className = `status ${modifier}`.trim();
   status.style.display = "block";
 }

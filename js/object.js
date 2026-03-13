@@ -1,6 +1,5 @@
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
-
 const status = document.getElementById("status");
 const objectCard = document.getElementById("objectCard");
 
@@ -9,15 +8,13 @@ if (!id) {
   throw new Error("No ID in URL");
 }
 
-// Загрузка дадзеных
 Promise.all([
   fetchJson("../data/sights.json"),
   fetchJson("../data/enterprises.json"),
   fetchJson("../data/people.json"),
 ])
   .then(([sights, enterprises, people]) => {
-    const allData = [...sights, ...enterprises, ...people];
-    const object = allData.find((item) => item.id === id);
+    const object = [...sights, ...enterprises, ...people].find((item) => item.id === id);
 
     if (!object) {
       showError("Аб'ект не знойдзены.");
@@ -43,10 +40,8 @@ function renderObject(object) {
   const descEl = document.getElementById("description");
   const audioContainer = document.getElementById("audioContainer");
 
-  // Загаловак
   titleEl.textContent = object.title || "Без назвы";
 
-  // Выява
   if (object.image) {
     img.src = object.image;
     img.alt = object.title;
@@ -55,28 +50,25 @@ function renderObject(object) {
     img.style.display = "none";
   }
 
-  // Апісанне
   descEl.innerHTML = object.description || "<p>Апісанне адсутнічае.</p>";
 
-  // Аўдыяплэер (той самы, што вы прасілі)
   if (object.audio) {
     audioContainer.innerHTML = `
-      <audio class="point_view_audio" width="100%" controls controlslist="nodownload" style="width:100%;">
+      <audio class="object-card__audio" controls controlslist="nodownload" style="width: 100%;">
         <source src="${object.audio}" type="audio/ogg">
-        Your browser does not support the audio element.
+        Ваш браўзер не падтрымлівае аўдыёэлемент.
       </audio>
     `;
   } else {
-    audioContainer.innerHTML = "<p class='obj-meta'>Аўдыязапіс адсутнічае.</p>";
+    audioContainer.innerHTML = "<p class='object-card__meta'>Аўдыязапіс адсутнічае.</p>";
   }
 
-  // Паказваем картку, хаваем статус загрузкі
   status.style.display = "none";
   objectCard.hidden = false;
 }
 
 function showError(message) {
-  status.innerHTML = `${message}<br><br><a href="../index.html" style="color: var(--primary-color)">Вярнуцца на галоўную</a>`;
-  status.className = "loading error-state";
+  status.innerHTML = `${message}<br><br><a href="../index.html">Вярнуцца на галоўную</a>`;
+  status.className = "status status--error";
   objectCard.hidden = true;
 }
