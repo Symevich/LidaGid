@@ -18,9 +18,9 @@
 
   // ── Colour per category ──
   const COLORS = {
-    sights: "#f5a623", // yellow/amber
-    enterprises: "#4a90d9", // blue
-    people: "#5cb85c", // green
+    sights: "#e84040", // yellow/amber
+    enterprises: "#f5a623", // blue
+    people: "#4a90d9", // green
   };
 
   // ── Build Leaflet circle marker icon ──
@@ -41,8 +41,8 @@
 
   // ── Init map ──
   const map = L.map("map", { zoomControl: true }).setView(
-    [53.8885, 25.299],
-    14,
+    [53.891750, 25.302094],
+    12,
   );
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
