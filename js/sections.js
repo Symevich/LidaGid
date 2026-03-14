@@ -23,7 +23,7 @@ fetch(`../data/${file}`)
   .catch(() => {
     showStatus(
       "Не ўдалося загрузіць дадзеныя. Паспрабуйце абнавіць старонку.",
-      "status--error"
+      "status--error",
     );
   });
 

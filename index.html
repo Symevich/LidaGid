@@ -1,35 +1,62 @@
 <!doctype html>
 <html lang="be">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Інтэрактыўны аўдыёгід па Лідзе: славутасці, прадпрыемствы і вядомыя людзі ў адным зручным месцы." />
-  <title>Аўдыёгід па горадзе Ліда</title>
-  <link rel="stylesheet" href="./css/normalize.css" />
-  <link rel="stylesheet" href="./css/style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
-</head>
-<body>
-  <main class="page">
-    <header class="page__header">
-      <h1 class="page__title">Аўдыёгід па горадзе Ліда</h1>
-    </header>
-    <section class="card-grid" aria-label="Раздзелы аўдыёгіда">
-      <a href="./html/sights.html" class="card">
-        <div class="card__bg" style="background-image: url(./assets/images/lidski-zamak.jpg)"></div>
-        <h2 class="card__title">Славутасці</h2>
-      </a>
-      <a href="./html/enterprises.html" class="card">
-        <div class="card__bg" style="background-image: url(./assets/images/maloczny-zavod.jpg)"></div>
-        <h2 class="card__title">Прадпрыемствы</h2>
-      </a>
-      <a href="./html/people.html" class="card">
-        <div class="card__bg" style="background-image: url(./assets/images/kamandzirovaczny.jpg)"></div>
-        <h2 class="card__title">Вядомыя людзі</h2>
-      </a>
-    </section>
-  </main>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Інтэрактыўны аўдыёгід па Лідзе: славутасці, прадпрыемствы і вядомыя людзі ў адным зручным месцы."
+    />
+    <title>Аўдыёгід па горадзе Ліда</title>
+    <link rel="stylesheet" href="./css/normalize.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="page">
+      <header class="page__header">
+        <h1 class="page__title">Аўдыёгід па горадзе Ліда</h1>
+      </header>
+      <section class="card-grid" aria-label="Раздзелы аўдыёгіда">
+        <a href="./html/sights.html" class="card">
+          <div
+            class="card__bg"
+            style="background-image: url(./assets/images/lidski-zamak.jpg)"
+          ></div>
+          <h2 class="card__title">Славутасці</h2>
+        </a>
+        <a href="./html/enterprises.html" class="card">
+          <div
+            class="card__bg"
+            style="background-image: url(./assets/images/maloczny-zavod.jpg)"
+          ></div>
+          <h2 class="card__title">Прадпрыемствы</h2>
+        </a>
+        <a href="./html/people.html" class="card">
+          <div
+            class="card__bg"
+            style="background-image: url(./assets/images/kamandzirovaczny.jpg)"
+          ></div>
+          <h2 class="card__title">Вядомыя людзі</h2>
+        </a>
+      </section>
+    </main>
+    <div
+      id="map"
+      class="map-section"
+      data-sources="sights enterprises people"
+      data-root="."
+    ></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="./js/map.js"></script>
+  </body>
 </html>

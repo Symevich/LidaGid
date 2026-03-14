@@ -10,9 +10,10 @@ if (!id) {
 }
 
 const SOURCES = ["sights", "enterprises", "people"];
-const filesToFetch = source && SOURCES.includes(source)
-  ? [`../data/${source}.json`]
-  : SOURCES.map((s) => `../data/${s}.json`);
+const filesToFetch =
+  source && SOURCES.includes(source)
+    ? [`../data/${source}.json`]
+    : SOURCES.map((s) => `../data/${s}.json`);
 
 Promise.all(filesToFetch.map(fetchJson))
   .then((results) => {
@@ -61,7 +62,8 @@ function renderObject(object) {
       </audio>
     `;
   } else {
-    audioContainer.innerHTML = "<p class='object-card__meta'>Аўдыязапіс адсутнічае.</p>";
+    audioContainer.innerHTML =
+      "<p class='object-card__meta'>Аўдыязапіс адсутнічае.</p>";
   }
 
   status.style.display = "none";
