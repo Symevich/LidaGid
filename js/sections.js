@@ -8,6 +8,7 @@ if (!page || !list || !status) {
 }
 
 const file = page.dataset.file;
+const source = file.replace(".json", "");
 let items = [];
 
 fetch(`../data/${file}`)
@@ -38,7 +39,7 @@ function render(data) {
 
   data.forEach((item) => {
     const link = document.createElement("a");
-    link.href = `object.html?id=${encodeURIComponent(item.id)}`;
+    link.href = `object.html?source=${source}&id=${encodeURIComponent(item.id)}`;
     link.className = "list-item";
 
     const img = document.createElement("img");

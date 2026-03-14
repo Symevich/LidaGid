@@ -1,5 +1,6 @@
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
+const source = params.get("source");
 const status = document.getElementById("status");
 const objectCard = document.getElementById("objectCard");
 
@@ -8,13 +9,14 @@ if (!id) {
   throw new Error("No ID in URL");
 }
 
-Promise.all([
-  fetchJson("../data/sights.json"),
-  fetchJson("../data/enterprises.json"),
-  fetchJson("../data/people.json"),
-])
-  .then(([sights, enterprises, people]) => {
-    const object = [...sights, ...enterprises, ...people].find((item) => item.id === id);
+const SOURCES = ["sights", "enterprises", "people"];
+const filesToFetch = source && SOURCES.includes(source)
+  ? [`../data/${source}.json`]
+  : SOURCES.map((s) => `../data/${s}.json`);
+
+Promise.all(filesToFetch.map(fetchJson))
+  .then((results) => {
+    const object = results.flat().find((item) => item.id === id);
 
     if (!object) {
       showError("Аб'ект не знойдзены.");
@@ -40,14 +42,13 @@ function renderObject(object) {
   const descEl = document.getElementById("description");
   const audioContainer = document.getElementById("audioContainer");
 
+  document.title = `${object.title} | Аўдыёгід па Лідзе`;
   titleEl.textContent = object.title || "Без назвы";
 
   if (object.image) {
     img.src = object.image;
     img.alt = object.title;
-    img.style.display = "block";
-  } else {
-    img.style.display = "none";
+    img.hidden = false;
   }
 
   descEl.innerHTML = object.description || "<p>Апісанне адсутнічае.</p>";
