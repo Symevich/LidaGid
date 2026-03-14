@@ -413,6 +413,10 @@ img {
     margin-bottom: 16px;
   }
 
+  body:has(.back-button) {
+    padding-top: 56px;
+  }
+
   .back-button {
     top: 10px;
     left: 10px;
