@@ -1,0 +1,50 @@
+[
+  {
+    "id": "torfabryketny",
+    "title": "Lida Peat Briquette Plant",
+    "description": "<p>An enterprise in the Lida district that produces fuel briquettes from peat. This product is used for heating and in the energy sector. The plant plays an important role in the utilisation of local natural resources.</p>",
+    "image": "../assets/images/torfabryketny.jpg",
+    "lat": 53.886742,
+    "lng": 25.416148
+  },
+  {
+    "id": "maloczny-zavod",
+    "title": "MiLida Dairy Plant",
+    "description": "<p>This is one of the largest food enterprises in Lida. The plant processes milk and produces condensed and powdered milk, butter, and other dairy products. It cooperates with local agricultural farms and supplies its products to both the domestic market and for export.</p>",
+    "image": "../assets/images/maloczny-zavod.jpg",
+    "lat": 53.871183,
+    "lng": 25.314976
+  },
+  {
+    "id": "lidselmash",
+    "title": "Lidselmash",
+    "description": "<p>A machine-building plant specialising in the manufacture of agricultural machinery and equipment for animal husbandry and crop farming. The plant's products are used in agriculture across Belarus and other countries. It has a long history and is one of the city's major industrial facilities.</p>",
+    "image": "../assets/images/lidselmash.jpg",
+    "lat": 53.902585,
+    "lng": 25.298678
+  },
+  {
+    "id": "konus",
+    "title": "Konus Hot-Dip Galvanising Plant",
+    "description": "<p>The enterprise specialises in hot-dip galvanising of metal structures. This treatment protects metal from corrosion and extends its service life. The plant's services are used in construction, industry, and other sectors where reliable metal structures are required.</p>",
+    "image": "../assets/images/konus.jpg",
+    "lat": 53.863790,
+    "lng": 25.268880
+  },
+  {
+    "id": "liplast",
+    "title": "Liplast",
+    "description": "<p>The enterprise specialises in the production of plastic and polymer products. It manufactures packaging, technical parts, and other products used across various industries and in everyday life.</p>",
+    "image": "../assets/images/liplast.jpg",
+    "lat": 53.903788,
+    "lng": 25.324376
+  },
+  {
+    "id": "lakafarba",
+    "title": "Lakafarba",
+    "description": "<p>A large chemical enterprise that produces paints, varnishes, and other coatings. Its products are used in construction, industry, and renovation. The plant is one of the largest manufacturers of paint and varnish materials in Belarus.</p>",
+    "image": "../assets/images/lakafarba.jpg",
+    "lat": 53.906953,
+    "lng": 25.316834
+  }
+]

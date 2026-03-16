@@ -1,0 +1,73 @@
+[
+  {
+    "id": "kamandzirovaczny",
+    "title": "The Business Traveller",
+    "description": "<p>\"The Business Traveller\" is an ironic sculptural composition that takes us back to the 1970s.</p><p>In 2008, an ironic sculpture created by Belarusian artist Uladzimir Zhabanau appeared on a street in Lida. The sculpture \"Hello, Business Traveller!\" stands next to the main entrance of the Hotel \"Lida\". It humorously depicts the chronic shortage of hotel rooms that was common in small Soviet-era cities.</p><p>Near the hotel, a young man sits on a large old suitcase. In his outstretched hand he clutches a city map, greeting every passerby. His clothes match the style of the 1970s. The bronze sculpture is life-sized and strikingly lifelike.</p>",
+    "image": "../assets/images/kamandzirovaczny.jpg",
+    "lat": 53.888573,
+    "lng": 25.303809
+  },
+  {
+    "id": "kamien-u-honar-zasnavannia-lidy",
+    "title": "Foundation Stone of Lida",
+    "description": "<p>The Foundation Stone of Lida stands on Savieckaja Street and tells visitors about this remarkable city.</p><p>One of Lida's landmarks is located near the Church of the Exaltation of the Holy Cross. This massive boulder was installed in 2008 to mark the city's 685th anniversary. The monument was created by local sculptor Rychard Grusha, who found the enormous stone in the Vawkavysk district. The most challenging part was transporting it, as it weighed 30 tonnes. After special processing, the boulder was reduced by 10 tonnes.</p><p>One side of the stone features an engraving of the city's coat of arms, granted along with the Magdeburg Rights on September 17, 1590. It also shows the city's founding date (1323) and a text in Old Slavonic stating that Grand Duke of the Grand Duchy of Lithuania Gediminas bequeathed the city to his son Keystut, to whom Lida passed in 1330. The other side of the boulder provides information about the founding of the city in Belarusian.</p>",
+    "image": "../assets/images/kamien-u-honar-zasnavannia-lidy.jpg",
+    "audio": "../assets/audio/kamien-u-honar-zasnavannia-lidy.ogg",
+    "lat": 53.889516,
+    "lng": 25.303592
+  },
+  {
+    "id": "kasciol-uzvyszennia-sviatoha-kryzha",
+    "title": "Church of the Exaltation of the Holy Cross",
+    "description": "<p>The construction of a church in Lida was planned from the very moment the city was founded. The year 1388 is considered the year the first church in Lida was built, by order of King Jagiełło. But it did not last long — it was burned down by the Teutonic Knights. Eight years later another church appeared, but it too is no longer standing: it burned down in the 17th century. According to records, a wooden church was erected in 1674, though its exact location is unknown.</p><p>After all these events, in 1770 came the turn of the Church of the Exaltation of the Holy Cross, which fortunately we can still see today. Its architect was Johann Christoph Glaubitz, considered the founder of the famous Vilnius Baroque style. The church was built over five years.</p><p>Sadly, neither the founders nor the architect lived to see the result: both passed away shortly before the construction was fully completed. The Church of the Exaltation of the Holy Cross has a T-shaped layout, and its altar section is rectangular. The vaults and walls are decorated with frescoes.</p>",
+    "image": "../assets/images/kasciol-uzvyszennia-sviatoha-kryzha.jpg",
+    "audio": "../assets/audio/kasciol-uzvyszennia-sviatoha-kryzha.ogg",
+    "lat": 53.889293,
+    "lng": 25.303169
+  },
+  {
+    "id": "kurhan-neumiruczasci",
+    "title": "Mound of Immortality",
+    "description": "<p>The Mound of Immortality in Lida is located in the central part of the city, within a large park. It has become the central place of remembrance for those who perished during World War II.</p><p>The mounding of the kurgan began on May 9, 1966, to mark the 21st anniversary of the city's victory over fascism. The mound takes the form of a pentagonal pyramid 7 metres high, with a total perimeter at its base of about 55 metres. A capsule is embedded in the base of the mound, surrounded by sacred earth brought by many delegations who came to Lida. On July 8, 1966, an Eternal Flame was lit at the foot of the mound, and in 1967 the Tomb of the Unknown Soldier was moved here. In 1973, the mound was complemented by pylons 14 m high, tilted at an angle of 76 degrees, symbolising the barrels of artillery guns.</p>",
+    "image": "../assets/images/kurhan-neumiruczasci.jpg",
+    "audio": "../assets/audio/kurhan-neumiruczasci.ogg",
+    "lat": 53.892351,
+    "lng": 25.315195
+  },
+  {
+    "id": "lidski-zamak",
+    "title": "Lida Castle",
+    "description": "<p>Lida Castle was built in 1323 at the confluence of the Lideya and Kamenka rivers by Grand Duke of Lithuania Gediminas. It formed part of the anti-Teutonic defence line \"Navahrudak — Kreva — Medininkai — Trakai\".</p><p>In the 14th century the walls of Lida Castle repeatedly withstood the onslaught of the Teutonic Knights. The German knights first appeared beneath the castle walls in 1392.</p><p>The wars of the mid-17th to early 18th century did not spare Lida. In the summer of 1659 the castle was besieged from all sides by a 30,000-strong Muscovite army. At the beginning of the 18th century, during the Great Northern War, Swedish forces dealt a heavy blow to the castle — they blew up both towers and the fortification lost its defensive significance. The walls gradually began to crumble. In the summer of 1794 a battle between Tadeusz Kościuszko's rebels and Russian troops took place among the castle ruins.</p><p>In 1891 a fire broke out in Lida, after which there were even attempts to dismantle the remaining walls for bricks. In the early 20th century it was decided to preserve them instead. A construction commission was formed for the repair of Lida Castle, and from 1909 to 1911 the eastern, western and northern walls were restored.</p><p>In the interwar period, Polish restorers under young architect Tadeusz Bursze carried out renovation work. During the Nazi occupation, from July 1941, the castle grounds served as a camp for Soviet prisoners of war.</p><p>Restoration work began in 1978. Today, Lida Castle hosts festivals, knight tournaments, and costumed performances. Visitors can take the guided tour \"Gediminas Castle — an Architectural Monument of the 14th Century\" and explore the photo exhibition \"Archaeological Finds of Lida Castle\".</p>",
+    "image": "../assets/images/lidski-zamak.jpg",
+    "audio": "../assets/audio/lidski-zamak.ogg",
+    "lat": 53.887178,
+    "lng": 25.302266
+  },
+  {
+    "id": "pomnik-francysku-skarynu",
+    "title": "Monument to Francysk Skaryna",
+    "description": "<p>In the square near the Parish Church stands a monument to the great Belarusian first printer, writer, scholar, enlightener, and outstanding cultural figure of the Renaissance — Francysk Skaryna.</p><p>At the end of 1989, public figure, teacher, and poet Michas Melnik, who at the time headed the Lida city council of the Society of the Belarusian Language named after Francysk Skaryna, put forward a proposal to erect a monument to the famous Belarusian in Lida. The monument was unveiled on July 25, 1993.</p><p>The bronze figure of Skaryna was created by Minsk sculptor Valeryjan Janushkevich. The architectural design of the area around the monument was led by Lida artist Rychard Grusha. In the sculpture, the first printer is depicted in a long robe with his right hand raised upward, symbolising knowledge and wisdom. Beside him stands a book on a tall pedestal.</p>",
+    "image": "../assets/images/pomnik-francysku-skarynu.jpg",
+    "audio": "../assets/audio/pomnik-francysku-skarynu.ogg",
+    "lat": 53.889781,
+    "lng": 25.303201
+  },
+  {
+    "id": "sviata-michajlauski-kafedralny-sabor",
+    "title": "St. Michael the Archangel Cathedral",
+    "description": "<p>St. Michael the Archangel Cathedral (originally the Church of St. Joseph) is an Orthodox church and an architectural monument of Classicism. It is a rare example of a rotunda church in Catholic architecture.</p><p>The Church of St. Joseph at the Piarist monastery in Lida was built between 1797 and 1825. Russian Emperor Paul I donated 5,000 roubles toward its construction. The Piarist monastery was closed in 1832 following the 1830–1831 uprising. The Church of St. Joseph burned in 1842, and in 1863 was converted into the Orthodox Church of St. Michael the Archangel. In the 1960s, as part of the Soviet anti-religious policy, the building was turned into a planetarium. The brick gate, which had been a unique adornment of the entire grounds, was destroyed during the conversion. The building was returned to the Orthodox community in 1996.</p><p>The brick rotunda church is topped with a hemispherical dome, crowned by an octagonal lantern. Attached to the main circular volume are lower rectangular structures: a vestibule with a four-column portico on the main facade, and a two-storey sacristy along the east–west axis. The Doric order is used in the facade decoration.</p>",
+    "image": "../assets/images/sviata-michajlauski-kafedralny-sabor.jpg",
+    "audio": "../assets/audio/sviata-michajlauski-kafedralny-sabor.ogg",
+    "lat": 53.893820,
+    "lng": 25.303325
+  },
+  {
+    "id": "carkva-usich-sviatych",
+    "title": "Church of All Saints",
+    "description": "<p>The Church of All Saints rises in the very centre of the city and is one of Lida's dominant architectural landmarks.</p><p>The Church of All Saints was built in Lida in 2006, after 16 years of construction. The project was designed by Leanid Makarevich, Honoured Architect of the Republic of Belarus.</p><p>The church is conceived as a centralised cubic volume, topped in the centre by a cylindrical drum with an onion dome, and at the corners by smaller onion domes on cylindrical drums. Three semicircular apses project from the altar facade. The architectural expressiveness is achieved through an intensive articulation of the facades with vertical pilaster strips that frame arched bays and narrow tall arched windows.</p>",
+    "image": "../assets/images/carkva-usich-sviatych.jpg",
+    "audio": "../assets/audio/carkva-usich-sviatych.ogg",
+    "lat": 53.883736,
+    "lng": 25.301513
+  }
+]

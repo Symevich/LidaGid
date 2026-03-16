@@ -15,24 +15,34 @@
   <body>
     <main class="page">
       <header class="page__header">
-        <h1 class="page__title">Аўдыёгід па горадзе Ліда</h1>
+        <h1 class="page__title" id="appTitle">Аўдыёгід па горадзе Ліда</h1>
       </header>
-      <section class="card-grid" aria-label="Раздзелы аўдыёгіда">
+      <section class="card-grid" id="cardGrid" aria-label="Раздзелы аўдыёгіда">
         <a href="./html/sights.html" class="card">
           <div class="card__bg" style="background-image: url(./assets/images/lidski-zamak.jpg)"></div>
-          <h2 class="card__title">Славутасці</h2>
+          <h2 class="card__title" id="labelSights">Славутасці</h2>
         </a>
         <a href="./html/enterprises.html" class="card">
           <div class="card__bg" style="background-image: url(./assets/images/maloczny-zavod.jpg)"></div>
-          <h2 class="card__title">Прадпрыемствы</h2>
+          <h2 class="card__title" id="labelEnterprises">Прадпрыемствы</h2>
         </a>
         <a href="./html/people.html" class="card">
           <div class="card__bg" style="background-image: url(./assets/images/kamandzirovaczny.jpg)"></div>
-          <h2 class="card__title">Вядомыя людзі</h2>
+          <h2 class="card__title" id="labelPeople">Вядомыя людзі</h2>
         </a>
       </section>
     </main>
     <div id="map" class="map-section" data-sources="sights enterprises people" data-root="."></div>
+    <script src="./js/i18n.js"></script>
+    <script>
+      document.documentElement.lang = I18N.get();
+      document.title = I18N.t('appTitle');
+      document.getElementById('appTitle').textContent         = I18N.t('appTitle');
+      document.getElementById('labelSights').textContent      = I18N.t('sights');
+      document.getElementById('labelEnterprises').textContent = I18N.t('enterprises');
+      document.getElementById('labelPeople').textContent      = I18N.t('people');
+      I18N.renderToggle();
+    </script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="./js/map.js"></script>
   </body>

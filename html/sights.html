@@ -3,43 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Славутасці Ліды: замкі, помнікі, цэрквы і іншыя гістарычныя аб'екты горада ў аўдыёгідзе."
-    />
+    <meta name="description" content="Славутасці Ліды: замкі, помнікі, цэрквы і іншыя гістарычныя аб'екты горада ў аўдыёгідзе." />
     <title>Славутасці | Аўдыёгід па Лідзе</title>
     <link rel="stylesheet" href="../css/normalize.css" />
     <link rel="stylesheet" href="../css/style.css" />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <a href="../index.html" class="back-button">← На галоўную</a>
+    <a href="../index.html" class="back-button" id="backBtn">← На галоўную</a>
     <main class="page page--section" data-file="sights.json">
       <header class="page__header">
-        <h1 class="page__title">Славутасці Ліды</h1>
+        <h1 class="page__title" id="pageTitle">Славутасці Ліды</h1>
       </header>
       <div id="status" class="status">Загрузка дадзеных...</div>
-      <section
-        id="list"
-        class="card-grid"
-        aria-label="Спіс славутасцей"
-      ></section>
+      <section id="list" class="card-grid" aria-label="Спіс славутасцей"></section>
     </main>
-    <div
-      id="map"
-      class="map-section map-section--section"
-      data-sources="sights"
-      data-root=".."
-    ></div>
+    <div id="map" class="map-section map-section--section" data-sources="sights" data-root=".."></div>
+    <script src="../js/i18n.js"></script>
+    <script>
+      document.documentElement.lang = I18N.get();
+      document.title = I18N.t('sights') + ' ' + I18N.t('pageTitle');
+      document.getElementById('pageTitle').textContent = I18N.t('sightsTitle');
+      document.getElementById('backBtn').textContent   = I18N.t('backHome');
+      document.getElementById('status').textContent    = I18N.t('loading');
+      document.querySelector('.page--section').dataset.file = I18N.dataFile('sights');
+      I18N.renderToggle();
+    </script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="../js/map.js"></script>
     <script src="../js/sections.js"></script>

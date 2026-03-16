@@ -1,5 +1,5 @@
 /* ============================================================
-   map.js — reusable Leaflet map for LidaGid
+   map.js — reusable Leaflet map for LidaGid (multilang)
    Configure via attributes on <div id="map">:
      data-sources="sights enterprises people"  (space-separated)
      data-root="."   (for index.html) or ".." (for html/ pages)
@@ -9,15 +9,15 @@
   const mapEl = document.getElementById("map");
   if (!mapEl) return;
 
-  const sources = (mapEl.dataset.sources || "sights enterprises people")
+  const sources  = (mapEl.dataset.sources || "sights enterprises people")
     .trim()
     .split(/\s+/);
   const dataRoot = mapEl.dataset.root || "..";
 
   const COLORS = {
-    sights:      "#f5a623", // amber
-    enterprises: "#4a90d9", // blue
-    people:      "#5cb85c", // green
+    sights:      "#f5a623",
+    enterprises: "#4a90d9",
+    people:      "#5cb85c",
   };
 
   function makeIcon(color) {
@@ -43,21 +43,28 @@
   }).addTo(map);
 
   Promise.all(
-    sources.map((source) =>
-      fetch(`${dataRoot}/data/${source}.json`)
+    sources.map((source) => {
+      // Use language-aware filename via I18N if available
+      const file = (typeof I18N !== 'undefined')
+        ? I18N.dataFile(source)
+        : `${source}.json`;
+      return fetch(`${dataRoot}/data/${file}`)
         .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
         .then((items) => ({ source, items }))
-        .catch(() => ({ source, items: [] }))
-    )
+        .catch(() => ({ source, items: [] }));
+    })
   ).then((results) => {
+    const lang = (typeof I18N !== 'undefined') ? I18N.get() : 'be';
+
     results.forEach(({ source, items }) => {
       const icon = makeIcon(COLORS[source] || "#999");
 
       items.forEach((item) => {
         if (!item.lat || !item.lng) return;
 
-        const imageSrc = (item.image || "").replace(/^\.\.\//, dataRoot + "/");
-        const objectHref = `${dataRoot}/html/object.html?source=${source}&id=${encodeURIComponent(item.id)}`;
+        const imageSrc  = (item.image || "").replace(/^\.\.\//, dataRoot + "/");
+        const langParam = lang !== 'be' ? `&lang=${lang}` : '';
+        const objectHref = `${dataRoot}/html/object.html?source=${source}&id=${encodeURIComponent(item.id)}${langParam}`;
 
         const popupHtml = `
           <div class="map-popup">

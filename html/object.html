@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <a href="#" class="back-button" onclick="history.back(); return false;">← Назад</a>
+    <a href="#" class="back-button" id="backBtn" onclick="history.back(); return false;">← Назад</a>
     <main class="page page--object">
       <div id="status" class="status">Загрузка матэрыялу...</div>
       <article id="objectCard" class="object-card" hidden>
@@ -22,6 +22,12 @@
         <div id="description" class="object-card__text"></div>
       </article>
     </main>
+    <script src="../js/i18n.js"></script>
+    <script>
+      document.documentElement.lang = I18N.get();
+      document.getElementById('backBtn').textContent      = I18N.t('back');
+      document.getElementById('status').textContent       = I18N.t('loadingObj');
+    </script>
     <script src="../js/object.js"></script>
   </body>
 </html>

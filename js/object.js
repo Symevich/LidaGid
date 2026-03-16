@@ -1,33 +1,37 @@
 const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+const id     = params.get("id");
 const source = params.get("source");
-const status = document.getElementById("status");
-const objectCard = document.getElementById("objectCard");
+const status      = document.getElementById("status");
+const objectCard  = document.getElementById("objectCard");
 
 if (!id) {
-  showError("Не перададзены id аб'екта. Перайдзіце са спісу.");
+  showError(I18N.t('errorNoId'));
   throw new Error("No ID in URL");
 }
 
 const SOURCES = ["sights", "enterprises", "people"];
+
+// Determine which file(s) to fetch based on language
+function langFile(src) {
+  return I18N.dataFile(src);
+}
+
 const filesToFetch =
   source && SOURCES.includes(source)
-    ? [`../data/${source}.json`]
-    : SOURCES.map((s) => `../data/${s}.json`);
+    ? [`../data/${langFile(source)}`]
+    : SOURCES.map((s) => `../data/${langFile(s)}`);
 
 Promise.all(filesToFetch.map(fetchJson))
   .then((results) => {
     const object = results.flat().find((item) => item.id === id);
-
     if (!object) {
-      showError("Аб'ект не знойдзены.");
+      showError(I18N.t('errorNotFound'));
       return;
     }
-
     renderObject(object);
   })
   .catch(() => {
-    showError("Памылка загрузкі дадзеных. Паспрабуйце пазней.");
+    showError(I18N.t('errorObj'));
   });
 
 function fetchJson(path) {
@@ -38,40 +42,39 @@ function fetchJson(path) {
 }
 
 function renderObject(object) {
-  const titleEl = document.getElementById("title");
-  const img = document.getElementById("image");
-  const descEl = document.getElementById("description");
+  const titleEl        = document.getElementById("title");
+  const img            = document.getElementById("image");
+  const descEl         = document.getElementById("description");
   const audioContainer = document.getElementById("audioContainer");
 
-  document.title = `${object.title} | Аўдыёгід па Лідзе`;
-  titleEl.textContent = object.title || "Без назвы";
+  document.title       = `${object.title} ${I18N.t('pageTitle')}`;
+  titleEl.textContent  = object.title || (I18N.get() === 'en' ? 'Untitled' : 'Без назвы');
 
   if (object.image) {
-    img.src = object.image;
-    img.alt = object.title;
+    img.src    = object.image;
+    img.alt    = object.title;
     img.hidden = false;
   }
 
-  descEl.innerHTML = object.description || "<p>Апісанне адсутнічае.</p>";
+  descEl.innerHTML = object.description || I18N.t('noDesc');
 
   if (object.audio) {
     audioContainer.innerHTML = `
       <audio class="object-card__audio" controls controlslist="nodownload" style="width: 100%;">
         <source src="${object.audio}" type="audio/ogg">
-        Ваш браўзер не падтрымлівае аўдыёэлемент.
+        ${I18N.t('audioNotSupported')}
       </audio>
     `;
   } else {
-    audioContainer.innerHTML =
-      "<p class='object-card__meta'>Аўдыязапіс адсутнічае.</p>";
+    audioContainer.innerHTML = `<p class='object-card__meta'>${I18N.t('noAudio')}</p>`;
   }
 
   status.style.display = "none";
-  objectCard.hidden = false;
+  objectCard.hidden    = false;
 }
 
 function showError(message) {
-  status.innerHTML = `${message}<br><br><a href="../index.html">Вярнуцца на галоўную</a>`;
-  status.className = "status status--error";
+  status.innerHTML  = `${message}<br><br><a href="../index.html">${I18N.t('errorGoHome')}</a>`;
+  status.className  = "status status--error";
   objectCard.hidden = true;
 }

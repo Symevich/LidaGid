@@ -68,6 +68,105 @@ img {
 }
 
 /* ============================================================
+   LANGUAGE SWITCHER (globe dropdown)
+   ============================================================ */
+
+.lang-switcher {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 50;
+  font-family: "Roboto", sans-serif;
+}
+
+.lang-switcher__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(26, 34, 51, 0.86);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: background 0.25s, transform 0.25s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.lang-switcher__trigger:hover,
+.lang-switcher__trigger:focus-visible {
+  background: rgba(26, 34, 51, 0.98);
+  transform: translateY(-1px);
+}
+
+.lang-switcher__globe {
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.lang-switcher__label {
+  color: #fff;
+}
+
+.lang-switcher__caret {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.7);
+  transition: transform 0.25s;
+}
+
+.lang-switcher--open .lang-switcher__caret {
+  transform: rotate(180deg);
+}
+
+.lang-switcher__dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 148px;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: rgba(26, 34, 51, 0.97);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.lang-switcher__dropdown--open {
+  display: block;
+}
+
+.lang-switcher__option {
+  padding: 9px 16px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.lang-switcher__option:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.lang-switcher__option--active {
+  color: #fff;
+  font-weight: 600;
+  cursor: default;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 600px) {
+  .lang-switcher {
+    top: 10px;
+    right: 10px;
+  }
+}
+
+/* ============================================================
    BACK BUTTON
    ============================================================ */
 
