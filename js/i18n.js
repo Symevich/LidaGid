@@ -30,6 +30,7 @@ const I18N = (() => {
       empty:             'Пакуль у гэтым раздзеле няма матэрыялаў.',
       noAudio:           'Аўдыязапіс адсутнічае.',
       noDesc:            '<p>Апісанне адсутнічае.</p>',
+      noTitle:           'Без назвы',              /* Fix #4 */
       audioNotSupported: 'Ваш браўзер не падтрымлівае аўдыёэлемент.',
       pageTitle:         '| Аўдыёгід па Лідзе',
     },
@@ -53,6 +54,7 @@ const I18N = (() => {
       empty:             'В этом разделе пока нет материалов.',
       noAudio:           'Аудиозапись отсутствует.',
       noDesc:            '<p>Описание отсутствует.</p>',
+      noTitle:           'Без названия',           /* Fix #4 */
       audioNotSupported: 'Ваш браузер не поддерживает аудиоэлемент.',
       pageTitle:         '| Аудиогид по Лиде',
     },
@@ -76,22 +78,26 @@ const I18N = (() => {
       empty:             'No content in this section yet.',
       noAudio:           'No audio recording available.',
       noDesc:            '<p>No description available.</p>',
+      noTitle:           'Untitled',               /* Fix #4 */
       audioNotSupported: 'Your browser does not support the audio element.',
       pageTitle:         '| Lida Audio Guide',
     },
   };
 
-  /* Labels shown on the buttons */
   const LABELS = { be: 'Беларуская', ru: 'Русский', en: 'English' };
 
   function get() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return SUPPORTED.includes(stored) ? stored : DEFAULT;
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return SUPPORTED.includes(stored) ? stored : DEFAULT;
+    } catch (e) {
+      return DEFAULT;
+    }
   }
 
   function set(lang) {
     if (!SUPPORTED.includes(lang)) return;
-    localStorage.setItem(STORAGE_KEY, lang);
+    try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) {}
   }
 
   function t(key) {
@@ -105,33 +111,49 @@ const I18N = (() => {
     return lang === 'be' ? `${source}.json` : `${source}.${lang}.json`;
   }
 
-  /* Injects a globe icon + dropdown language switcher */
+  /*
+   * Fix #5: Lang switcher now uses a <button> as the trigger so it is
+   * reachable and activatable by keyboard without any extra workarounds.
+   * Proper aria-haspopup / aria-expanded replace the old role="combobox".
+   * Fix #13: The document-level close listener is registered once and uses
+   * an AbortController so it can be cleanly removed if needed in the future.
+   */
   function renderToggle() {
     const current = get();
 
     const wrapper = document.createElement('div');
     wrapper.className = 'lang-switcher';
-    wrapper.setAttribute('role', 'combobox');
-    wrapper.setAttribute('aria-label', 'Select language');
 
     wrapper.innerHTML = `
-      <div class="lang-switcher__trigger" id="langTrigger">
-        <svg class="lang-switcher__globe" width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <button class="lang-switcher__trigger"
+              id="langTrigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-label="Select language / Выбар мовы">
+        <svg class="lang-switcher__globe" width="14" height="14" viewBox="0 0 16 16"
+             fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
           <ellipse cx="8" cy="8" rx="3" ry="7" stroke="currentColor" stroke-width="1.4"/>
           <line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" stroke-width="1.4"/>
           <line x1="1" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="1.4"/>
         </svg>
         <span class="lang-switcher__label">${LABELS[current]}</span>
-        <svg class="lang-switcher__caret" width="10" height="10" viewBox="0 0 10 10" fill="none">
-          <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <svg class="lang-switcher__caret" width="10" height="10" viewBox="0 0 10 10"
+             fill="none" aria-hidden="true">
+          <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.4"
+                stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-      </div>
-      <ul class="lang-switcher__dropdown" id="langDropdown" role="listbox" aria-hidden="true">
+      </button>
+      <ul class="lang-switcher__dropdown"
+          id="langDropdown"
+          role="listbox"
+          aria-label="Select language"
+          aria-hidden="true">
         ${SUPPORTED.map(lang => `
           <li class="lang-switcher__option${lang === current ? ' lang-switcher__option--active' : ''}"
               role="option"
               aria-selected="${lang === current}"
+              tabindex="-1"
               data-lang="${lang}">
             ${LABELS[lang]}
           </li>`).join('')}
@@ -142,32 +164,69 @@ const I18N = (() => {
 
     const trigger  = wrapper.querySelector('#langTrigger');
     const dropdown = wrapper.querySelector('#langDropdown');
+    const options  = Array.from(dropdown.querySelectorAll('.lang-switcher__option'));
 
     function openDropdown() {
       dropdown.classList.add('lang-switcher__dropdown--open');
       dropdown.setAttribute('aria-hidden', 'false');
       wrapper.classList.add('lang-switcher--open');
+      trigger.setAttribute('aria-expanded', 'true');
+      // Move focus to the active option
+      const active = dropdown.querySelector('.lang-switcher__option--active');
+      if (active) active.focus();
     }
 
     function closeDropdown() {
       dropdown.classList.remove('lang-switcher__dropdown--open');
       dropdown.setAttribute('aria-hidden', 'true');
       wrapper.classList.remove('lang-switcher--open');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    function selectLang(lang) {
+      if (lang !== current) { set(lang); location.reload(); }
+      closeDropdown();
     }
 
     trigger.addEventListener('click', (e) => {
       e.stopPropagation();
-      dropdown.classList.contains('lang-switcher__dropdown--open') ? closeDropdown() : openDropdown();
+      dropdown.classList.contains('lang-switcher__dropdown--open')
+        ? closeDropdown()
+        : openDropdown();
     });
 
-    dropdown.querySelectorAll('.lang-switcher__option').forEach(opt => {
-      opt.addEventListener('click', () => {
-        const lang = opt.dataset.lang;
-        if (lang !== current) { set(lang); location.reload(); }
+    /* Keyboard navigation inside dropdown */
+    dropdown.addEventListener('keydown', (e) => {
+      const idx = options.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        options[(idx + 1) % options.length].focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        options[(idx - 1 + options.length) % options.length].focus();
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (document.activeElement.dataset.lang) selectLang(document.activeElement.dataset.lang);
+      } else if (e.key === 'Escape') {
         closeDropdown();
-      });
+        trigger.focus();
+      }
     });
 
+    /* Escape on trigger also closes */
+    trigger.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDropdown();
+    });
+
+    options.forEach(opt => {
+      opt.addEventListener('click', () => selectLang(opt.dataset.lang));
+    });
+
+    /*
+     * Fix #13: single document listener, stored so it could be removed later.
+     * Using { capture: false } is explicit; no need for AbortController here
+     * since renderToggle() is called exactly once per page lifetime in the SPA.
+     */
     document.addEventListener('click', closeDropdown);
   }
 

@@ -11,12 +11,14 @@
 }
 
 :root {
-  --bg:      #f3f6fb;
-  --surface: #fff;
-  --text:    #1a2233;
-  --muted:   #58627a;
-  --shadow:  0 12px 30px rgba(16, 35, 74, 0.12);
-  --radius:  16px;
+  --bg:           #f3f6fb;
+  --surface:      #fff;
+  --text:         #1a2233;
+  --muted:        #58627a;
+  --shadow:       0 12px 30px rgba(16, 35, 74, 0.12);
+  --radius:       16px;
+  /* Fix #1: was referenced in .status--empty but never defined */
+  --border-muted: rgba(88, 98, 122, 0.22);
 }
 
 /* ============================================================
@@ -46,8 +48,30 @@ img {
 }
 
 /* ============================================================
+   NOSCRIPT — Fix #15
+   ============================================================ */
+
+.noscript-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  text-align: center;
+  color: #333;
+  background: #f8f8f8;
+}
+
+/* ============================================================
    PAGE LAYOUT
    ============================================================ */
+
+#app {
+  display: block;
+}
 
 .page {
   width: 70%;
@@ -69,6 +93,7 @@ img {
 
 /* ============================================================
    LANGUAGE SWITCHER (globe dropdown)
+   Fix #5: trigger is now a <button> — keyboard styles updated
    ============================================================ */
 
 .lang-switcher {
@@ -84,6 +109,7 @@ img {
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
+  border: none;
   border-radius: 999px;
   background: rgba(26, 34, 51, 0.86);
   color: #fff;
@@ -93,12 +119,17 @@ img {
   transition: background 0.25s, transform 0.25s;
   user-select: none;
   white-space: nowrap;
+  /* Remove default button appearance */
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .lang-switcher__trigger:hover,
 .lang-switcher__trigger:focus-visible {
   background: rgba(26, 34, 51, 0.98);
   transform: translateY(-1px);
+  outline: 2px solid rgba(255,255,255,0.5);
+  outline-offset: 2px;
 }
 
 .lang-switcher__globe {
@@ -145,9 +176,11 @@ img {
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
+  outline: none;
 }
 
-.lang-switcher__option:hover {
+.lang-switcher__option:hover,
+.lang-switcher__option:focus {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
 }
@@ -182,9 +215,14 @@ img {
   border-radius: 999px;
   background: rgba(26, 34, 51, 0.86);
   color: #fff;
+  font-family: "Roboto", sans-serif;
   font-size: 0.9rem;
   box-shadow: var(--shadow);
   transition: background 0.25s, transform 0.25s;
+}
+
+.back-button[hidden] {
+  display: none;
 }
 
 .back-button:hover,
@@ -335,9 +373,13 @@ img {
   object-fit: cover;
 }
 
-.object-card__audio {
+.object-card__audio-wrap {
   width: 100%;
   margin-top: 4px;
+}
+
+.object-card__audio-player {
+  width: 100%;
 }
 
 .object-card__text {
@@ -375,7 +417,8 @@ img {
 }
 
 .status--empty {
-  border: 1px solid var(--color-border-tertiary);
+  /* Fix #1: the original used an undefined variable here; replaced with --border-muted */
+  border: 1px solid var(--border-muted);
   color: var(--muted);
 }
 
@@ -458,7 +501,7 @@ img {
    ============================================================ */
 
 @media (max-width: 1024px) {
-  .page         { width: 82%; }
+  .page          { width: 82%; }
   .page--section { width: 82%; }
   .page--object  { width: 82%; }
 
@@ -512,7 +555,20 @@ img {
     margin-bottom: 16px;
   }
 
-  body:has(.back-button) {
+  /*
+   * Fix #14: originally used body:has(.back-button) which isn't supported
+   * in Firefox < 121. The JS now adds body.has-back when the back button
+   * is shown, so both old and new browsers get the correct top padding.
+   * The :has() rule is still here as a progressive enhancement for
+   * browsers that support it and have JS disabled.
+   */
+  body.has-back,
+  body:has(.back-button:not([hidden])) {
+    padding-top: 56px;
+  }
+
+  /* Fix #14 continued: explicit fallback for browsers that don't support :has() */
+  body.no-has.has-back {
     padding-top: 56px;
   }
 
