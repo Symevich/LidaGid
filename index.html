@@ -3,16 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Інтэрактыўны аўдыёгід па Лідзе: славутасці, прадпрыемствы і вядомыя людзі ў адным зручным месцы." />
+    <meta name="description" content="Інтэрактыўны аўдыёгід па Лідзе: славутасці, прадпрыемствы і вядомыя людзі." />
     <title>Аўдыёгід па горадзе Ліда</title>
 
-    <!--
-      Fix #6: set the correct language on <html> immediately, before any render,
-      so screen readers and search engines see the right lang on first load.
-      Wrapped in try/catch because localStorage can throw in private mode.
-    -->
+    <!-- Fix #6: set correct lang before first render -->
     <script>
-      try { document.documentElement.lang = localStorage.getItem('lidagid_lang') || 'be'; } catch (e) {}
+      try { document.documentElement.lang = localStorage.getItem('lidagid_lang') || 'be'; } catch(e) {}
     </script>
 
     <link rel="stylesheet" href="./css/normalize.css" />
@@ -24,19 +20,15 @@
   </head>
   <body>
 
-    <!-- Fix #15: visible fallback for users with JS disabled -->
+    <!-- Fix #15: noscript fallback -->
     <noscript>
       <div class="noscript-msg">
-        Для работы аўдыёгіда неабходна ўключыць JavaScript у браўзеры.<br />
-        Для работы аудиогида необходимо включить JavaScript в браузере.<br />
-        JavaScript is required to use this audio guide. Please enable it in your browser settings.
+        Для работы аўдыёгіда неабходна ўключыць JavaScript.<br />
+        Для работы аудиогида необходимо включить JavaScript.<br />
+        JavaScript is required to use this audio guide.
       </div>
     </noscript>
 
-    <!--
-      #app is the single root for all view content.
-      aria-live="polite" announces route changes to screen readers.
-    -->
     <main id="app" aria-live="polite" aria-atomic="false"></main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

@@ -17,7 +17,7 @@
   --muted:        #58627a;
   --shadow:       0 12px 30px rgba(16, 35, 74, 0.12);
   --radius:       16px;
-  /* Fix #1: was referenced in .status--empty but never defined */
+  /* Fix #1: was --color-border-tertiary which was never defined */
   --border-muted: rgba(88, 98, 122, 0.22);
 }
 
@@ -57,21 +57,17 @@ img {
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
-  font-family: sans-serif;
   font-size: 1rem;
-  line-height: 1.7;
+  line-height: 1.8;
   text-align: center;
-  color: #333;
-  background: #f8f8f8;
+  color: var(--muted);
 }
 
 /* ============================================================
    PAGE LAYOUT
    ============================================================ */
 
-#app {
-  display: block;
-}
+#app { display: block; }
 
 .page {
   width: 70%;
@@ -93,7 +89,7 @@ img {
 
 /* ============================================================
    LANGUAGE SWITCHER (globe dropdown)
-   Fix #5: trigger is now a <button> — keyboard styles updated
+   Fix #5: trigger is now a <button> with full keyboard support
    ============================================================ */
 
 .lang-switcher {
@@ -119,7 +115,6 @@ img {
   transition: background 0.25s, transform 0.25s;
   user-select: none;
   white-space: nowrap;
-  /* Remove default button appearance */
   -webkit-appearance: none;
   appearance: none;
 }
@@ -128,28 +123,18 @@ img {
 .lang-switcher__trigger:focus-visible {
   background: rgba(26, 34, 51, 0.98);
   transform: translateY(-1px);
-  outline: 2px solid rgba(255,255,255,0.5);
+  outline: 2px solid rgba(255, 255, 255, 0.4);
   outline-offset: 2px;
 }
 
-.lang-switcher__globe {
-  flex-shrink: 0;
-  color: #fff;
-}
-
-.lang-switcher__label {
-  color: #fff;
-}
-
-.lang-switcher__caret {
+.lang-switcher__globe  { flex-shrink: 0; color: #fff; }
+.lang-switcher__label  { color: #fff; }
+.lang-switcher__caret  {
   flex-shrink: 0;
   color: rgba(255, 255, 255, 0.7);
   transition: transform 0.25s;
 }
-
-.lang-switcher--open .lang-switcher__caret {
-  transform: rotate(180deg);
-}
+.lang-switcher--open .lang-switcher__caret { transform: rotate(180deg); }
 
 .lang-switcher__dropdown {
   display: none;
@@ -166,9 +151,7 @@ img {
   overflow: hidden;
 }
 
-.lang-switcher__dropdown--open {
-  display: block;
-}
+.lang-switcher__dropdown--open { display: block; }
 
 .lang-switcher__option {
   padding: 9px 16px;
@@ -193,10 +176,7 @@ img {
 }
 
 @media (max-width: 600px) {
-  .lang-switcher {
-    top: 10px;
-    right: 10px;
-  }
+  .lang-switcher { top: 10px; right: 10px; }
 }
 
 /* ============================================================
@@ -221,9 +201,7 @@ img {
   transition: background 0.25s, transform 0.25s;
 }
 
-.back-button[hidden] {
-  display: none;
-}
+.back-button[hidden] { display: none; }
 
 .back-button:hover,
 .back-button:focus-visible {
@@ -283,6 +261,7 @@ img {
 .card:focus-visible {
   transform: translateY(-4px);
   box-shadow: 0 20px 42px rgba(16, 35, 74, 0.24);
+  outline: none;
 }
 
 .card__bg {
@@ -295,9 +274,7 @@ img {
 }
 
 .card:hover .card__bg,
-.card:focus-visible .card__bg {
-  transform: scale(1.04);
-}
+.card:focus-visible .card__bg { transform: scale(1.04); }
 
 .card__title {
   position: relative;
@@ -373,23 +350,15 @@ img {
   object-fit: cover;
 }
 
-.object-card__audio-wrap {
-  width: 100%;
-  margin-top: 4px;
-}
-
-.object-card__audio-player {
-  width: 100%;
-}
+.object-card__audio-wrap { width: 100%; margin-top: 4px; }
+.object-card__audio-player { width: 100%; }
 
 .object-card__text {
   font-size: clamp(15px, 1.6vw, 19px);
   margin-top: 4px;
 }
 
-.object-card__text p {
-  margin-bottom: 12px;
-}
+.object-card__text p { margin-bottom: 12px; }
 
 .object-card__meta {
   color: var(--muted);
@@ -417,7 +386,7 @@ img {
 }
 
 .status--empty {
-  /* Fix #1: the original used an undefined variable here; replaced with --border-muted */
+  /* Fix #1: was var(--color-border-tertiary) which was undefined */
   border: 1px solid var(--border-muted);
   color: var(--muted);
 }
@@ -440,11 +409,8 @@ img {
   box-shadow: var(--shadow);
 }
 
-.map-section--section {
-  width: 65%;
-}
+.map-section--section { width: 65%; }
 
-/* Popup */
 .map-popup {
   display: flex;
   flex-direction: column;
@@ -468,9 +434,7 @@ img {
   line-height: 1.3;
 }
 
-.map-popup__title:hover {
-  text-decoration: underline;
-}
+.map-popup__title:hover { text-decoration: underline; }
 
 .map-popup-wrap .leaflet-popup-content-wrapper {
   border-radius: 12px;
@@ -478,10 +442,7 @@ img {
   overflow: hidden;
 }
 
-.map-popup-wrap .leaflet-popup-content {
-  margin: 0;
-  padding: 12px;
-}
+.map-popup-wrap .leaflet-popup-content { margin: 0; padding: 12px; }
 
 .map-popup-wrap .leaflet-popup-close-button {
   top: 8px !important;
@@ -529,13 +490,12 @@ img {
 
   .card { min-height: 200px; }
 
-  .card-grid {
-    grid-template-columns: 1fr;
-  }
+  .card-grid { grid-template-columns: 1fr; }
 }
 
 /* ============================================================
    RESPONSIVE — mobile (≤ 600px)
+   Fix #14: use body.has-back class instead of :has() for old Firefox
    ============================================================ */
 
 @media (max-width: 600px) {
@@ -555,22 +515,9 @@ img {
     margin-bottom: 16px;
   }
 
-  /*
-   * Fix #14: originally used body:has(.back-button) which isn't supported
-   * in Firefox < 121. The JS now adds body.has-back when the back button
-   * is shown, so both old and new browsers get the correct top padding.
-   * The :has() rule is still here as a progressive enhancement for
-   * browsers that support it and have JS disabled.
-   */
   body.has-back,
-  body:has(.back-button:not([hidden])) {
-    padding-top: 56px;
-  }
-
-  /* Fix #14 continued: explicit fallback for browsers that don't support :has() */
-  body.no-has.has-back {
-    padding-top: 56px;
-  }
+  body:has(.back-button:not([hidden])) { padding-top: 56px; }
+  body.no-has.has-back                  { padding-top: 56px; }
 
   .back-button {
     top: 10px;
@@ -581,9 +528,7 @@ img {
 
   .card { min-height: 160px; }
 
-  .card__title {
-    font-size: 1.1rem;
-  }
+  .card__title { font-size: 1.1rem; }
 
   .list-item {
     flex-direction: column;
@@ -597,18 +542,14 @@ img {
     height: 56px;
   }
 
-  .list-item__title {
-    font-size: 1rem;
-  }
+  .list-item__title { font-size: 1rem; }
 
   .object-card {
     padding: 14px;
     border-radius: 12px;
   }
 
-  .object-card__image {
-    border-radius: 10px;
-  }
+  .object-card__image { border-radius: 10px; }
 
   .status {
     font-size: 0.9rem;

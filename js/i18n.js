@@ -1,7 +1,6 @@
 /* ============================================================
    i18n.js — language management for LidaGid
    Supported: 'be' (Беларуская), 'ru' (Русский), 'en' (English)
-   Persisted in localStorage under key 'lidagid_lang'
    ============================================================ */
 
 const I18N = (() => {
@@ -18,7 +17,6 @@ const I18N = (() => {
       sightsTitle:       'Славутасці Ліды',
       enterprisesTitle:  'Прадпрыемствы Ліды',
       peopleTitle:       'Вядомыя людзі Лідчыны',
-      backHome:          '← На галоўную',
       back:              '← Назад',
       loading:           'Загрузка дадзеных...',
       loadingObj:        'Загрузка матэрыялу...',
@@ -30,7 +28,7 @@ const I18N = (() => {
       empty:             'Пакуль у гэтым раздзеле няма матэрыялаў.',
       noAudio:           'Аўдыязапіс адсутнічае.',
       noDesc:            '<p>Апісанне адсутнічае.</p>',
-      noTitle:           'Без назвы',              /* Fix #4 */
+      noTitle:           'Без назвы',
       audioNotSupported: 'Ваш браўзер не падтрымлівае аўдыёэлемент.',
       pageTitle:         '| Аўдыёгід па Лідзе',
     },
@@ -42,7 +40,6 @@ const I18N = (() => {
       sightsTitle:       'Достопримечательности Лиды',
       enterprisesTitle:  'Предприятия Лиды',
       peopleTitle:       'Известные люди Лиды',
-      backHome:          '← На главную',
       back:              '← Назад',
       loading:           'Загрузка данных...',
       loadingObj:        'Загрузка материала...',
@@ -54,7 +51,7 @@ const I18N = (() => {
       empty:             'В этом разделе пока нет материалов.',
       noAudio:           'Аудиозапись отсутствует.',
       noDesc:            '<p>Описание отсутствует.</p>',
-      noTitle:           'Без названия',           /* Fix #4 */
+      noTitle:           'Без названия',
       audioNotSupported: 'Ваш браузер не поддерживает аудиоэлемент.',
       pageTitle:         '| Аудиогид по Лиде',
     },
@@ -66,7 +63,6 @@ const I18N = (() => {
       sightsTitle:       'Sights of Lida',
       enterprisesTitle:  'Enterprises of Lida',
       peopleTitle:       'Notable People of Lida',
-      backHome:          '← Home',
       back:              '← Back',
       loading:           'Loading data...',
       loadingObj:        'Loading content...',
@@ -78,7 +74,7 @@ const I18N = (() => {
       empty:             'No content in this section yet.',
       noAudio:           'No audio recording available.',
       noDesc:            '<p>No description available.</p>',
-      noTitle:           'Untitled',               /* Fix #4 */
+      noTitle:           'Untitled',
       audioNotSupported: 'Your browser does not support the audio element.',
       pageTitle:         '| Lida Audio Guide',
     },
@@ -88,16 +84,14 @@ const I18N = (() => {
 
   function get() {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return SUPPORTED.includes(stored) ? stored : DEFAULT;
-    } catch (e) {
-      return DEFAULT;
-    }
+      const s = localStorage.getItem(STORAGE_KEY);
+      return SUPPORTED.includes(s) ? s : DEFAULT;
+    } catch(e) { return DEFAULT; }
   }
 
   function set(lang) {
     if (!SUPPORTED.includes(lang)) return;
-    try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) {}
+    try { localStorage.setItem(STORAGE_KEY, lang); } catch(e) {}
   }
 
   function t(key) {
@@ -105,19 +99,14 @@ const I18N = (() => {
     return (STRINGS[lang] && STRINGS[lang][key]) || STRINGS[DEFAULT][key] || key;
   }
 
-  /* Returns the correct JSON filename for a given source */
   function dataFile(source) {
     const lang = get();
     return lang === 'be' ? `${source}.json` : `${source}.${lang}.json`;
   }
 
-  /*
-   * Fix #5: Lang switcher now uses a <button> as the trigger so it is
-   * reachable and activatable by keyboard without any extra workarounds.
-   * Proper aria-haspopup / aria-expanded replace the old role="combobox".
-   * Fix #13: The document-level close listener is registered once and uses
-   * an AbortController so it can be cleanly removed if needed in the future.
-   */
+  /* ── Lang switcher
+     Fix #5: <button> trigger with full keyboard nav (Arrow/Enter/Escape)
+     Fix #13: document listener registered once per renderToggle() call ── */
   function renderToggle() {
     const current = get();
 
@@ -144,17 +133,12 @@ const I18N = (() => {
                 stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <ul class="lang-switcher__dropdown"
-          id="langDropdown"
-          role="listbox"
-          aria-label="Select language"
-          aria-hidden="true">
+      <ul class="lang-switcher__dropdown" id="langDropdown"
+          role="listbox" aria-label="Select language" aria-hidden="true">
         ${SUPPORTED.map(lang => `
           <li class="lang-switcher__option${lang === current ? ' lang-switcher__option--active' : ''}"
-              role="option"
-              aria-selected="${lang === current}"
-              tabindex="-1"
-              data-lang="${lang}">
+              role="option" aria-selected="${lang === current}"
+              tabindex="-1" data-lang="${lang}">
             ${LABELS[lang]}
           </li>`).join('')}
       </ul>
@@ -166,68 +150,42 @@ const I18N = (() => {
     const dropdown = wrapper.querySelector('#langDropdown');
     const options  = Array.from(dropdown.querySelectorAll('.lang-switcher__option'));
 
-    function openDropdown() {
+    const open = () => {
       dropdown.classList.add('lang-switcher__dropdown--open');
       dropdown.setAttribute('aria-hidden', 'false');
       wrapper.classList.add('lang-switcher--open');
       trigger.setAttribute('aria-expanded', 'true');
-      // Move focus to the active option
-      const active = dropdown.querySelector('.lang-switcher__option--active');
-      if (active) active.focus();
-    }
-
-    function closeDropdown() {
+      (dropdown.querySelector('.lang-switcher__option--active') || options[0]).focus();
+    };
+    const close = () => {
       dropdown.classList.remove('lang-switcher__dropdown--open');
       dropdown.setAttribute('aria-hidden', 'true');
       wrapper.classList.remove('lang-switcher--open');
       trigger.setAttribute('aria-expanded', 'false');
-    }
-
-    function selectLang(lang) {
+    };
+    const pick = (lang) => {
       if (lang !== current) { set(lang); location.reload(); }
-      closeDropdown();
-    }
+      close();
+    };
 
-    trigger.addEventListener('click', (e) => {
+    trigger.addEventListener('click', e => {
       e.stopPropagation();
-      dropdown.classList.contains('lang-switcher__dropdown--open')
-        ? closeDropdown()
-        : openDropdown();
+      dropdown.classList.contains('lang-switcher__dropdown--open') ? close() : open();
     });
 
-    /* Keyboard navigation inside dropdown */
-    dropdown.addEventListener('keydown', (e) => {
-      const idx = options.indexOf(document.activeElement);
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        options[(idx + 1) % options.length].focus();
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        options[(idx - 1 + options.length) % options.length].focus();
-      } else if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        if (document.activeElement.dataset.lang) selectLang(document.activeElement.dataset.lang);
-      } else if (e.key === 'Escape') {
-        closeDropdown();
-        trigger.focus();
-      }
+    dropdown.addEventListener('keydown', e => {
+      const i = options.indexOf(document.activeElement);
+      if      (e.key === 'ArrowDown') { e.preventDefault(); options[(i + 1) % options.length].focus(); }
+      else if (e.key === 'ArrowUp')   { e.preventDefault(); options[(i - 1 + options.length) % options.length].focus(); }
+      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (document.activeElement.dataset.lang) pick(document.activeElement.dataset.lang); }
+      else if (e.key === 'Escape')    { close(); trigger.focus(); }
     });
 
-    /* Escape on trigger also closes */
-    trigger.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeDropdown();
-    });
+    trigger.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    options.forEach(o => o.addEventListener('click', () => pick(o.dataset.lang)));
+    document.addEventListener('click', close);
 
-    options.forEach(opt => {
-      opt.addEventListener('click', () => selectLang(opt.dataset.lang));
-    });
-
-    /*
-     * Fix #13: single document listener, stored so it could be removed later.
-     * Using { capture: false } is explicit; no need for AbortController here
-     * since renderToggle() is called exactly once per page lifetime in the SPA.
-     */
-    document.addEventListener('click', closeDropdown);
+    return wrapper;
   }
 
   return { get, set, t, dataFile, renderToggle };

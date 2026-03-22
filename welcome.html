@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="be">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Аўдыёгід па горадзе Ліда — Аудиогид — Audio Guide" />
+  <title>Ліда · Аўдыёгід</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #f3f6fb;
+      --surface: #fff;
+      --text:   #1a2233;
+      --muted:  #58627a;
+      --shadow: 0 12px 30px rgba(16, 35, 74, 0.12);
+      --radius: 16px;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Roboto", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(47, 109, 246, 0.12), transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(106, 69, 255, 0.09), transparent 28%),
+        var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px 32px;
+    }
+
+    /* ── Main card ── */
+    .welcome-card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Hero image area ── */
+    .welcome-card__hero {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+      background: #1a2233;
+    }
+
+    .welcome-card__hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('./assets/images/lidski-zamak.jpg');
+      background-size: cover;
+      background-position: center;
+      transition: transform 8s ease;
+    }
+
+    /* Slow Ken Burns on load */
+    .welcome-card__hero-bg.animate {
+      transform: scale(1.08);
+    }
+
+    /* Dark gradient overlay */
+    .welcome-card__hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(6, 10, 25, 0.75),
+        rgba(6, 10, 25, 0.1) 60%,
+        rgba(6, 10, 25, 0.02)
+      );
+    }
+
+    /* City name over hero */
+    .welcome-card__city {
+      position: absolute;
+      bottom: 16px;
+      left: 20px;
+      z-index: 2;
+      color: #fff;
+    }
+
+    .welcome-card__city-name {
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.1;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .welcome-card__city-sub {
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.75);
+      margin-top: 2px;
+    }
+
+    /* ── Body ── */
+    .welcome-card__body {
+      padding: 24px 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Cycling subtitle */
+    .welcome-card__tagline {
+      font-size: 1rem;
+      color: var(--muted);
+      min-height: 1.5rem;
+      text-align: center;
+    }
+
+    /* Language selection */
+    .lang-section { display: flex; flex-direction: column; gap: 8px; }
+
+    .lang-section__label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .lang-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .lang-btn {
+      flex: 1;
+      font-family: "Roboto", sans-serif;
+      font-size: 0.88rem;
+      font-weight: 400;
+      color: var(--muted);
+      background: var(--bg);
+      border: 2px solid transparent;
+      border-radius: 10px;
+      padding: 10px 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .lang-btn:hover {
+      color: var(--text);
+      background: #edf0f8;
+    }
+
+    .lang-btn.active {
+      color: var(--text);
+      background: var(--surface);
+      border-color: rgba(47, 109, 246, 0.35);
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(47, 109, 246, 0.12);
+    }
+
+    /* Enter button — same pill style as back/lang buttons in the app */
+    .enter-btn {
+      width: 100%;
+      font-family: "Roboto", sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(26, 34, 51, 0.86);
+      border: none;
+      border-radius: 999px;
+      padding: 13px 24px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: background 0.25s, transform 0.25s;
+      letter-spacing: 0.02em;
+    }
+
+    .enter-btn:hover {
+      background: rgba(26, 34, 51, 0.98);
+      transform: translateY(-1px);
+    }
+
+    .enter-btn:active { transform: translateY(0); }
+
+    /* Year note */
+    .welcome-card__foot {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* Exit fade */
+    body.out { animation: fade-out 0.4s ease forwards; }
+    @keyframes fade-out { to { opacity: 0; } }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      body { padding: 16px; }
+      .welcome-card__hero { height: 180px; }
+      .welcome-card__city-name { font-size: 1.8rem; }
+      .welcome-card__body { padding: 18px; gap: 16px; }
+      .lang-btn { font-size: 0.82rem; padding: 9px 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="welcome-card">
+
+    <!-- Hero image with city name overlay -->
+    <div class="welcome-card__hero">
+      <div class="welcome-card__hero-bg" id="heroBg"></div>
+      <div class="welcome-card__city">
+        <h1 class="welcome-card__city-name">Ліда</h1>
+        <p class="welcome-card__city-sub">Беларусь · ок. 1323</p>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="welcome-card__body">
+
+      <!-- Cycling tagline -->
+      <p class="welcome-card__tagline" id="tagline" aria-live="polite">
+        Аўдыёгід па горадзе
+      </p>
+
+      <!-- Language picker -->
+      <div class="lang-section">
+        <p class="lang-section__label">Мова / Язык / Language</p>
+        <div class="lang-btns" role="group" aria-label="Select language">
+          <button class="lang-btn" data-lang="be">Беларуская</button>
+          <button class="lang-btn" data-lang="ru">Русский</button>
+          <button class="lang-btn" data-lang="en">English</button>
+        </div>
+      </div>
+
+      <!-- Enter -->
+      <button class="enter-btn" id="enterBtn">Увайсці →</button>
+
+      <p class="welcome-card__foot">Лідскі раён · Гродзенская вобласць</p>
+
+    </div>
+  </div>
+
+  <script>
+    /* ── Ken Burns on hero ── */
+    requestAnimationFrame(() => {
+      document.getElementById('heroBg').classList.add('animate');
+    });
+
+    /* ── Tagline cycling ── */
+    const TAGLINES = {
+      be: 'Аўдыёгід па горадзе',
+      ru: 'Аудиогид по городу',
+      en: 'Audio guide to the city',
+    };
+    const ALL_TAGLINES = Object.values(TAGLINES);
+    const taglineEl = document.getElementById('tagline');
+    let tlIdx = 0;
+
+    setInterval(() => {
+      taglineEl.style.opacity = '0';
+      taglineEl.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => {
+        tlIdx = (tlIdx + 1) % ALL_TAGLINES.length;
+        taglineEl.textContent = ALL_TAGLINES[tlIdx];
+        taglineEl.style.opacity = '1';
+      }, 320);
+    }, 2400);
+
+    /* ── Language selection ── */
+    const ENTER_LABELS = { be: 'Увайсці →', ru: 'Войти →', en: 'Enter →' };
+    const SUPPORTED    = ['be', 'ru', 'en'];
+
+    let selected = null;
+    try {
+      const s = localStorage.getItem('lidagid_lang');
+      if (SUPPORTED.includes(s)) selected = s;
+    } catch(e) {}
+
+    const btns     = document.querySelectorAll('.lang-btn');
+    const enterBtn = document.getElementById('enterBtn');
+
+    function pick(lang) {
+      selected = lang;
+      btns.forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+      enterBtn.textContent = ENTER_LABELS[lang] || ENTER_LABELS.be;
+      try { localStorage.setItem('lidagid_lang', lang); } catch(e) {}
+      document.documentElement.lang = lang;
+    }
+
+    btns.forEach(b => b.addEventListener('click', () => pick(b.dataset.lang)));
+    if (selected) pick(selected);
+
+    /* ── Enter ── */
+    enterBtn.addEventListener('click', () => {
+      if (!selected) pick('be');
+      document.body.classList.add('out');
+      setTimeout(() => { window.location.href = './index.html'; }, 380);
+    });
+  </script>
+
+</body>
+</html>
