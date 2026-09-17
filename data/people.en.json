@@ -17,5 +17,114 @@
       "correctIndex": 0,
       "explanation": "According to legend Gediminas bequeathed the city to his son Kęstutis, who took it over in 1330."
     }
+  },
+  {
+    "id": "pola-raksa",
+    "title": "Pola Raksa",
+    "description": "<p>Pola Raksa (real name Apolonia Raksa; born 14 April 1941 in Lida) is a Polish film actress who in the 1960s and 1970s became one of the most recognisable stars of Polish cinema.</p><p>She was born in Lida, and after the war her family left for Poland and settled in Wrocław. There Raksa finished school and studied Polish language and literature at the University of Wrocław, then moved to the acting department of the Łódź Film School, graduating in 1964.</p><p>She made her film debut in 1960 as Wanda in 'Satan from the Seventh Grade'. There followed Helena de With in 'The Ashes' (1965), Inezilia in 'The Saragossa Manuscript' (1965) and Zosia in the Soviet film of the same name (1967).</p><p>Exceptional fame came with the series 'Czterej pancerni i pies' (Four Tank-Men and a Dog, 1966–1970), in which she played the nurse Marusia, nicknamed 'Ogoniok'. Her active film career lasted only about ten years: after 1970 she worked mainly in the theatre — first in Łódź, then in Warsaw — and on television.</p><p>For these roles she was repeatedly awarded the 'Silver Mask' as the most popular Polish actress, and in 1967 the magazine Soviet Screen named her actress of the year. In 1974 she received the Golden Cross of Merit, one of Poland's highest state awards.</p><p>For Lida, Pola Raksa is a figure of local memory: local historians call her 'the Lida girl who became a symbol of beauty for all of Poland'.</p>",
+    "image": "../assets/images/pola-raksa.jpg",
+    "quiz": {
+      "question": "In which TV series did Pola Raksa play the nurse Marusia, nicknamed 'Ogoniok'?",
+      "options": [
+        "Captain Sowa on the Trail",
+        "Four Tank-Men and a Dog",
+        "The Saragossa Manuscript",
+        "Beata"
+      ],
+      "correctIndex": 1,
+      "explanation": "'Czterej pancerni i pies' (Four Tank-Men and a Dog, 1966–1970) is the series in which Pola Raksa played the nurse Marusia, nicknamed 'Ogoniok' by the tank crew."
+    }
+  },
+  {
+    "id": "ihnat-damejka",
+    "title": "Ignacy Domeyko",
+    "description": "<p>Ignacy Domeyko (1802–1889) was a geologist and mineralogist who went from a Belarusian estate to becoming a national hero of Chile. He was born at the Miadzviadka estate in the Navahrudak area.</p><p>He studied at Vilnius University and was a member of the Philomaths, for which he was exiled and placed under police supervision. After the 1830–1831 uprising he emigrated, graduated from the School of Mines in Paris and devoted himself to science.</p><p>Domeyko spent most of his life in Chile: he was a professor in La Serena and Santiago and headed the University of Chile in 1867–1883. He reformed the country's education system, wrote some 130 scholarly works, and a mineral he discovered is named domeykite after him. Today a city, an Andean mountain range and an asteroid bear his name.</p><p>His link to the Lida area is the years he spent under police supervision after the trial of the Philomaths: he lived at his uncle's estate in Zapolle, now a village in Lida district. An obelisk with a memorial plaque was placed in Zapolle in 1995, and the village of Krupava has a street, a museum and an obelisk named after him.</p>",
+    "image": "../assets/images/ihnat-damejka.jpg",
+    "lat": 53.926766,
+    "lng": 25.197805,
+    "quiz": {
+      "question": "In which village of Lida district did Ignacy Domeyko live under police supervision after the trial of the Philomaths?",
+      "options": [
+        "Zapolle",
+        "Miadzviadka",
+        "Krupava",
+        "Radun"
+      ],
+      "correctIndex": 0,
+      "explanation": "After the trial of the Philomaths Domeyko lived at his uncle's estate in Zapolle, now a village in Lida district."
+    }
+  },
+  {
+    "id": "valiancin-taulai",
+    "title": "Valiancin Taulaj",
+    "description": "<p>Valiancin Taulaj (1914–1947) was a poet, journalist and underground activist whose name is borne by a street and a house museum in Lida. He was born in Baranavichy and spent his childhood in the village of Rudaŭka in the Słonim area.</p><p>He wrote his first poem in Polish while studying at a Polish school in Lida. Later he studied at the Słonim teachers' seminary, the Vilnius Belarusian gymnasium and the literature faculty of Belarusian State University, from which he was expelled for taking part in a strike.</p><p>From 1932 Taulaj worked underground in Western Belarus and was imprisoned several times for it. In 1939–1941 he worked for the Lida district newspaper 'Uperad', and in September 1943 he was arrested in Lida by the German security service. After his release he became a liaison for a partisan unit and ran the 'Buraviesnik' intelligence network.</p><p>In 1945 he became deputy director of the Yanka Kupala Literary Museum. The poem 'The Invincible' and the collection 'Selected Works' are his main books. A memorial plaque marks the house where Taulaj lived in Lida in 1939–1941, and another one by sculptor Ryčard Hruša was placed on the building of the 'Lidskaja Hazieta' newspaper.</p>",
+    "image": "../assets/images/valiancin-taulai.jpg",
+    "gallery": [
+      "../assets/images/valiancin-taulai_2.jpg"
+    ],
+    "lat": 53.70444,
+    "lng": 23.858814,
+    "quiz": {
+      "question": "Which Lida newspaper did Valiancin Taulaj work for in 1939–1941?",
+      "options": [
+        "Uperad",
+        "Lidskaja Hazieta",
+        "Zviazda",
+        "Ziemia Lidzka"
+      ],
+      "correctIndex": 0,
+      "explanation": "In 1939–1941 Taulaj worked for the Lida district newspaper 'Uperad'."
+    }
+  },
+  {
+    "id": "piotr-kogan",
+    "title": "Pyotr Kogan",
+    "description": "<p>Pyotr Semyonovich Kogan (1 June 1872, Lida — 2 May 1932, Moscow) was a literary scholar, critic, translator and teacher, a professor at Moscow University and the first president of the State Academy of Arts Sciences.</p><p>He was born in Lida and finished his gymnasium in Mogilev. In 1896 he graduated from the history and philology faculty of Moscow University. He taught in Moscow and from 1909 in St Petersburg, where between 1911 and 1918 he was a privat-docent in Germanic and Romance philology.</p><p>After 1917 he returned to Moscow and from 1921 was a professor at Moscow University. That same year he initiated and became the first president of the State Academy of Arts Sciences — an institution that brought together philosophers, art historians and literary scholars and became one of the centres of humanities thinking in the 1920s. He led it until 1925.</p><p>Kogan was one of the leading Marxist critics of his time. His main works are the three-volume 'Essays on the History of Western European Literature' (1903–1910) and 'Essays on the History of Modern Russian Literature' (1908–1911), as well as 'Essays on the History of Ancient Literatures' (1912), 'The Literature of These Years: 1917–1923' (1925) and 'A History of Russian Literature from the Earliest Times to the Present Day' (1927). He translated John Ruskin and Hippolyte Taine and wrote entries for the Brockhaus and Efron dictionary and for the first Great Soviet Encyclopedia.</p><p>He died on 2 May 1932 in Moscow; his ashes are interred at the Novodevichy cemetery. His wife Nadezhda Nolle-Kogan was a translator, and his son Alexander Kuleshov became a writer.</p>",
+    "image": "../assets/images/piotr-kogan.jpg",
+    "quiz": {
+      "question": "Where was the literary scholar Pyotr Kogan born?",
+      "options": [
+        "In Lida",
+        "In Mogilev",
+        "In Vilnius",
+        "In Moscow"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pyotr Kogan was born in Lida in 1872; Mogilev is where he only attended the gymnasium."
+    }
+  },
+  {
+    "id": "kanstantsin-gorski",
+    "title": "Konstanty Gorski",
+    "description": "<p>Konstanty Antoni Gorski (13 June 1859, Lida — 31 May 1924, Poznań) was a composer, conductor and violinist whom reference books call a Polish composer — but he was born in Lida. He was first educated in Grodno and finished his gymnasium in Vilnius.</p><p>He studied music at the St Petersburg Conservatory: in 1881 he graduated from Leopold Auer's violin class with a large silver medal, and in 1882 he studied composition with Nikolai Rimsky-Korsakov. He then worked in Saratov and Penza, was invited to Tiflis in 1885, and from 1890 to 1919 — almost thirty years — worked in Kharkiv, where he taught, founded Polish and church choirs and a string quartet, and co-founded the local Polish House.</p><p>It was in Kharkiv that he wrote his main work, the opera 'Margier' after the poem by Władysław Syrokomla. The libretto is signed with a pseudonym and scholars believe the composer wrote it himself; the piano score was published in St Petersburg in 1905. The opera was never staged in his lifetime: its world premiere took place on 13 January 1927, two and a half years after his death, at the Wielki Theatre in Poznań. The full score burned during the Second World War, and only in 2022–2023 did Ivan Kastsyakhin reconstruct the opera — it was performed in Warsaw in March 2023.</p><p>Among Gorski's other works are the opera 'Za chlebem' after Sienkiewicz, an Organ Fantasy in F minor, a mass in A minor and a 'Missa Solemnis', the symphonic poems 'On Olympus' and 'The Enchanted Circle', more than a hundred songs and 36 violin studies; he also wrote a cadenza for Beethoven's Violin Concerto.</p><p>Gorski knew Pyotr Tchaikovsky, who thought highly of him as a performer of his own Violin Concerto. He spent his last years in Poland: he moved to Warsaw in 1919 and from 1922 was concertmaster of the Wielki Theatre orchestra in Poznań, where he died on 31 May 1924. Today a plaque marks the house where he lived in Poznań, and in 2009 a bust of him was unveiled in Kharkiv.</p>",
+    "image": "../assets/images/kanstantsin-gorski.jpg",
+    "quiz": {
+      "question": "Where did Konstanty Gorski's opera 'Margier' receive its world premiere?",
+      "options": [
+        "In Vilnius",
+        "In Warsaw",
+        "In Poznań",
+        "In Kharkiv"
+      ],
+      "correctIndex": 2,
+      "explanation": "The premiere took place on 13 January 1927 at the Wielki Theatre in Poznań, after the composer had died."
+    }
+  },
+  {
+    "id": "arkadz-migdal",
+    "title": "Arkady Migdal",
+    "description": "<p>Arkady Benediktovich Migdal (11 March 1911, Lida — 9 February 1991, Princeton, USA) was a theoretical physicist, an academician of the USSR Academy of Sciences and one of the great specialists of the 20th century in quantum field theory and nuclear physics. He was born in Lida into a Jewish family; his father was a pharmacist.</p><p>When the First World War broke out he was four years old and the family moved to Petrograd, so his whole scientific career belongs to Russia. The road into science was not easy: in 1931 Migdal was expelled from Leningrad University 'for non-proletarian origins', in 1933 he was arrested and spent about 70 days under investigation, and he only graduated in 1936.</p><p>He worked at the Physico-Technical Institute and then at the Institute for Physical Problems under Lev Landau, and in 1945 joined the Kurchatov Institute, where he headed the theory department. That same year he became involved in the Soviet atomic project. He was elected a corresponding member of the USSR Academy of Sciences in 1953 and a full academician in 1966. From 1971 until the end of his life he worked at the Landau Institute for Theoretical Physics.</p><p>His best-known result is the Landau–Pomeranchuk–Migdal effect (1953–1954): in dense matter the bremsstrahlung of a particle is strongly suppressed. He also described the Migdal–Kohn singularity (1958), developed the 'shaking' method for the interaction of neutrons with atoms, created the theory of finite Fermi systems and the quasiparticle method in nuclear physics (the 1965 book), and was among the first to write about superfluid nuclear matter inside neutron stars (1959). His textbooks 'Theory of Finite Fermi Systems', 'Qualitative Methods in Quantum Theory' and 'Quantum Physics for Big and Small' have been translated into many languages.</p><p>Among Migdal's students were Anatoly Larkin, Valery Vaks and Yuri Gaponov, and his son Alexander also became a well-known theoretical physicist. Outside science he was a mountaineer and a scuba diver — the first chairman of the USSR Underwater Sports Federation — and a wood carver. He died on 9 February 1991 in Princeton during a working trip and is buried in Moscow at the Novodevichy cemetery.</p>",
+    "image": "../assets/images/arkadz-migdal.jpg",
+    "quiz": {
+      "question": "In what year did Arkady Migdal become a full academician of the USSR Academy of Sciences?",
+      "options": [
+        "1943",
+        "1953",
+        "1966",
+        "1971"
+      ],
+      "correctIndex": 2,
+      "explanation": "Migdal was elected a corresponding member of the USSR Academy of Sciences in 1953 and a full academician in 1966."
+    }
   }
 ]
