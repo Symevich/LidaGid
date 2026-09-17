@@ -81,6 +81,13 @@
 
   /* Screen-edge gutter on phones, widened by the safe area in landscape. */
   --gutter: var(--space-4);
+
+  /* ── Photos ──
+     A hero photo is bounded, never cropped: it keeps the proportions of its
+     own file and is limited only by this ceiling. 480 px is the height a 3:2
+     photo reaches at the widest the object page is allowed to get, so the
+     wide and the tall envelopes end up agreeing with each other. */
+  --photo-max-h: 480px;
 }
 
 /* ============================================================
@@ -152,6 +159,11 @@ img {
    text, whose glyphs already start a few pixels into their line box. */
 .page--object {
   width: 60%;
+  /* Without a ceiling the card grows with the monitor. At 1920 px it was
+     1152 px wide, so a plain 3:2 photo filled 741 px of height and a
+     portrait source (960×1371) was stretched to 1590 px — taller than the
+     screen it was on. Past this width the text measure suffers too. */
+  max-width: 760px;
   padding-top: calc(var(--chrome-clearance) + var(--space-4));
 }
 
@@ -364,7 +376,13 @@ body.chrome-hidden .back-button {
   .list-item,
   .card__bg,
   .quiz__option,
+  .quiz__chevron,
+  .gallery__dot::before,
+  .gallery__arrow,
   .share-social__icon { transition: none; }
+
+  /* the carousel snap must not animate between photos either */
+  .gallery__track { scroll-behavior: auto; }
 
   .card:hover,
   .card:focus-visible,
@@ -527,11 +545,142 @@ body.chrome-hidden .back-button {
    and the content then jumps up when the banner is dropped. */
 .object-card[hidden] { display: none; }
 
-.object-card__image {
-  width: 100%;
-  height: auto;
+/* ── Hero photo ──
+   Never cropped and never stretched: the box follows the proportions of the
+   file itself and only the ceiling bounds it, so a 960×1371 portrait and a
+   1280×853 landscape read at a similar size without either being chopped to
+   match the other. */
+.object-card__image,
+.gallery__image {
   border-radius: var(--radius-lg);
-  object-fit: cover;
+}
+
+.object-card__image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: var(--photo-max-h);
+  /* the auto margin stops the flex card from stretching the photo to full
+     width, and centres it when it ends up narrower than the card */
+  margin-inline: auto;
+}
+
+/* ── Photo carousel ──
+   Native scroll-snap rather than a transform slider: the swipe and the
+   momentum come from the browser, so touch, trackpad, keyboard and screen
+   readers all behave the way the platform already taught the user. Every
+   slide is exactly one track wide, which is what keeps the dot maths exact. */
+.gallery__viewport { position: relative; }
+
+.gallery__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  border-radius: var(--radius-lg);
+  /* The dots below are the affordance; a scrollbar through the middle of a
+     photo is not. Swipe, arrow keys and the dots all still work without it. */
+  scrollbar-width: none;
+}
+
+.gallery__track::-webkit-scrollbar { display: none; }
+
+.gallery__track:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.gallery__image {
+  /* A slide has to be exactly one track wide for the swipe and for the dot
+     maths, so the photo is fitted inside that box instead of defining it —
+     which means a matte around a photo that is not 3:2, never a crop. */
+  flex: 0 0 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+  background: var(--bg);
+  scroll-snap-align: start;
+}
+
+.gallery__dots {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-1);
+}
+
+/* A 24px tap target around a small painted dot. The padding trick would need
+   an off-grid number, so the dot itself is a centred pseudo-element. */
+.gallery__dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.gallery__dot::before {
+  content: '';
+  width: 42%;
+  height: 42%;
+  border-radius: var(--radius-pill);
+  background: var(--border-muted);
+  transition: background-color 0.2s ease;
+}
+
+.gallery__dot:hover::before { background: var(--muted); }
+
+.gallery__dot[aria-current='true']::before {
+  background: var(--text);
+  transform: scale(1.25);
+}
+
+.gallery__dot:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ── Carousel arrows ──
+   Full-size previous/next controls for anyone who would rather click than
+   swipe. They overlay the photo on a dark pill, because the picture
+   underneath can be any colour and cannot be trusted for contrast. */
+.gallery__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* the pill height every floating control on the site shares */
+  width: var(--chrome-h);
+  height: var(--chrome-h);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: rgba(26, 34, 51, 0.6);
+  color: #fff;
+  transform: translateY(-50%);
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.gallery__arrow--prev { left: var(--space-2); }
+.gallery__arrow--next { right: var(--space-2); }
+
+.gallery__arrow:hover { background: rgba(26, 34, 51, 0.92); }
+
+/* A faded arrow still tells the reader there is a carousel here, which a
+   hidden one would not. */
+.gallery__arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.gallery__arrow:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .object-card__audio-wrap { width: 100%; }
@@ -750,7 +899,9 @@ body.chrome-hidden .back-button {
     border-radius: var(--radius-md);
   }
 
-  .object-card__image { border-radius: var(--radius-md); }
+  .object-card__image,
+  .gallery__track,
+  .gallery__image { border-radius: var(--radius-md); }
 
   .status {
     font-size: 0.9rem;
@@ -983,14 +1134,51 @@ body.share-open { overflow: hidden; }
    ============================================================ */
 
 .quiz {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  /* A <details> element stays a plain block on purpose: the flexible part is
+     the panel inside it. A non-block display here has a history of breaking
+     the disclosure in Safari. */
   margin-top: var(--space-2);
   padding: var(--space-5);
   border: 1px solid var(--border-muted);
   border-radius: var(--radius-lg);
   background: var(--bg);
+}
+
+.quiz__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  cursor: pointer;
+  /* the browser's own triangle is replaced by the chevron below */
+  list-style: none;
+}
+
+.quiz__summary::-webkit-details-marker { display: none; }
+
+.quiz__summary:hover .quiz__title { color: var(--text); }
+
+.quiz__summary:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.quiz__chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+
+.quiz[open] .quiz__chevron { transform: rotate(180deg); }
+
+/* the panel: the gap lives here, so nothing separates the title from the
+   card edge while the quiz is still collapsed */
+.quiz__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
 }
 
 .quiz__title {

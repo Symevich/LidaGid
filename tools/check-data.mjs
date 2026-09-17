@@ -21,7 +21,9 @@ for (const source of ['sights', 'enterprises', 'people']) {
     be.forEach((o, i) => {
       const p = other[i];
       if (!p || p.id !== o.id) { fail(source, lang, o.id, 'id mismatch'); return; }
-      for (const key of ['image', 'lat', 'lng']) {
+      /* "gallery" holds the extra carousel photos, so it has to stay
+         identical across languages exactly like "image" does. */
+      for (const key of ['image', 'gallery', 'lat', 'lng']) {
         if (JSON.stringify(o[key]) !== JSON.stringify(p[key])) fail(source, lang, o.id, key, o[key], p[key]);
       }
       /* Audio is locale-specific: each language may point at its own
@@ -45,6 +47,18 @@ for (const source of ['sights', 'enterprises', 'people']) {
       }
     });
   }
+
+  /* extra carousel photos: checked once, they are language-independent */
+  be.forEach((o) => {
+    if (o.gallery === undefined) return;
+    if (!Array.isArray(o.gallery) || !o.gallery.length) {
+      fail(source, 'be', o.id, 'gallery must be a non-empty array');
+      return;
+    }
+    o.gallery.forEach((g) => {
+      if (typeof g !== 'string' || !g.trim()) fail(source, 'be', o.id, 'bad gallery path', g);
+    });
+  });
 }
 
 console.log(problems ? problems + ' PROBLEMS' : 'CROSS-LANGUAGE DATA CONSISTENT');

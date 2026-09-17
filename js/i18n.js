@@ -54,6 +54,12 @@ const I18N = (() => {
       quizBadge:         'Квіз пройдзены',
       quizProgress:      'Квізы: {done} з {total}',
       quizProgressAria:  'Прагрэс па квізах',
+      /* Photo carousel — only used by records that carry more than one picture */
+      galleryLabel:      'Фотаздымкі: {total}',
+      galleryAlt:        '{title} — фота {n} з {total}',
+      galleryGoTo:       'Паказаць фота {n} з {total}',
+      galleryPrev:       'Папярэдняе фота',
+      galleryNext:       'Наступнае фота',
     },
     ru: {
       appTitle:          'Аудиогид по городу Лида',
@@ -100,6 +106,12 @@ const I18N = (() => {
       quizBadge:         'Квиз пройден',
       quizProgress:      'Квизы: {done} из {total}',
       quizProgressAria:  'Прогресс по квизам',
+      /* Photo carousel — only used by records that carry more than one picture */
+      galleryLabel:      'Фотографии: {total}',
+      galleryAlt:        '{title} — фото {n} из {total}',
+      galleryGoTo:       'Показать фото {n} из {total}',
+      galleryPrev:       'Предыдущее фото',
+      galleryNext:       'Следующее фото',
     },
     en: {
       appTitle:          'Audio Guide to the City of Lida',
@@ -146,6 +158,12 @@ const I18N = (() => {
       quizBadge:         'Quiz completed',
       quizProgress:      'Quizzes: {done} of {total}',
       quizProgressAria:  'Quiz progress',
+      /* Photo carousel — only used by records that carry more than one picture */
+      galleryLabel:      'Photographs: {total}',
+      galleryAlt:        '{title} — photo {n} of {total}',
+      galleryGoTo:       'Show photo {n} of {total}',
+      galleryPrev:       'Previous photo',
+      galleryNext:       'Next photo',
     },
   };
 

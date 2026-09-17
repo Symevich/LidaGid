@@ -218,6 +218,28 @@
       <path d="M5.5 12.5v6a1.5 1.5 0 0 0 1.5 1.5h10a1.5 1.5 0 0 0 1.5-1.5v-6"/>
     </svg>`;
 
+  /* Carousel arrows — same stroke language as the icons above. */
+  const CHEVRON_ICONS = {
+    prev: `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="m14.5 5.5-6.5 6.5 6.5 6.5"/>
+      </svg>`,
+    next: `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="m9.5 5.5 6.5 6.5-6.5 6.5"/>
+      </svg>`,
+    down: `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="m5.5 9.5 6.5 6.5 6.5-6.5"/>
+      </svg>`,
+  };
+
   /* Material-design handset, reused by the Viber and WhatsApp icons. */
   const PHONE_PATH = 'M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24' +
     ' 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5' +
@@ -715,11 +737,15 @@
     h1.className   = 'page__title';
     h1.textContent = obj.title || I18N.t('noTitle');  /* Fix #4: all 3 langs via i18n key */
 
-    /* Hero image */
-    if (obj.image) {
+    /* Hero photo(s) — a record with a "gallery" array turns into a photo
+       carousel; a single-photo record keeps the plain <img> it always had. */
+    const shots = [obj.image, ...(Array.isArray(obj.gallery) ? obj.gallery : [])].filter(Boolean);
+    if (shots.length > 1) {
+      card.appendChild(buildGallery(shots, obj.title));
+    } else if (shots.length === 1) {
       const img        = document.createElement('img');
       img.className    = 'object-card__image';
-      img.src          = fixPath(obj.image);
+      img.src          = fixPath(shots[0]);
       img.alt          = obj.title;
       card.appendChild(img);
     }
@@ -773,18 +799,137 @@
     card.hidden = false;
   }
 
+  /*
+   * Photo carousel for records that carry more than one picture.
+   *
+   * Built on native CSS scroll-snap rather than a JS transform slider: the
+   * swipe then comes from the browser itself, so momentum scrolling, RTL and
+   * touch all behave the way the platform expects. Every slide is exactly
+   * one track wide, which keeps track.scrollLeft -> slide index arithmetic
+   * exact and removes the need for any layout measurement.
+   */
+  function buildGallery(paths, title) {
+    const total = paths.length;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'gallery';
+
+    /* The arrows float over the photo, so they need a positioning context of
+       their own: a child of the track would slide away with the picture. */
+    const viewport = document.createElement('div');
+    viewport.className = 'gallery__viewport';
+
+    const track = document.createElement('div');
+    track.className = 'gallery__track';
+    track.tabIndex  = 0;
+    track.setAttribute('role', 'group');
+    track.setAttribute('aria-label', I18N.t('galleryLabel', { total }));
+
+    paths.forEach((path, i) => {
+      const img       = document.createElement('img');
+      img.className   = 'gallery__image';
+      img.src         = fixPath(path);
+      img.alt         = I18N.t('galleryAlt', { title, n: i + 1, total });
+      img.loading     = i === 0 ? 'eager' : 'lazy';
+      img.decoding    = 'async';
+      img.draggable   = false;
+      track.appendChild(img);
+    });
+
+    const dots = document.createElement('div');
+    dots.className = 'gallery__dots';
+
+    let shown = -1;
+
+    /* scroll-behavior comes from the stylesheet, so the reduced-motion
+       block can switch the animation off without any JS branch. */
+    const goTo = (i) => {
+      track.scrollLeft = track.clientWidth * Math.max(0, Math.min(total - 1, i));
+    };
+
+    const dotButtons = paths.map((_, i) => {
+      const dot = document.createElement('button');
+      dot.type      = 'button';
+      dot.className = 'gallery__dot';
+      dot.setAttribute('aria-label', I18N.t('galleryGoTo', { n: i + 1, total }));
+      dot.addEventListener('click', () => goTo(i));
+      dots.appendChild(dot);
+      return dot;
+    });
+
+    const makeArrow = (kind, labelKey) => {
+      const arrow = document.createElement('button');
+      arrow.type      = 'button';
+      arrow.className = `gallery__arrow gallery__arrow--${kind}`;
+      arrow.innerHTML = CHEVRON_ICONS[kind];   /* static markup, no user data */
+      arrow.setAttribute('aria-label', I18N.t(labelKey));
+      return arrow;
+    };
+
+    const prev = makeArrow('prev', 'galleryPrev');
+    const next = makeArrow('next', 'galleryNext');
+    prev.addEventListener('click', () => goTo(shown - 1));
+    next.addEventListener('click', () => goTo(shown + 1));
+
+    const sync = () => {
+      const width = track.clientWidth || 1;
+      const index = Math.max(0, Math.min(total - 1, Math.round(track.scrollLeft / width)));
+      if (index === shown) return;
+      shown = index;
+      dotButtons.forEach((dot, i) => {
+        if (i === index) dot.setAttribute('aria-current', 'true');
+        else dot.removeAttribute('aria-current');
+      });
+      /* The arrows also carry the "there is more this way" cue, so they stay
+         in place at the ends and merely fade out instead of disappearing. */
+      prev.disabled = index === 0;
+      next.disabled = index === total - 1;
+    };
+
+    track.addEventListener('scroll', sync, { passive: true });
+    track.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      const step = e.key === 'ArrowRight' ? 1 : -1;
+      goTo(shown + step);
+    });
+
+    viewport.append(track, prev, next);
+    wrap.append(viewport, dots);
+    sync();
+    return wrap;
+  }
+
   function buildQuiz(obj, source) {
     const quiz = obj.quiz;
     if (!quiz || !Array.isArray(quiz.options) || !quiz.options.length) return null;
 
     const correctIndex = Number.isInteger(quiz.correctIndex) ? quiz.correctIndex : 0;
 
-    const block = document.createElement('section');
+    /* <details> rather than a button plus a hidden panel: the toggle, the
+       keyboard handling and the screen-reader semantics then come from the
+       browser, and the quiz still opens if the script never runs. */
+    const block = document.createElement('details');
     block.className = 'quiz';
+
+    const summary = document.createElement('summary');
+    summary.className = 'quiz__summary';
 
     const title = document.createElement('h2');
     title.className = 'quiz__title';
     title.textContent = I18N.t('quizTitle');
+
+    const chevron = document.createElement('span');
+    chevron.className = 'quiz__chevron';
+    chevron.innerHTML = CHEVRON_ICONS.down;   /* static markup, no user data */
+
+    summary.append(title, chevron);
+
+    /* Everything below the title sits in one wrapper, so the panel stays a
+       plain flex column and the container itself can remain a block — a
+       non-block display on <details> breaks the disclosure in Safari. */
+    const body = document.createElement('div');
+    body.className = 'quiz__body';
 
     const question = document.createElement('p');
     question.className = 'quiz__question';
@@ -838,7 +983,8 @@
 
     if (quizIsDone(source, obj.id)) answer(correctIndex, false);
 
-    block.append(title, question, options, feedback, explanation);
+    body.append(question, options, feedback, explanation);
+    block.append(summary, body);
     return block;
   }
 

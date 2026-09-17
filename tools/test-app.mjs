@@ -97,6 +97,32 @@ check('nothing declares a raw spacing value any more',
 check('no raw radius value leaks through',
   !/border-radius:[^;]*\d+px/.test(styleCss));
 check('the old single radius alias is gone', !/var\(--radius\)/.test(styleCss));
+
+/* ── photo sizing: bounded, but never cropped ── */
+check('the photo ceiling is declared as a token',
+  /--photo-max-h:\s*\d+px/.test(styleCss));
+check('a hero photo is bounded, not cropped',
+  /\.object-card__image\s*\{[^}]*max-height:\s*var\(--photo-max-h\)/.test(styleCss)
+  && !/\.object-card__image[^{]*\{[^}]*object-fit:\s*cover/.test(styleCss));
+check('a bounded hero photo keeps its own proportions',
+  /\.object-card__image\s*\{[^}]*width:\s*auto/.test(styleCss)
+  && /\.object-card__image\s*\{[^}]*margin-inline:\s*auto/.test(styleCss));
+check('a carousel slide fits the photo instead of cropping it',
+  /\.gallery__image\s*\{[^}]*object-fit:\s*contain/.test(styleCss)
+  && /\.gallery__image\s*\{[^}]*flex:\s*0 0 100%/.test(styleCss));
+check('the object page stops growing on a wide monitor',
+  /\.page--object\s*\{[^}]*max-width:\s*\d+px/.test(styleCss));
+check('the carousel arrows are pills sized from the shared token',
+  /\.gallery__arrow\s*\{[^}]*height:\s*var\(--chrome-h\)/.test(styleCss)
+  && /\.gallery__arrow--prev\s*\{\s*left:/.test(styleCss)
+  && /\.gallery__arrow--next\s*\{\s*right:/.test(styleCss));
+check('a disabled arrow fades instead of vanishing',
+  /\.gallery__arrow:disabled\s*\{[^}]*opacity:\s*0?\.\d+/.test(styleCss));
+check('the disclosure drops the browser default marker',
+  /\.quiz__summary\s*\{[^}]*list-style:\s*none/.test(styleCss) &&
+  /\.quiz__summary::-webkit-details-marker\s*\{\s*display:\s*none/.test(styleCss));
+check('the disclosure cue turns over when the quiz opens',
+  /\.quiz\[open\]\s+\.quiz__chevron\s*\{[^}]*rotate\(180deg\)/.test(styleCss));
 check('a view and the map below it share one bottom margin',
   /--page-gap:/.test(styleCss) &&
   !/\.map-section \{[\s\S]*?margin: 0 auto var\(--space/.test(styleCss));
@@ -277,6 +303,28 @@ card = await waitFor(() => {
 
 const quizBlock = card.querySelector('.quiz');
 check('quiz rendered on the object page', !!quizBlock);
+
+/* ── the quiz is a collapsed disclosure, opened by tapping its title ── */
+check('the quiz starts collapsed',
+  quizBlock.tagName === 'DETAILS' && quizBlock.open === false);
+check('the quiz title sits inside the disclosure summary',
+  !!quizBlock.querySelector('.quiz__summary > .quiz__title'));
+check('the collapsed quiz shows an expand cue',
+  !!quizBlock.querySelector('.quiz__summary > .quiz__chevron'));
+check('the question and the options live in the panel',
+  !!quizBlock.querySelector('.quiz__body > .quiz__question') &&
+  !!quizBlock.querySelector('.quiz__body > .quiz__options'));
+check('nothing outside the summary is a direct child of the disclosure',
+  [...quizBlock.children].every((el) => el.matches('.quiz__summary, .quiz__body')),
+  [...quizBlock.children].map((el) => el.className).join('|'));
+check('clicking the summary opens the quiz', (() => {
+  try { quizBlock.querySelector('summary').click(); return quizBlock.open === true; }
+  catch (e) { return false; }
+})());
+check('clicking the summary again closes it', (() => {
+  try { quizBlock.querySelector('summary').click(); return quizBlock.open === false; }
+  catch (e) { return false; }
+})());
 check('quiz question', quizBlock.querySelector('.quiz__question').textContent === 'У якім годзе быў узведзены Лідскі замак?',
   quizBlock.querySelector('.quiz__question').textContent);
 const opts = [...quizBlock.querySelectorAll('.quiz__option')];
@@ -416,9 +464,90 @@ card = await waitFor(() => {
 check('a passed quiz comes back answered',
   [...card.querySelectorAll('.quiz__option')].every((o) => o.disabled));
 
+/* ── the people added to the data render like the original entry ── */
+await goto('#/object/people/arkadz-migdal');
+card = await waitFor(() => {
+  const c = doc.getElementById('objectCard');
+  return c && !c.hidden ? c : null;
+}, 'migdal card');
+check('an added person page shows the heading',
+  card.querySelector('.page__title').textContent === 'Аркадзь Мігдал',
+  card.querySelector('.page__title').textContent);
+check('an added person page has the full description',
+  card.querySelectorAll('.object-card__text p').length >= 4,
+  String(card.querySelectorAll('.object-card__text p').length));
+check('an added person page builds a four-option quiz',
+  card.querySelectorAll('.quiz__option').length === 4,
+  String(card.querySelectorAll('.quiz__option').length));
+/* the old recordings belong to the Belarusian objects only, and a record
+   without audio must leave no player and no placeholder behind */
+check('an added person page builds no audio player',
+  !card.querySelector('.object-card__audio-player'));
+
+/* ── a second photo turns the hero image into a carousel ── */
+const taulaj = JSON.parse(read('data/people.json')).find((p) => p.id === 'valiancin-taulai');
+const slides = 1 + taulaj.gallery.length;
+
+await goto('#/object/people/valiancin-taulai');
+card = await waitFor(() => {
+  const c = doc.getElementById('objectCard');
+  return c && c.querySelector('.gallery__track') ? c : null;
+}, 'taulaj carousel');
+check('a record with extra photos builds the carousel',
+  card.querySelectorAll('.gallery__image').length === slides,
+  `${card.querySelectorAll('.gallery__image').length} of ${slides} slides`);
+check('a carousel replaces the single hero image',
+  !card.querySelector('.object-card__image'));
+check('the carousel builds one dot per photo',
+  card.querySelectorAll('.gallery__dot').length === slides,
+  String(card.querySelectorAll('.gallery__dot').length));
+check('the first dot is marked current',
+  card.querySelector('.gallery__dot').getAttribute('aria-current') === 'true');
+check('the other dots are not marked current',
+  [...card.querySelectorAll('.gallery__dot')].slice(1)
+    .every((d) => d.getAttribute('aria-current') === null));
+check('every carousel photo carries its own alt text',
+  new Set([...card.querySelectorAll('.gallery__image')].map((i) => i.alt)).size === slides);
+check('carousel photos point at the files named in the data',
+  [...card.querySelectorAll('.gallery__image')].every((img, i) =>
+    img.getAttribute('src').endsWith((i === 0 ? taulaj.image : taulaj.gallery[i - 1]).replace('../', ''))),
+  [...card.querySelectorAll('.gallery__image')].map((i) => i.getAttribute('src')).join(' '));
+check('clicking a carousel dot does not throw', (() => {
+  try { card.querySelectorAll('.gallery__dot')[1].click(); return true; } catch (e) { return false; }
+})());
+check('the carousel builds a previous and a next arrow',
+  !!card.querySelector('.gallery__arrow--prev') && !!card.querySelector('.gallery__arrow--next'));
+check('both arrows carry an accessible label',
+  [...card.querySelectorAll('.gallery__arrow')].every((a) => (a.getAttribute('aria-label') || '').length > 3),
+  [...card.querySelectorAll('.gallery__arrow')].map((a) => a.getAttribute('aria-label')).join(' / '));
+check('both arrows are real buttons',
+  [...card.querySelectorAll('.gallery__arrow')].every((a) => a.tagName === 'BUTTON' && a.type === 'button'));
+check('the arrows float outside the swipeable track',
+  !card.querySelector('.gallery__track .gallery__arrow') &&
+  card.querySelectorAll('.gallery__viewport > .gallery__arrow').length === 2);
+check('the first slide cannot go back',
+  card.querySelector('.gallery__arrow--prev').disabled === true);
+check('the first slide can still go forward',
+  card.querySelector('.gallery__arrow--next').disabled === false);
+check('clicking an arrow does not throw', (() => {
+  try { card.querySelector('.gallery__arrow--next').click(); return true; } catch (e) { return false; }
+})());
+
+/* a record with a single photo keeps the plain <img> it always had */
+await goto('#/object/people/pola-raksa');
+card = await waitFor(() => {
+  const c = doc.getElementById('objectCard');
+  return c && !c.hidden ? c : null;
+}, 'raksa card');
+check('a single-photo record builds no carousel',
+  !card.querySelector('.gallery__track') && !!card.querySelector('.object-card__image'));
+
 /* ── lists and sections stay quiz-free ── */
 await goto('#/people');
 await waitFor(() => doc.querySelectorAll('.list-item').length, 'people list');
+check('every person in the data file becomes a list row',
+  doc.querySelectorAll('.list-item').length === JSON.parse(read('data/people.json')).length,
+  String(doc.querySelectorAll('.list-item').length));
 check('section has no quiz progress badge', !doc.getElementById('quizBadge'));
 check('share button visible on a section page', shareBtn.hidden === false);
 check('list items carry no quiz marker', !doc.querySelector('.list-item__badge'));

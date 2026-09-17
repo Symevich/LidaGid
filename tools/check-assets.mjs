@@ -12,13 +12,19 @@ const perLang = {};
 for (const file of fs.readdirSync(DATA).filter((f) => f.endsWith('.json'))) {
   const items = JSON.parse(fs.readFileSync(path.join(DATA, file), 'utf8'));
   for (const item of items) {
-    for (const key of ['image', 'audio']) {
-      if (item[key]) {
-        referenced[key].add(item[key]);
-        if (!fs.existsSync(toLocal(item[key]))) {
+    /* "gallery" holds the extra carousel photos — they are image references
+       like any other, so they must be checked and counted too. */
+    const refs = {
+      image: [item.image, ...(Array.isArray(item.gallery) ? item.gallery : [])].filter(Boolean),
+      audio: [item.audio].filter(Boolean),
+    };
+    for (const [key, paths] of Object.entries(refs)) {
+      for (const p of paths) {
+        referenced[key].add(p);
+        if (!fs.existsSync(toLocal(p))) {
           perLang[key + ' missing'] = perLang[key + ' missing'] || [];
-          if (!perLang[key + ' missing'].some((e) => e.ref === item[key] && e.file === file)) {
-            perLang[key + ' missing'].push({ file, id: item.id, ref: item[key] });
+          if (!perLang[key + ' missing'].some((e) => e.ref === p && e.file === file)) {
+            perLang[key + ' missing'].push({ file, id: item.id, ref: p });
           }
         }
       }
