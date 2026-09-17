@@ -110,8 +110,25 @@ check('a bounded hero photo keeps its own proportions',
 check('a carousel slide fits the photo instead of cropping it',
   /\.gallery__image\s*\{[^}]*object-fit:\s*contain/.test(styleCss)
   && /\.gallery__image\s*\{[^}]*flex:\s*0 0 100%/.test(styleCss));
+check('every view declares a width ceiling',
+  /--page-max:\s*\d+px/.test(styleCss) &&
+  /--section-max:\s*\d+px/.test(styleCss) &&
+  /--object-max:\s*\d+px/.test(styleCss));
+check('the home view and its map share one ceiling',
+  (styleCss.match(/max-width: var\(--page-max\)/g) || []).length === 2,
+  String((styleCss.match(/max-width: var\(--page-max\)/g) || []).length));
+check('a section view and its map share one ceiling',
+  (styleCss.match(/max-width: var\(--section-max\)/g) || []).length === 2,
+  String((styleCss.match(/max-width: var\(--section-max\)/g) || []).length));
 check('the object page stops growing on a wide monitor',
-  /\.page--object\s*\{[^}]*max-width:\s*\d+px/.test(styleCss));
+  /\.page--object\s*\{[^}]*max-width:\s*var\(--object-max\)/.test(styleCss));
+check('the monogram fills the round thumbnail box',
+  /\.list-item__monogram\s*\{[^}]*display:\s*inline-flex/.test(styleCss) &&
+  /\.list-item__monogram\s*\{[^}]*justify-content:\s*center/.test(styleCss));
+check('a person thumbnail crops from the top of the frame',
+  /\.card-grid--people\s+\.list-item__image\s*\{[^}]*object-position:\s*center\s+30%/.test(styleCss));
+check('no section falls back to a photo of another object',
+  !/fallback:\s*'\.\/assets\//.test(appJs) && /card-grid--/.test(appJs));
 check('the carousel arrows are pills sized from the shared token',
   /\.gallery__arrow\s*\{[^}]*height:\s*var\(--chrome-h\)/.test(styleCss)
   && /\.gallery__arrow--prev\s*\{\s*left:/.test(styleCss)
@@ -548,6 +565,23 @@ await waitFor(() => doc.querySelectorAll('.list-item').length, 'people list');
 check('every person in the data file becomes a list row',
   doc.querySelectorAll('.list-item').length === JSON.parse(read('data/people.json')).length,
   String(doc.querySelectorAll('.list-item').length));
+
+/* a photo that will not load must not fall back to a picture of something
+   else — the row shows the first letter of its own title instead */
+doc.querySelector('.list-item .list-item__image').dispatchEvent(new window.Event('error'));
+const monogram = doc.querySelector('.list-item .list-item__monogram');
+check('a failed photo is replaced by a monogram', !!monogram);
+check('the monogram shows the first letter of the title',
+  monogram.textContent ===
+    doc.querySelector('.list-item .list-item__title').textContent.trim().charAt(0).toUpperCase(),
+  monogram.textContent);
+check('the monogram keeps the round thumbnail box',
+  monogram.classList.contains('list-item__image'));
+check('the monogram is hidden from assistive technology',
+  monogram.getAttribute('aria-hidden') === 'true');
+check('the monogram is tinted with the section colour',
+  /#5cb85c|rgb\(92,\s*184,\s*92\)/i.test(monogram.style.background),
+  monogram.style.background);
 check('section has no quiz progress badge', !doc.getElementById('quizBadge'));
 check('share button visible on a section page', shareBtn.hidden === false);
 check('list items carry no quiz marker', !doc.querySelector('.list-item__badge'));

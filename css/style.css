@@ -82,6 +82,15 @@
   /* Screen-edge gutter on phones, widened by the safe area in landscape. */
   --gutter: var(--space-4);
 
+  /* ── Layout ceilings ──
+     Every view is sized in percentages and had no ceiling at all, so a
+     2560 px monitor stretched the home page to 1792 px and a section to
+     1664 px. Each view now stops growing at its own width, and the map below
+     it uses the same token so the two stay aligned. */
+  --page-max:    1000px;  /* the home view and its map */
+  --section-max:  900px;  /* a section view and its map */
+  --object-max:   760px;  /* one object: a narrower reading column */
+
   /* ── Photos ──
      A hero photo is bounded, never cropped: it keeps the proportions of its
      own file and is limited only by this ceiling. 480 px is the height a 3:2
@@ -142,6 +151,7 @@ img {
 
 .page {
   width: 70%;
+  max-width: var(--page-max);
   margin: 0 auto var(--page-gap);
   /* The floating controls are fixed, so they sit on top of whatever comes
      first. The clearance lives here rather than on the children: padding
@@ -152,7 +162,10 @@ img {
   padding-top: var(--chrome-clearance);
 }
 
-.page--section { width: 65%; }
+.page--section {
+  width: 65%;
+  max-width: var(--section-max);
+}
 
 /* The object page has no heading: its first element is the card itself. A
    white block sitting right under the pill needs more air than a line of
@@ -163,7 +176,7 @@ img {
      1152 px wide, so a plain 3:2 photo filled 741 px of height and a
      portrait source (960×1371) was stretched to 1590 px — taller than the
      screen it was on. Past this width the text measure suffers too. */
-  max-width: 760px;
+  max-width: var(--object-max);
   padding-top: calc(var(--chrome-clearance) + var(--space-4));
 }
 
@@ -506,6 +519,25 @@ body.chrome-hidden .back-button {
   object-fit: cover;
 }
 
+/* Stands in for a photo: the first letter of the title, on the section's own
+   colour. Decorative — the title sits right beside it, so it is hidden from
+   assistive technology. */
+.list-item__monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border-muted);
+  color: var(--text);
+  font-size: 1.7rem;
+  font-weight: 700;
+  user-select: none;
+}
+
+/* A person's photo is a portrait, and a round crop taken from the middle of
+   a portrait keeps the chest and loses the face. The other sections hold
+   landscapes, where the middle is the right place to take it from. */
+.card-grid--people .list-item__image { object-position: center 30%; }
+
 .list-item__body {
   display: flex;
   flex-direction: column;
@@ -737,6 +769,7 @@ body.chrome-hidden .back-button {
 
 .map-section {
   width: 70%;
+  max-width: var(--page-max);
   height: 420px;
   margin: 0 auto var(--page-gap);
   border-radius: var(--radius-lg);
@@ -744,7 +777,10 @@ body.chrome-hidden .back-button {
   box-shadow: var(--shadow);
 }
 
-.map-section--section { width: 65%; }
+.map-section--section {
+  width: 65%;
+  max-width: var(--section-max);
+}
 
 /* Leaflet unavailable (offline CDN) — the container is hidden by app.js */
 .map-section[hidden] { display: none; }
@@ -889,6 +925,8 @@ body.chrome-hidden .back-button {
     width: 56px;
     height: 56px;
   }
+
+  .list-item__monogram { font-size: 1.1rem; }
 
   .list-item__body { min-width: 0; }
 

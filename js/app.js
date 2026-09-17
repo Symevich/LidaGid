@@ -10,9 +10,9 @@
   const SOURCES = ['sights', 'enterprises', 'people'];
 
   const META = {
-    sights:      { color: '#f5a623', fallback: './assets/images/lidski-zamak.jpg',     titleKey: 'sightsTitle'      },
-    enterprises: { color: '#4a90d9', fallback: './assets/images/maloczny-zavod.jpg',   titleKey: 'enterprisesTitle' },
-    people:      { color: '#5cb85c', fallback: './assets/images/kamandzirovaczny.jpg', titleKey: 'peopleTitle'      },
+    sights:      { color: '#f5a623', titleKey: 'sightsTitle'      },
+    enterprises: { color: '#4a90d9', titleKey: 'enterprisesTitle' },
+    people:      { color: '#5cb85c', titleKey: 'peopleTitle'      },
   };
 
   let _map    = null;
@@ -28,6 +28,13 @@
   /* Fix: data files use "../assets/…" paths (written for html/ subfolder).
      In the SPA served from root they must be "./assets/…". */
   function fixPath(p) { return p ? p.replace(/^\.\.\//, './') : ''; }
+
+  /* The first letter or digit of a title — the glyph an object without a
+     photo shows instead. */
+  function firstGlyph(text) {
+    const found = String(text || '').match(/[\p{L}\p{N}]/u);
+    return found ? found[0].toUpperCase() : '?';
+  }
 
   /* ── Toast (non-blocking status message) ── */
   let _toastTimer = null;
@@ -640,14 +647,14 @@
         <div id="status" class="status" role="status" aria-live="polite">
           ${esc(I18N.t('loading'))}
         </div>
-        <section id="list" class="card-grid" aria-label="${esc(I18N.t(meta.titleKey))}"></section>
+        <section id="list" class="card-grid card-grid--${esc(name)}" aria-label="${esc(I18N.t(meta.titleKey))}"></section>
       </div>
       <div id="map-root" class="map-section map-section--section"></div>
     `;
 
     try {
       const items = await loadData(name);
-      renderList(items, name, meta.fallback);
+      renderList(items, name, meta);
     } catch {
       /* Fix #8: error shown in UI */
       const st = document.getElementById('status');
@@ -656,7 +663,7 @@
     initMap('map-root', [name]);
   }
 
-  function renderList(data, source, fallback) {
+  function renderList(data, source, meta) {
     const status = document.getElementById('status');
     const list   = document.getElementById('list');
     if (!status || !list) return;
@@ -669,19 +676,34 @@
     }
     status.style.display = 'none';
 
+    /* A row without a photo gets the first letter of its own title rather
+       than a stand-in picture of a different object: a real photograph of
+       the wrong thing reads as a mistake, a monogram reads as a choice. */
+    const makeMonogram = (title) => {
+      const box = document.createElement('span');
+      box.className = 'list-item__image list-item__monogram';
+      box.setAttribute('aria-hidden', 'true');
+      if (meta.color) box.style.background = meta.color;
+      box.textContent = firstGlyph(title);
+      return box;
+    };
+
+    const makeThumb = (item) => {
+      const img     = document.createElement('img');
+      img.className = 'list-item__image';
+      img.src       = fixPath(item.image);
+      img.alt       = item.title;
+      img.loading   = 'lazy';
+      /* A file that will not load must not leave a hole in the row either. */
+      img.onerror   = () => img.replaceWith(makeMonogram(item.title));
+      return img;
+    };
+
     items.forEach(item => {
       const a = document.createElement('a');
       /* Fix #3: no &lang= param — language handled by localStorage only */
       a.href      = `#/object/${encodeURIComponent(source)}/${encodeURIComponent(item.id)}`;
       a.className = 'list-item';
-
-      const img       = document.createElement('img');
-      img.className   = 'list-item__image';
-      /* Fix #11: per-source fallback image */
-      img.src         = fixPath(item.image) || fallback;
-      img.alt         = item.title;
-      img.loading     = 'lazy';
-      img.onerror     = () => { img.src = fallback; img.onerror = null; };
 
       const body      = document.createElement('div');
       body.className  = 'list-item__body';
@@ -691,7 +713,7 @@
       title.textContent = item.title;
 
       body.appendChild(title);
-      a.append(img, body);
+      a.append(item.image ? makeThumb(item) : makeMonogram(item.title), body);
 
       list.appendChild(a);
     });
