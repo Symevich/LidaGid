@@ -31,6 +31,30 @@ const I18N = (() => {
       noTitle:           'Без назвы',
       audioNotSupported: 'Ваш браўзер не падтрымлівае аўдыёэлемент.',
       pageTitle:         '| Аўдыёгід па Лідзе',
+      /* Share — chrome button + modal (offline: no network request) */
+      share:             'Падзяліцца',
+      shareAria:         'Падзяліцца спасылкай на гэтую старонку',
+      shareTo:           'Падзяліцца ў…',
+      shareToNetwork:    'Падзяліцца ў {network}',
+      shareCopyLink:     'Скапіяваць спасылку',
+      shareMore:         'Яшчэ…',
+      shareClose:        'Зачыніць акно',
+      qrAlt:             'QR-код са спасылкай на гэтую старонку',
+      qrTitle:           'Спасылка на старонку',
+      qrHint:            'Навядзіце камеру тэлефона на код, каб адкрыць старонку',
+      qrUnavailable:     'Не ўдалося згенераваць QR-код.',
+      linkCopied:        'Спасылка скапіравана',
+      shareFailed:       'Не ўдалося скапіраваць спасылку',
+      /* Mini quiz / gamification — only the quiz itself is on the
+         object page; these counter strings are kept for the moment the
+         "X of N" progress badge is switched back on. */
+      quizTitle:         'Праверце сябе',
+      quizCorrect:       'Правільна!',
+      quizWrong:         'Няправільна.',
+      quizAnswer:        'Правільны адказ: {answer}',
+      quizBadge:         'Квіз пройдзены',
+      quizProgress:      'Квізы: {done} з {total}',
+      quizProgressAria:  'Прагрэс па квізах',
     },
     ru: {
       appTitle:          'Аудиогид по городу Лида',
@@ -54,6 +78,30 @@ const I18N = (() => {
       noTitle:           'Без названия',
       audioNotSupported: 'Ваш браузер не поддерживает аудиоэлемент.',
       pageTitle:         '| Аудиогид по Лиде',
+      /* Share — chrome button + modal (offline: no network request) */
+      share:             'Поделиться',
+      shareAria:         'Поделиться ссылкой на эту страницу',
+      shareTo:           'Поделиться в…',
+      shareToNetwork:    'Поделиться в {network}',
+      shareCopyLink:     'Скопировать ссылку',
+      shareMore:         'Ещё…',
+      shareClose:        'Закрыть окно',
+      qrAlt:             'QR-код со ссылкой на эту страницу',
+      qrTitle:           'Ссылка на страницу',
+      qrHint:            'Наведите камеру телефона на код, чтобы открыть страницу',
+      qrUnavailable:     'Не удалось сгенерировать QR-код.',
+      linkCopied:        'Ссылка скопирована',
+      shareFailed:       'Не удалось скопировать ссылку',
+      /* Mini quiz / gamification — only the quiz itself is on the
+         object page; these counter strings are kept for the moment the
+         "X of N" progress badge is switched back on. */
+      quizTitle:         'Проверьте себя',
+      quizCorrect:       'Правильно!',
+      quizWrong:         'Неправильно.',
+      quizAnswer:        'Правильный ответ: {answer}',
+      quizBadge:         'Квиз пройден',
+      quizProgress:      'Квизы: {done} из {total}',
+      quizProgressAria:  'Прогресс по квизам',
     },
     en: {
       appTitle:          'Audio Guide to the City of Lida',
@@ -77,6 +125,30 @@ const I18N = (() => {
       noTitle:           'Untitled',
       audioNotSupported: 'Your browser does not support the audio element.',
       pageTitle:         '| Lida Audio Guide',
+      /* Share — chrome button + modal (offline: no network request) */
+      share:             'Share',
+      shareAria:         'Share a link to this page',
+      shareTo:           'Share to...',
+      shareToNetwork:    'Share to {network}',
+      shareCopyLink:     'Copy link',
+      shareMore:         'More…',
+      shareClose:        'Close the window',
+      qrAlt:             'QR code with the link to this page',
+      qrTitle:           'Link to the page',
+      qrHint:            'Point your phone camera at the code to open this page',
+      qrUnavailable:     'Could not generate the QR code.',
+      linkCopied:        'Link copied',
+      shareFailed:       'Could not copy the link',
+      /* Mini quiz / gamification — only the quiz itself is on the
+         object page; these counter strings are kept for the moment the
+         "X of N" progress badge is switched back on. */
+      quizTitle:         'Test yourself',
+      quizCorrect:       'Correct!',
+      quizWrong:         'Not quite.',
+      quizAnswer:        'The correct answer is: {answer}',
+      quizBadge:         'Quiz completed',
+      quizProgress:      'Quizzes: {done} of {total}',
+      quizProgressAria:  'Quiz progress',
     },
   };
 
@@ -94,9 +166,14 @@ const I18N = (() => {
     try { localStorage.setItem(STORAGE_KEY, lang); } catch(e) {}
   }
 
-  function t(key) {
-    const lang = get();
-    return (STRINGS[lang] && STRINGS[lang][key]) || STRINGS[DEFAULT][key] || key;
+  function t(key, vars) {
+    const lang  = get();
+    const value = (STRINGS[lang] && STRINGS[lang][key]) || STRINGS[DEFAULT][key] || key;
+    if (!vars) return value;
+    /* {name} placeholders, e.g. t('quizProgress', { done: 3, total: 8 }) */
+    return String(value).replace(/\{(\w+)\}/g, (match, name) =>
+      Object.prototype.hasOwnProperty.call(vars, name) ? String(vars[name]) : match
+    );
   }
 
   function dataFile(source) {

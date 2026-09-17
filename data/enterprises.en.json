@@ -5,7 +5,18 @@
     "description": "<p>An enterprise in the Lida district that produces fuel briquettes from peat. This product is used for heating and in the energy sector. The plant plays an important role in the utilisation of local natural resources.</p>",
     "image": "../assets/images/torfabryketny.jpg",
     "lat": 53.886742,
-    "lng": 25.416148
+    "lng": 25.416148,
+    "quiz": {
+      "question": "What does the “Lidski” peat-briquette plant produce?",
+      "options": [
+        "Bricks",
+        "Fuel briquettes made of peat",
+        "Furniture",
+        "Glass"
+      ],
+      "correctIndex": 1,
+      "explanation": "The plant makes peat fuel briquettes used for heating and in the energy sector."
+    }
   },
   {
     "id": "maloczny-zavod",
@@ -13,7 +24,18 @@
     "description": "<p>This is one of the largest food enterprises in Lida. The plant processes milk and produces condensed and powdered milk, butter, and other dairy products. It cooperates with local agricultural farms and supplies its products to both the domestic market and for export.</p>",
     "image": "../assets/images/maloczny-zavod.jpg",
     "lat": 53.871183,
-    "lng": 25.314976
+    "lng": 25.314976,
+    "quiz": {
+      "question": "Under what name is the Lida dairy plant known?",
+      "options": [
+        "MiLida",
+        "Lidselmash",
+        "Konus",
+        "Liplast"
+      ],
+      "correctIndex": 0,
+      "explanation": "The “MiLida” dairy is one of the city’s largest food enterprises, and part of its output is exported."
+    }
   },
   {
     "id": "lidselmash",
@@ -21,7 +43,18 @@
     "description": "<p>A machine-building plant specialising in the manufacture of agricultural machinery and equipment for animal husbandry and crop farming. The plant's products are used in agriculture across Belarus and other countries. It has a long history and is one of the city's major industrial facilities.</p>",
     "image": "../assets/images/lidselmash.jpg",
     "lat": 53.902585,
-    "lng": 25.298678
+    "lng": 25.298678,
+    "quiz": {
+      "question": "What does “Lidselmash” specialise in?",
+      "options": [
+        "Paint and varnish materials",
+        "Farm machinery and livestock equipment",
+        "Hot-dip galvanising",
+        "Plastic packaging"
+      ],
+      "correctIndex": 1,
+      "explanation": "“Lidselmash” is a machine-building plant producing farm machinery and equipment for livestock and crop farming."
+    }
   },
   {
     "id": "konus",
@@ -29,7 +62,18 @@
     "description": "<p>The enterprise specialises in hot-dip galvanising of metal structures. This treatment protects metal from corrosion and extends its service life. The plant's services are used in construction, industry, and other sectors where reliable metal structures are required.</p>",
     "image": "../assets/images/konus.jpg",
     "lat": 53.863790,
-    "lng": 25.268880
+    "lng": 25.268880,
+    "quiz": {
+      "question": "What service does the “Konus” plant provide?",
+      "options": [
+        "Printing",
+        "Hot-dip galvanising of steel structures",
+        "Milk processing",
+        "Paper production"
+      ],
+      "correctIndex": 1,
+      "explanation": "The plant hot-dip galvanises steel structures, which protects metal from corrosion."
+    }
   },
   {
     "id": "liplast",
@@ -37,7 +81,18 @@
     "description": "<p>The enterprise specialises in the production of plastic and polymer products. It manufactures packaging, technical parts, and other products used across various industries and in everyday life.</p>",
     "image": "../assets/images/liplast.jpg",
     "lat": 53.903788,
-    "lng": 25.324376
+    "lng": 25.324376,
+    "quiz": {
+      "question": "What does “Liplast” produce?",
+      "options": [
+        "Plastic goods and packaging",
+        "Fuel briquettes",
+        "Farm machinery",
+        "Paints and varnishes"
+      ],
+      "correctIndex": 0,
+      "explanation": "“Liplast” specialises in plastic and polymer products: packaging, technical parts and more."
+    }
   },
   {
     "id": "lakafarba",
@@ -45,6 +100,17 @@
     "description": "<p>A large chemical enterprise that produces paints, varnishes, and other coatings. Its products are used in construction, industry, and renovation. The plant is one of the largest manufacturers of paint and varnish materials in Belarus.</p>",
     "image": "../assets/images/lakafarba.jpg",
     "lat": 53.906953,
-    "lng": 25.316834
+    "lng": 25.316834,
+    "quiz": {
+      "question": "What does the “Lakafarba” enterprise produce?",
+      "options": [
+        "Paints and varnishes",
+        "Milk and butter",
+        "Bricks",
+        "Cars"
+      ],
+      "correctIndex": 0,
+      "explanation": "“Lakafarba” is one of Belarus’s largest makers of paints, varnishes and other coatings."
+    }
   }
 ]

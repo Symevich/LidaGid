@@ -1,0 +1,17 @@
+{
+  "name": "lidagid-tools",
+  "private": true,
+  "description": "Ad-hoc checks for the LidaGid SPA: data/asset consistency, share modal, QR encoding.",
+  "scripts": {
+    "test": "node test-app.mjs && node verify-share.mjs && node verify-qr.js && node verify-svg-qr.mjs",
+    "test:app": "node test-app.mjs",
+    "test:share": "node verify-share.mjs",
+    "test:qr": "node verify-qr.js && node verify-svg-qr.mjs",
+    "check:data": "node check-data.mjs",
+    "check:assets": "node check-assets.mjs"
+  },
+  "dependencies": {
+    "@zxing/library": "^0.23.0",
+    "jsdom": "^30.1.0"
+  }
+}

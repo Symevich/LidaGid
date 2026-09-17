@@ -92,11 +92,49 @@ img {
    Fix #5: trigger is now a <button> with full keyboard support
    ============================================================ */
 
-.lang-switcher {
+/* Top-right chrome: the share button sits on the left of the language
+   switcher (DOM order inside .top-chrome decides the visual order). */
+.top-chrome {
   position: fixed;
   top: 14px;
   right: 14px;
   z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.share-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(26, 34, 51, 0.86);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: background 0.25s, transform 0.25s;
+}
+
+.share-button:hover,
+.share-button:focus-visible {
+  background: rgba(26, 34, 51, 0.98);
+  transform: translateY(-1px);
+  outline: 2px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 2px;
+}
+
+/* hidden on the home screen (see updateChrome in app.js) */
+.share-button[hidden] { display: none; }
+
+.share-button svg { display: block; }
+
+.lang-switcher {
+  position: relative;
   font-family: "Roboto", sans-serif;
 }
 
@@ -176,7 +214,7 @@ img {
 }
 
 @media (max-width: 600px) {
-  .lang-switcher { top: 10px; right: 10px; }
+  .top-chrome { top: 10px; right: 10px; gap: 6px; }
 }
 
 /* ============================================================
@@ -411,6 +449,9 @@ img {
 
 .map-section--section { width: 65%; }
 
+/* Leaflet unavailable (offline CDN) — the container is hidden by app.js */
+.map-section[hidden] { display: none; }
+
 .map-popup {
   display: flex;
   flex-direction: column;
@@ -555,4 +596,346 @@ img {
     font-size: 0.9rem;
     padding: 12px 14px;
   }
+}
+
+/* ============================================================
+   SHARE MODAL — QR code, "share to" targets and copy-link button
+   Everything is generated locally, so it works offline too.
+   ============================================================ */
+
+.share-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.share-modal[hidden] { display: none; }
+
+/* Locks the page behind the modal */
+body.share-open { overflow: hidden; }
+
+.share-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 16, 30, 0.55);
+  animation: share-fade 0.2s ease both;
+}
+
+.share-modal__dialog {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 22px 22px 20px;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: 0 24px 60px rgba(10, 20, 45, 0.35);
+  animation: share-pop 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes share-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes share-pop {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.share-modal__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.share-modal__close:hover,
+.share-modal__close:focus-visible {
+  background: #e9eef8;
+  color: var(--text);
+}
+
+.share-modal__qr {
+  width: 100%;
+  max-width: 230px;
+  margin: 0 auto;
+}
+
+.share-modal__qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.share-modal__error {
+  font-size: 0.88rem;
+  color: #8f2323;
+  text-align: center;
+}
+
+.share-modal__hint {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.share-modal__divider {
+  height: 0;
+  margin: 18px 0 14px;
+  border: 0;
+  border-top: 1px solid var(--border-muted);
+}
+
+.share-modal__label {
+  margin-bottom: 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.share-modal__socials {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 10px;
+  margin-bottom: 18px;
+}
+
+.share-social {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 66px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-decoration: none;
+  text-align: center;
+}
+
+.share-social__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.share-social:hover .share-social__icon,
+.share-social:focus-visible .share-social__icon {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.share-social:focus-visible { outline: none; }
+
+.share-social__name { overflow-wrap: anywhere; }
+
+/* The "more" target is a <button>, the rest are links */
+.share-social--native {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: "Roboto", sans-serif;
+  cursor: pointer;
+}
+
+.share-modal__copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(26, 34, 51, 0.9);
+  color: #fff;
+  font-family: "Roboto", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: background 0.25s, transform 0.25s;
+}
+
+.share-modal__copy:hover,
+.share-modal__copy:focus-visible {
+  background: rgba(26, 34, 51, 0.98);
+  transform: translateY(-1px);
+}
+
+.share-modal__copy svg { flex-shrink: 0; }
+
+/* ============================================================
+   TOAST — "link copied" and similar short confirmations
+   ============================================================ */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  z-index: 80;   /* above the share modal */
+  max-width: min(92vw, 420px);
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: rgba(26, 34, 51, 0.96);
+  color: #fff;
+  font-size: 0.9rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+.toast--visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ============================================================
+   MINI QUIZ
+   ============================================================ */
+
+.quiz {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 18px;
+  border: 1px solid var(--border-muted);
+  border-radius: 14px;
+  background: var(--bg);
+}
+
+.quiz__title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.quiz__question {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.quiz__options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quiz__option {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-muted);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: "Roboto", sans-serif;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.quiz__option:hover:not(:disabled),
+.quiz__option:focus-visible:not(:disabled) {
+  border-color: rgba(47, 109, 246, 0.45);
+  transform: translateY(-1px);
+}
+
+.quiz__option:disabled { cursor: default; }
+
+.quiz__option--correct {
+  background: #e8f7ec;
+  border-color: #3f9c58;
+  color: #1d5c30;
+  font-weight: 700;
+}
+
+.quiz__option--correct::after { content: " ✓"; }
+
+.quiz__option--wrong {
+  background: #fdeceb;
+  border-color: #d9534f;
+  color: #8f2323;
+  font-weight: 700;
+}
+
+.quiz__option--wrong::after { content: " ✕"; }
+
+.quiz__feedback {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* stays out of the layout until an answer is given */
+.quiz__feedback:empty { display: none; }
+
+.quiz__feedback--correct { color: #1d5c30; }
+.quiz__feedback--wrong   { color: #8f2323; }
+
+.quiz__explanation {
+  padding-left: 12px;
+  border-left: 3px solid var(--border-muted);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* ============================================================
+   RESPONSIVE — mobile tweaks for the share modal
+   ============================================================ */
+
+@media (max-width: 600px) {
+  /* the modal turns into a bottom sheet, as in Telegram */
+  .share-modal {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .share-modal__dialog {
+    max-width: none;
+    max-height: 88vh;
+    padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
+    border-radius: 20px 20px 0 0;
+  }
+
+  .share-modal__close { top: 10px; right: 10px; }
+
+  /* a bit smaller, so QR + targets fit a short screen without scrolling */
+  .share-modal__qr { max-width: 200px; }
+
+  .share-social { width: 60px; }
+  .share-social__icon { width: 42px; height: 42px; }
+
+  .quiz { padding: 14px; }
 }

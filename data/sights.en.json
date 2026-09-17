@@ -5,7 +5,18 @@
     "description": "<p>\"The Business Traveller\" is an ironic sculptural composition that takes us back to the 1970s.</p><p>In 2008, an ironic sculpture created by Belarusian artist Uladzimir Zhabanau appeared on a street in Lida. The sculpture \"Hello, Business Traveller!\" stands next to the main entrance of the Hotel \"Lida\". It humorously depicts the chronic shortage of hotel rooms that was common in small Soviet-era cities.</p><p>Near the hotel, a young man sits on a large old suitcase. In his outstretched hand he clutches a city map, greeting every passerby. His clothes match the style of the 1970s. The bronze sculpture is life-sized and strikingly lifelike.</p>",
     "image": "../assets/images/kamandzirovaczny.jpg",
     "lat": 53.888573,
-    "lng": 25.303809
+    "lng": 25.303809,
+    "quiz": {
+      "question": "In what year did the “Business Traveller” sculpture appear in Lida?",
+      "options": [
+        "1993",
+        "2006",
+        "2008",
+        "2011"
+      ],
+      "correctIndex": 2,
+      "explanation": "The sculpture was installed in 2008 next to the “Lida” hotel. Its author is the Belarusian artist Uladzimir Zhbanau."
+    }
   },
   {
     "id": "kamien-u-honar-zasnavannia-lidy",
@@ -14,7 +25,18 @@
     "image": "../assets/images/kamien-u-honar-zasnavannia-lidy.jpg",
     "audio": "../assets/audio/kamien-u-honar-zasnavannia-lidy.ogg",
     "lat": 53.889516,
-    "lng": 25.303592
+    "lng": 25.303592,
+    "quiz": {
+      "question": "How much did the boulder of the city-foundation monument weigh before it was worked?",
+      "options": [
+        "10 tons",
+        "20 tons",
+        "30 tons",
+        "50 tons"
+      ],
+      "correctIndex": 2,
+      "explanation": "Sculptor Richard Hrusha found a 30-ton boulder in the Voranava district; after working it shed 10 tons."
+    }
   },
   {
     "id": "kasciol-uzvyszennia-sviatoha-kryzha",
@@ -23,7 +45,18 @@
     "image": "../assets/images/kasciol-uzvyszennia-sviatoha-kryzha.jpg",
     "audio": "../assets/audio/kasciol-uzvyszennia-sviatoha-kryzha.ogg",
     "lat": 53.889293,
-    "lng": 25.303169
+    "lng": 25.303169,
+    "quiz": {
+      "question": "In what year did the construction of the Exaltation of the Holy Cross church in Lida begin?",
+      "options": [
+        "1388",
+        "1674",
+        "1770",
+        "1797"
+      ],
+      "correctIndex": 2,
+      "explanation": "The church was built in 1770 to a design by Johann Christoph Glaubitz; construction took five years."
+    }
   },
   {
     "id": "kurhan-neumiruczasci",
@@ -32,7 +65,18 @@
     "image": "../assets/images/kurhan-neumiruczasci.jpg",
     "audio": "../assets/audio/kurhan-neumiruczasci.ogg",
     "lat": 53.892351,
-    "lng": 25.315195
+    "lng": 25.315195,
+    "quiz": {
+      "question": "When did the Mound of Immortality start to be built up?",
+      "options": [
+        "1945",
+        "1966",
+        "1967",
+        "1973"
+      ],
+      "correctIndex": 1,
+      "explanation": "The mound was begun on 9 May 1966, and in 1973 it was complemented with 14-metre pylons."
+    }
   },
   {
     "id": "lidski-zamak",
@@ -41,7 +85,18 @@
     "image": "../assets/images/lidski-zamak.jpg",
     "audio": "../assets/audio/lidski-zamak.ogg",
     "lat": 53.887178,
-    "lng": 25.302266
+    "lng": 25.302266,
+    "quiz": {
+      "question": "In what year was Lida Castle built?",
+      "options": [
+        "1180",
+        "1323",
+        "1569",
+        "1795"
+      ],
+      "correctIndex": 1,
+      "explanation": "The castle was built in 1323 by order of Grand Duke Gediminas at the confluence of the Lidzieja and Kamienka rivers."
+    }
   },
   {
     "id": "pomnik-francysku-skarynu",
@@ -50,7 +105,18 @@
     "image": "../assets/images/pomnik-francysku-skarynu.jpg",
     "audio": "../assets/audio/pomnik-francysku-skarynu.ogg",
     "lat": 53.889781,
-    "lng": 25.303201
+    "lng": 25.303201,
+    "quiz": {
+      "question": "In what year was the monument to Francysk Skaryna unveiled in Lida?",
+      "options": [
+        "1989",
+        "1993",
+        "2001",
+        "2006"
+      ],
+      "correctIndex": 1,
+      "explanation": "The monument was unveiled on 25 July 1993; the bronze figure was made by Valeryjan Januškievič."
+    }
   },
   {
     "id": "sviata-michajlauski-kafedralny-sabor",
@@ -59,15 +125,36 @@
     "image": "../assets/images/sviata-michajlauski-kafedralny-sabor.jpg",
     "audio": "../assets/audio/sviata-michajlauski-kafedralny-sabor.ogg",
     "lat": 53.893820,
-    "lng": 25.303325
+    "lng": 25.303325,
+    "quiz": {
+      "question": "What was St Michael’s Cathedral originally?",
+      "options": [
+        "St Joseph’s church",
+        "The All Saints church",
+        "The Exaltation of the Holy Cross church",
+        "A synagogue"
+      ],
+      "correctIndex": 0,
+      "explanation": "St Joseph’s church at the Piarist monastery was built in 1797—1825 and converted into an Orthodox church in 1863."
+    }
   },
   {
     "id": "carkva-usich-sviatych",
     "title": "Church of All Saints",
     "description": "<p>The Church of All Saints rises in the very centre of the city and is one of Lida's dominant architectural landmarks.</p><p>The Church of All Saints was built in Lida in 2006, after 16 years of construction. The project was designed by Leanid Makarevich, Honoured Architect of the Republic of Belarus.</p><p>The church is conceived as a centralised cubic volume, topped in the centre by a cylindrical drum with an onion dome, and at the corners by smaller onion domes on cylindrical drums. Three semicircular apses project from the altar facade. The architectural expressiveness is achieved through an intensive articulation of the facades with vertical pilaster strips that frame arched bays and narrow tall arched windows.</p>",
     "image": "../assets/images/carkva-usich-sviatych.jpg",
-    "audio": "../assets/audio/carkva-usich-sviatych.ogg",
     "lat": 53.883736,
-    "lng": 25.301513
+    "lng": 25.301513,
+    "quiz": {
+      "question": "In what year was the All Saints church built?",
+      "options": [
+        "1990",
+        "1997",
+        "2006",
+        "2011"
+      ],
+      "correctIndex": 2,
+      "explanation": "Construction lasted 16 years and was completed in 2006; the design was made by architect Leanid Makarevič."
+    }
   }
 ]

@@ -29,6 +29,385 @@
      In the SPA served from root they must be "./assets/…". */
   function fixPath(p) { return p ? p.replace(/^\.\.\//, './') : ''; }
 
+  /* ── Toast (non-blocking status message) ── */
+  let _toastTimer = null;
+  function showToast(message) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.className = 'toast';
+      toast.setAttribute('role', 'status');
+      toast.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('toast--visible');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => toast.classList.remove('toast--visible'), 2600);
+  }
+
+  /* ============================================================
+     QUIZ PROGRESS — stored in localStorage, no backend needed.
+     Entries are "<source>/<id>" so ids stay unique across files.
+     Quizzes live on object pages only, so the record is used there
+     to restore an already answered quiz and nowhere else.
+  ============================================================ */
+  const QUIZ_KEY = 'lidagid_quiz_progress';
+
+  function quizDoneList() {
+    try {
+      const list = JSON.parse(localStorage.getItem(QUIZ_KEY) || '[]');
+      return Array.isArray(list) ? list.filter(k => typeof k === 'string') : [];
+    } catch (e) { return []; }
+  }
+
+  function quizIsDone(source, id) { return quizDoneList().includes(`${source}/${id}`); }
+
+  function quizMarkDone(source, id) {
+    const list = quizDoneList();
+    const key  = `${source}/${id}`;
+    if (list.includes(key)) return;
+    list.push(key);
+    try { localStorage.setItem(QUIZ_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+
+  /* ============================================================
+     SHARE — round icon button in the top-right chrome, left of the
+     language switcher. It opens a modal with a locally generated QR
+     code (no CDN, no backend) plus the usual share targets.
+     Everything here only reads the current URL, so sharing works
+     offline too.
+  ============================================================ */
+  const SHARE_ICON = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="1.8"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="17.5" cy="5" r="2.6"/>
+      <circle cx="6.5" cy="12" r="2.6"/>
+      <circle cx="17.5" cy="19" r="2.6"/>
+      <line x1="8.9" y1="10.7" x2="15.1" y2="6.3"/>
+      <line x1="8.9" y1="13.3" x2="15.1" y2="17.7"/>
+    </svg>`;
+
+  const CLOSE_ICON = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <line x1="6" y1="6" x2="18" y2="18"/>
+      <line x1="18" y1="6" x2="6" y2="18"/>
+    </svg>`;
+
+  const LINK_ICON = `
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+      <path d="M10.6 13.4a4 4 0 0 0 5.6 0l2.6-2.6a4 4 0 1 0-5.6-5.6l-1 1"/>
+      <path d="M13.4 10.6a4 4 0 0 0-5.6 0l-2.6 2.6a4 4 0 1 0 5.6 5.6l1-1"/>
+    </svg>`;
+
+  const NATIVE_SHARE_ICON = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+         stroke="#fff" stroke-width="1.7" stroke-linecap="round"
+         stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 3v11"/>
+      <path d="m7.8 7.2 4.2-4.2 4.2 4.2"/>
+      <path d="M5.5 12.5v6a1.5 1.5 0 0 0 1.5 1.5h10a1.5 1.5 0 0 0 1.5-1.5v-6"/>
+    </svg>`;
+
+  /* Material-design handset, reused by the Viber and WhatsApp icons. */
+  const PHONE_PATH = 'M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24' +
+    ' 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5' +
+    'c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z';
+
+  /* Share targets of the modal. Network names are proper nouns and
+     stay untranslated; only the accessible label is localized. */
+  const SHARE_NETWORKS = [
+    {
+      id: 'telegram', name: 'Telegram', color: '#2aabee',
+      href: (url, title) => `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+      icon: (c) => `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path fill="#fff" d="M21.9 4.1 3 11.5c-.9.3-.9 1.4 0 1.7l4.5 1.5 1.7 5.1c.2.7 1.1.9 1.6.3l2.3-2.4 4.7 3.5c.6.4 1.4.1 1.5-.6l3.3-15.1c.2-.9-.6-1.6-1.4-1.4Z"/>
+        <path fill="${c}" d="m9.7 14.3 8.6-6.1-7 7-.3 3.2z"/>
+      </svg>`,
+    },
+    {
+      id: 'viber', name: 'Viber', color: '#7360f2',
+      href: (url, title) => `viber://forward?text=${encodeURIComponent(title + ' ' + url)}`,
+      icon: () => `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path fill="#fff" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+      </svg>`,
+    },
+    {
+      id: 'whatsapp', name: 'WhatsApp', color: '#25d366',
+      href: (url, title) => `https://api.whatsapp.com/send?text=${encodeURIComponent(title + ' ' + url)}`,
+      icon: (c) => `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path fill="#fff" d="M12 2.9a9.1 9.1 0 0 0-7.8 13.6L2.8 21.2l4.8-1.3A9.1 9.1 0 1 0 12 2.9Z"/>
+        <g transform="translate(4.7 4.7) scale(0.61)"><path fill="${c}" d="${PHONE_PATH}"/></g>
+      </svg>`,
+    },
+    {
+      id: 'vk', name: 'VK', color: '#4c75a3',
+      href: (url, title) => `https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
+      icon: () => `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <text x="12" y="16.4" text-anchor="middle" font-family="Roboto, Arial, sans-serif"
+              font-size="10.5" font-weight="700" fill="#fff">VK</text>
+      </svg>`,
+    },
+    {
+      id: 'facebook', name: 'Facebook', color: '#1877f2',
+      href: (url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+      icon: () => `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <text x="12" y="17.4" text-anchor="middle" font-family="Roboto, Arial, sans-serif"
+              font-size="16" font-weight="700" fill="#fff">f</text>
+      </svg>`,
+    },
+    {
+      id: 'x', name: 'X', color: '#10151c',
+      href: (url, title) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+      icon: () => `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="#fff" d="M4.4 3.5h4.4l3.9 5.4 4.5-5.4h2.5l-6 7.1 6.4 9.9h-4.4l-4.2-5.7-4.8 5.7H4.2l6.4-7.6z"/>
+      </svg>`,
+    },
+    {
+      id: 'email', name: 'E-mail', color: '#58627a',
+      href: (url, title) => `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(url)}`,
+      icon: () => `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="1.7"/>
+        <path d="M4.6 7.4 12 12.8l7.4-5.4" fill="none" stroke="#fff" stroke-width="1.7"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`,
+    },
+  ];
+
+  let _shareModal  = null;
+  let _shareButton = null;
+
+  function buildShareButton() {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'share-button';
+    btn.innerHTML = SHARE_ICON;   /* static markup, no user data */
+    btn.setAttribute('aria-haspopup', 'dialog');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-label', I18N.t('shareAria'));
+    btn.setAttribute('title', I18N.t('share'));
+    btn.addEventListener('click', () => openShareModal(btn));
+    _shareButton = btn;
+    return btn;
+  }
+
+  function ensureShareModal() {
+    if (_shareModal) return _shareModal;
+
+    const modal = document.createElement('div');
+    modal.className = 'share-modal';
+    modal.hidden = true;
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'share-modal__backdrop';
+
+    const dialog = document.createElement('div');
+    dialog.className = 'share-modal__dialog';
+    dialog.setAttribute('role', 'dialog');
+    dialog.setAttribute('aria-modal', 'true');
+    dialog.setAttribute('aria-labelledby', 'shareModalLabel');
+
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'share-modal__close';
+    close.innerHTML = CLOSE_ICON;
+
+    const qr = document.createElement('div');
+    qr.className = 'share-modal__qr';
+
+    const hint = document.createElement('p');
+    hint.className = 'share-modal__hint';
+
+    const divider = document.createElement('hr');
+    divider.className = 'share-modal__divider';
+
+    const label = document.createElement('h2');
+    label.className = 'share-modal__label';
+    label.id = 'shareModalLabel';
+
+    const socials = document.createElement('div');
+    socials.className = 'share-modal__socials';
+
+    const copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'share-modal__copy';
+    copy.innerHTML = LINK_ICON;
+    const copyText = document.createElement('span');
+    copyText.className = 'share-modal__copy-label';
+    copy.appendChild(copyText);
+    copy.addEventListener('click', async () => {
+      try {
+        await copyToClipboard(location.href);
+        closeShareModal();
+        showToast(I18N.t('linkCopied'));
+      } catch (e) {
+        showToast(I18N.t('shareFailed'));
+      }
+    });
+
+    dialog.append(close, qr, hint, divider, label, socials, copy);
+    modal.append(backdrop, dialog);
+    document.body.appendChild(modal);
+
+    backdrop.addEventListener('click', closeShareModal);
+    close.addEventListener('click', closeShareModal);
+
+    _shareModal = modal;
+    return modal;
+  }
+
+  /* Rebuilt on every open, so the QR code, the share targets and all
+     labels always describe the page the user is looking at right now. */
+  function fillShareModal(modal) {
+    const url   = location.href;   /* already contains #/object/<source>/<id> */
+    const title = document.title;
+
+    modal.querySelector('.share-modal__close').setAttribute('aria-label', I18N.t('shareClose'));
+    modal.querySelector('.share-modal__hint').textContent = I18N.t('qrHint');
+    modal.querySelector('.share-modal__label').textContent = I18N.t('shareTo');
+    modal.querySelector('.share-modal__copy-label').textContent = I18N.t('shareCopyLink');
+
+    const qr = modal.querySelector('.share-modal__qr');
+    qr.innerHTML = '';
+    const svg = qrSvg(url);
+    if (svg) {
+      qr.innerHTML = svg;   /* markup produced locally by js/vendor/qrcode.js */
+    } else {
+      const p = document.createElement('p');
+      p.className = 'share-modal__error';
+      p.textContent = I18N.t('qrUnavailable');
+      qr.appendChild(p);
+    }
+
+    const socials = modal.querySelector('.share-modal__socials');
+    socials.innerHTML = '';
+    SHARE_NETWORKS.forEach(net => {
+      const a = document.createElement('a');
+      a.className = 'share-social';
+      a.href = net.href(url, title);
+      if (net.id !== 'email') {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      }
+      a.setAttribute('aria-label', I18N.t('shareToNetwork', { network: net.name }));
+
+      const icon = document.createElement('span');
+      icon.className = 'share-social__icon';
+      icon.style.background = net.color;
+      icon.innerHTML = net.icon(net.color);   /* static markup, no user data */
+
+      const name = document.createElement('span');
+      name.className = 'share-social__name';
+      name.textContent = net.name;
+
+      a.append(icon, name);
+      socials.appendChild(a);
+    });
+
+    /* The system share sheet (Android, iOS, some desktops) is offered as
+       one more target whenever the browser supports it. */
+    if (navigator.share) {
+      const more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'share-social share-social--native';
+      more.setAttribute('aria-label', I18N.t('shareMore'));
+      more.addEventListener('click', async () => {
+        try {
+          await navigator.share({ title, url });
+          closeShareModal();
+        } catch (e) { /* dismissed by the user or unavailable */ }
+      });
+
+      const icon = document.createElement('span');
+      icon.className = 'share-social__icon';
+      icon.style.background = '#1a2233';
+      icon.innerHTML = NATIVE_SHARE_ICON;
+
+      const name = document.createElement('span');
+      name.className = 'share-social__name';
+      name.textContent = I18N.t('shareMore');
+
+      more.append(icon, name);
+      socials.appendChild(more);
+    }
+  }
+
+  function openShareModal(trigger) {
+    const modal = ensureShareModal();
+    fillShareModal(modal);
+    modal.hidden = false;
+    document.body.classList.add('share-open');
+    if (trigger) trigger.setAttribute('aria-expanded', 'true');
+    modal.querySelector('.share-modal__close').focus();
+    document.addEventListener('keydown', onShareKeydown);
+  }
+
+  function closeShareModal() {
+    if (!_shareModal || _shareModal.hidden) return;
+    _shareModal.hidden = true;
+    document.body.classList.remove('share-open');
+    document.removeEventListener('keydown', onShareKeydown);
+    if (_shareButton) {
+      _shareButton.setAttribute('aria-expanded', 'false');
+      /* on the home screen the button is hidden and cannot take focus */
+      if (!_shareButton.hidden) _shareButton.focus();
+    }
+  }
+
+  /* Escape closes the modal, Tab is kept inside it. */
+  function onShareKeydown(e) {
+    if (!_shareModal || _shareModal.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); closeShareModal(); return; }
+    if (e.key !== 'Tab') return;
+
+    const items = _shareModal.querySelectorAll('button, a[href]');
+    if (!items.length) return;
+    const first = items[0];
+    const last  = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+
+  async function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    /* Fallback for older browsers and non-secure origins */
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (!ok) throw new Error('copy failed');
+  }
+
+  /* The QR encodes the given URL and is generated locally (no CDN,
+     no backend), so it keeps working without a network. */
+  function qrSvg(text) {
+    if (typeof qrcode !== 'function') return null;
+    try {
+      const qr = qrcode(0, 'M');   /* auto version, ~15% error correction */
+      qr.addData(text, 'Byte');
+      qr.make();
+      return qr.createSvgTag({
+        cellSize: 4,
+        margin: 8,
+        scalable: true,
+        title: I18N.t('qrTitle'),
+        alt: I18N.t('qrAlt'),
+      });
+    } catch (e) { return null; }
+  }
+
   /* ── Router ── */
   function parseRoute() {
     const hash = location.hash.replace(/^#\/?/, '').trim();
@@ -45,7 +424,10 @@
     killMap();
     const app = document.getElementById('app');
     if (!app) return;
+    /* chrome first: the share button disappears on the home screen, and the
+       modal must not try to restore focus onto a hidden button */
     updateChrome(route);
+    closeShareModal();
     if      (route.view === 'section') renderSection(app, route.name);
     else if (route.view === 'object')  renderObject(app, route.source, route.id);
     else                               renderHome(app);
@@ -56,6 +438,8 @@
     if (!_back) return;
     const isHome = route.view === 'home';
     _back.hidden = isHome;
+    /* Nothing to share on the start screen, so the button is hidden there. */
+    if (_shareButton) _shareButton.hidden = isHome;
     document.body.classList.toggle('has-back', !isHome);
     if (!isHome) {
       _back.textContent = I18N.t('back');
@@ -178,6 +562,7 @@
 
       body.appendChild(title);
       a.append(img, body);
+
       list.appendChild(a);
     });
   }
@@ -207,10 +592,10 @@
     }
 
     if (!obj) { showError(I18N.t('errorNotFound')); return; }
-    populateObject(obj);
+    populateObject(obj, source);
   }
 
-  function populateObject(obj) {
+  function populateObject(obj, source) {
     const status = document.getElementById('status');
     const card   = document.getElementById('objectCard');
     if (!status || !card) return;
@@ -271,8 +656,81 @@
     desc.innerHTML = obj.description || I18N.t('noDesc');
     card.appendChild(desc);
 
+    /* Mini quiz — optional field, records without it are simply skipped */
+    const quiz = buildQuiz(obj, source);
+    if (quiz) card.appendChild(quiz);
+
     status.style.display = 'none';
     card.hidden = false;
+  }
+
+  function buildQuiz(obj, source) {
+    const quiz = obj.quiz;
+    if (!quiz || !Array.isArray(quiz.options) || !quiz.options.length) return null;
+
+    const correctIndex = Number.isInteger(quiz.correctIndex) ? quiz.correctIndex : 0;
+
+    const block = document.createElement('section');
+    block.className = 'quiz';
+
+    const title = document.createElement('h2');
+    title.className = 'quiz__title';
+    title.textContent = I18N.t('quizTitle');
+
+    const question = document.createElement('p');
+    question.className = 'quiz__question';
+    question.textContent = quiz.question || '';
+
+    const options = document.createElement('div');
+    options.className = 'quiz__options';
+    options.setAttribute('role', 'group');
+    options.setAttribute('aria-label', quiz.question || I18N.t('quizTitle'));
+
+    const feedback = document.createElement('p');
+    feedback.className = 'quiz__feedback';
+    feedback.setAttribute('role', 'status');
+    feedback.setAttribute('aria-live', 'polite');
+
+    const explanation = document.createElement('p');
+    explanation.className = 'quiz__explanation';
+    explanation.hidden = true;
+    if (quiz.explanation) explanation.textContent = quiz.explanation;
+
+    const buttons = quiz.options.map((option, index) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'quiz__option';
+      btn.textContent = option;
+      btn.addEventListener('click', () => answer(index, true));
+      options.appendChild(btn);
+      return btn;
+    });
+
+    /* Applies the answered state; also used to restore an already passed quiz */
+    function answer(index, userAction) {
+      const isCorrect = index === correctIndex;
+      buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        btn.classList.toggle('quiz__option--correct', i === correctIndex);
+        btn.classList.toggle('quiz__option--wrong',   i === index && !isCorrect);
+        if (i === index) btn.setAttribute('aria-current', 'true');
+      });
+
+      feedback.classList.toggle('quiz__feedback--correct', isCorrect);
+      feedback.classList.toggle('quiz__feedback--wrong', !isCorrect);
+      feedback.textContent = isCorrect
+        ? I18N.t('quizCorrect')
+        : I18N.t('quizWrong') + ' ' + I18N.t('quizAnswer', { answer: quiz.options[correctIndex] });
+
+      if (quiz.explanation) explanation.hidden = false;
+
+      if (isCorrect && userAction) quizMarkDone(source, obj.id);
+    }
+
+    if (quizIsDone(source, obj.id)) answer(correctIndex, false);
+
+    block.append(title, question, options, feedback, explanation);
+    return block;
   }
 
   function showError(message) {
@@ -304,9 +762,12 @@
   function killMap() { if (_map) { _map.remove(); _map = null; } }
 
   function initMap(containerId, sources) {
-    if (typeof L === 'undefined') return;
     const el = document.getElementById(containerId);
     if (!el) return;
+
+    /* Leaflet comes from a CDN: with no network the library is missing, so the
+       map area is hidden instead of showing an empty box (known offline limit). */
+    if (typeof L === 'undefined') { el.hidden = true; return; }
 
     _map = L.map(containerId, { zoomControl: true }).setView([53.8918, 25.3021], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -316,8 +777,7 @@
 
     Promise.all(
       sources.map(src =>
-        fetch(`./data/${I18N.dataFile(src)}`)
-          .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+        loadData(src)
           .then(items => ({ src, items }))
           .catch(() => ({ src, items: [] }))
       )
@@ -357,7 +817,12 @@
      BOOTSTRAP
   ============================================================ */
   function init() {
-    I18N.renderToggle();
+    /* Top-right chrome: share button on the left of the language switcher */
+    const chrome = document.createElement('div');
+    chrome.className = 'top-chrome';
+    chrome.appendChild(buildShareButton());
+    chrome.appendChild(I18N.renderToggle());
+    document.body.appendChild(chrome);
 
     _back           = document.createElement('a');
     _back.className = 'back-button';
