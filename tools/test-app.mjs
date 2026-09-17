@@ -157,7 +157,7 @@ check('no breakpoint re-adds its own top margin',
   !/margin: \d+px auto (2[04]|32)px/.test(styleCss));
 check('welcome.html syncs the "around 1323" note with the tagline',
   /id="citySub"/.test(welcomeHtml) &&
-  /каля 1323/.test(welcomeHtml) && /около 1323/.test(welcomeHtml) && /circa 1323/.test(welcomeHtml), 'citySub');
+  /каля 1323/.test(welcomeHtml) && /около 1323/.test(welcomeHtml) && /around 1323/.test(welcomeHtml), 'citySub');
 
 /* ── per-locale audio: no player and no placeholder text when missing ── */
 check('app.js only builds the audio wrap when a recording exists',
