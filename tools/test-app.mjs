@@ -60,6 +60,120 @@ check('sw handles Range requests', /headers\.has\('range'\)/.test(swJs));
 check('no in-card share buttons left in app.js', !/btn-action|object-card__actions/.test(appJs));
 check('no in-card share styles left in style.css', !/btn-action|\.qr-panel/.test(styleCss));
 
+/* ── scroll-aware chrome, mobile rows, welcome note ── */
+check('app.js toggles the chrome-hidden body class',
+  /classList\.add\('chrome-hidden'\)/.test(appJs) &&
+  /classList\.remove\('chrome-hidden'\)/.test(appJs));
+check('app.js requires a deliberate pull before showing the chrome again',
+  /CHROME_REVEAL_STEP\s*=\s*\d+/.test(appJs));
+check('app.js clamps the remembered depth to the end of the page',
+  /Math\.min\(Math\.max\(_deepestScrollY, y\), maxScrollY\(\)\)/.test(appJs));
+check('app.js throttles the scroll handler with rAF', /requestAnimationFrame\(applyScrollChrome\)/.test(appJs));
+check('app.js scrolls each new view to the top', /scrollToTop\(\);/.test(appJs));
+check('app.js lets the SPA own scroll restoration', /scrollRestoration = 'manual'/.test(appJs));
+check('css slides the chrome away when hidden',
+  /body\.chrome-hidden \.top-chrome[\s\S]*?opacity:\s*0/.test(styleCss), 'body.chrome-hidden');
+check('css transitions the chrome', /\.top-chrome,\s*\n\.back-button \{[\s\S]*?transition:/.test(styleCss));
+/* chrome buttons must behave alike: no UA border, and a focus ring */
+check('the back button resets the UA border',
+  /\.back-button \{[\s\S]*?border: none;/.test(styleCss));
+check('the back button shows a focus ring',
+  /\.back-button:focus-visible \{[^}]*outline: 2px/.test(styleCss));
+check('list rows reveal keyboard focus', /\.list-item:focus-visible/.test(styleCss));
+check('the card description drops its trailing paragraph margin',
+  /\.object-card__text p:last-child \{[^}]*margin-bottom: 0/.test(styleCss));
+check('reduced motion keeps focus visible',
+  /prefers-reduced-motion[\s\S]*?\.card:focus-visible,[\s\S]*?outline: 2px/.test(styleCss));
+
+/* ── design tokens: one scale, no stray values ── */
+check('the spacing scale is declared',
+  /--space-1:\s*4px/.test(styleCss) && /--space-7:\s*32px/.test(styleCss));
+check('the radius scale is declared',
+  /--radius-sm:\s*8px/.test(styleCss) && /--radius-pill:\s*999px/.test(styleCss));
+check('the elevation scale is declared',
+  /--shadow-hover:/.test(styleCss) && /--shadow-modal:/.test(styleCss));
+check('nothing declares a raw spacing value any more',
+  !/(margin|padding|gap)[a-z-]*:[^;]*\d+px/.test(styleCss));
+check('no raw radius value leaks through',
+  !/border-radius:[^;]*\d+px/.test(styleCss));
+check('the old single radius alias is gone', !/var\(--radius\)/.test(styleCss));
+check('a view and the map below it share one bottom margin',
+  /--page-gap:/.test(styleCss) &&
+  !/\.map-section \{[\s\S]*?margin: 0 auto var\(--space/.test(styleCss));
+
+/* ── safe areas ── */
+check('the viewport opts into the full screen',
+  /viewport-fit=cover/.test(indexHtml) && /viewport-fit=cover/.test(welcomeHtml));
+check('the safe-area insets are read once',
+  /--safe-top:\s*env\(safe-area-inset-top/.test(styleCss) &&
+  /--safe-bottom:\s*env\(safe-area-inset-bottom/.test(styleCss));
+check('the chrome steers around the notch',
+  /\.top-chrome \{[\s\S]*?calc\(var\(--chrome-inset\) \+ var\(--safe-top\)\)/.test(styleCss) &&
+  /\.back-button \{[\s\S]*?calc\(var\(--chrome-inset\) \+ var\(--safe-top\)\)/.test(styleCss));
+check('the content clears the notch too',
+  /--chrome-clearance:[\s\S]{0,200}?var\(--safe-top\)/.test(styleCss));
+/* A hardcoded clearance drifts the moment a pill's padding changes: the
+   height and the offset are tokens, and the clearance is computed from them. */
+check('the clearance is derived from the pill box, not a magic number',
+  /--chrome-clearance:[\s\S]{0,200}?var\(--chrome-inset\)[\s\S]{0,200}?var\(--chrome-h\)/.test(styleCss));
+check('every pill takes its height from the same token',
+  /\.share-button \{[\s\S]*?height: var\(--chrome-h\)/.test(styleCss) &&
+  (styleCss.match(/min-height: var\(--chrome-h\)/g) || []).length === 2);
+check('the mobile inset tightens through the token, not a copy of the rule',
+  /--chrome-inset: var\(--space-3\)/.test(styleCss) &&
+  !/@media \(max-width: 600px\) \{[\s\S]{0,2000}?\.top-chrome \{/.test(styleCss));
+check('the page ends above the home indicator',
+  /padding-bottom: var\(--safe-bottom\)/.test(styleCss));
+
+/* ── the object card must actually be hidden while loading ── */
+check('the hidden object card stays hidden',
+  /\.object-card\[hidden\] \{ display: none; \}/.test(styleCss));
+/* the fixed chrome floats above every view, home included */
+check('mobile list rows keep the round icon beside the title',
+  /\.list-item \{[^}]*flex-direction: row/.test(styleCss));
+/* Every view reserves the same room for the floating controls. The offset
+   lives on .page so padding cannot collapse with a child's margin — that is
+   what used to leave the object card tucked under the buttons. */
+check('the clearance is defined once',
+  (styleCss.match(/--chrome-clearance:/g) || []).length === 1);
+check('the page reserves room for the floating controls',
+  /\.page \{[\s\S]*?padding-top: var\(--chrome-clearance\)/.test(styleCss));
+check('no per-child offset duplicates the clearance',
+  !/\.page__header \{[^}]*padding-top/.test(styleCss) &&
+  !/\.object-card \{[^}]*margin-top/.test(styleCss));
+check('the offset does not shift when the chrome hides',
+  !/body\.chrome-hidden[^{].*\.page\b/.test(styleCss));
+check('mobile keeps the clearance from the base rules',
+  /padding-right: calc\(var\(--gutter\) \+ var\(--safe-right\)\)/.test(styleCss) &&
+  /padding-left:\s*calc\(var\(--gutter\) \+ var\(--safe-left\)\)/.test(styleCss));
+/* The card is the first element of an object view, so the one page that has
+   no heading over the fold is the one that gets the extra air. */
+check('the object card gets more air than a heading',
+  /\.page--object \{[\s\S]*?padding-top: calc\(var\(--chrome-clearance\) \+ var\(--space-4\)\)/
+    .test(styleCss));
+check('mobile does not stack a second top offset',
+  !/body \{ padding-top: 56px; \}/.test(styleCss));
+check('no breakpoint re-adds its own top margin',
+  !/margin: \d+px auto (2[04]|32)px/.test(styleCss));
+check('welcome.html syncs the "around 1323" note with the tagline',
+  /id="citySub"/.test(welcomeHtml) &&
+  /каля 1323/.test(welcomeHtml) && /около 1323/.test(welcomeHtml) && /circa 1323/.test(welcomeHtml), 'citySub');
+
+/* ── per-locale audio: no player and no placeholder text when missing ── */
+check('app.js only builds the audio wrap when a recording exists',
+  /if \(obj\.audio\) \{[\s\S]*?card\.appendChild\(audioWrap\);[\s\S]*?\n    \}/.test(appJs));
+check('app.js has no "no audio" placeholder left', !/noAudio/.test(appJs));
+check('i18n has no unused noAudio string left', !/noAudio/.test(read('js/i18n.js')));
+check('the data files may point at locale-specific recordings',
+  !/\['image', 'audio', 'lat', 'lng'\]/.test(read('tools/check-data.mjs')));
+/* the original recordings belong to the Belarusian locale only */
+for (const lang of ['ru', 'en']) {
+  const items = JSON.parse(read(`data/sights.${lang}.json`));
+  const borrowed = items.filter((it) => it.audio && !new RegExp(`\\.${lang}\\.(ogg|mp3)$`, 'i').test(it.audio));
+  check(`no Belarusian recording borrowed by the ${lang} locale`,
+    borrowed.length === 0, borrowed.map((it) => it.audio).join(', '));
+}
+
 /* ── DOM-level test ── */
 const dom = new JSDOM('<!doctype html><html lang="be"><body><main id="app"></main></body></html>', {
   url: 'http://localhost/index.html',
@@ -136,9 +250,30 @@ let card = await waitFor(() => {
 
 check('object title', card.querySelector('h1').textContent === 'Лідскі замак');
 check('share button visible on an object page', shareBtn.hidden === false);
+check('chrome is visible again after navigating', !doc.body.classList.contains('chrome-hidden'));
 check('audio player present', !!card.querySelector('audio'));
+check('the player points at the recording named in the data file',
+  (card.querySelector('audio source') || {}).src ===
+    new URL('./assets/audio/lidski-zamak.ogg', window.location.href).href,
+  (card.querySelector('audio source') || {}).src);
 check('object card has no share/QR buttons of its own', !card.querySelector('.btn-action'));
 check('no QR panel inside the object card', !doc.getElementById('qrPanel'));
+
+/* ── a record without audio shows nothing at all ── */
+await goto('#/object/sights/kamandzirovaczny');
+const silentCard = await waitFor(() => {
+  const c = doc.getElementById('objectCard');
+  return c && !c.hidden && c.querySelector('h1') ? c : null;
+}, 'card without audio');
+check('no audio player when the record has no recording', !silentCard.querySelector('audio'));
+check('no empty audio wrap left behind', !silentCard.querySelector('.object-card__audio-wrap'));
+check('no placeholder text about missing audio',
+  !/аўдыязапіс|аудиозапи|no audio/i.test(silentCard.textContent), silentCard.textContent.slice(0, 80));
+await goto('#/object/sights/lidski-zamak');
+card = await waitFor(() => {
+  const c = doc.getElementById('objectCard');
+  return c && !c.hidden ? c : null;
+}, 'object card again');
 
 const quizBlock = card.querySelector('.quiz');
 check('quiz rendered on the object page', !!quizBlock);
@@ -306,6 +441,54 @@ check('going back home closes the modal', modal.hidden);
 check('share button hidden again on the home screen', shareBtn.hidden === true);
 check('focus is not left on the hidden share button', doc.activeElement !== shareBtn);
 
+/* ── Safari-like chrome: hides on scroll down, returns on scroll up ── */
+let scrollTop = 0;
+const PAGE_H = 1600, VIEW_H = 768, MAX_SCROLL = PAGE_H - VIEW_H;
+Object.defineProperty(window, 'scrollY', { configurable: true, get: () => scrollTop });
+Object.defineProperty(window, 'innerHeight', { configurable: true, get: () => VIEW_H });
+/* jsdom has no real scroller: a stub makes both scrollToTop and the
+   end-of-page clamp observable */
+Object.defineProperty(doc, 'scrollingElement', {
+  configurable: true,
+  value: {
+    scrollHeight: PAGE_H,
+    get scrollTop() { return scrollTop; },
+    set scrollTop(v) { scrollTop = v; },
+  },
+});
+const scrollTo = async (y) => {
+  scrollTop = y;
+  window.dispatchEvent(new window.Event('scroll'));
+  await tick(60);   /* the handler runs on requestAnimationFrame */
+};
+await scrollTo(600);
+check('chrome hides after scrolling down', doc.body.classList.contains('chrome-hidden'));
+await scrollTo(200);
+check('chrome returns when scrolling back up', !doc.body.classList.contains('chrome-hidden'));
+
+/* ── a fling that lands at the bottom must not pop the chrome back in ── */
+await scrollTo(MAX_SCROLL);
+check('chrome stays hidden at the end of the page',
+  doc.body.classList.contains('chrome-hidden'));
+await scrollTo(MAX_SCROLL + 90);   /* rubber-band overshoots past the end */
+await scrollTo(MAX_SCROLL);        /* and springs back */
+check('the spring-back from the bottom is not read as a scroll up',
+  doc.body.classList.contains('chrome-hidden'));
+await scrollTo(MAX_SCROLL - 10);
+check('a few pixels of upward drift keep the chrome hidden',
+  doc.body.classList.contains('chrome-hidden'));
+await scrollTo(MAX_SCROLL - 60);
+check('a deliberate pull at the bottom reveals the chrome',
+  !doc.body.classList.contains('chrome-hidden'));
+await scrollTo(0);
+check('the chrome is back on screen at the very top',
+  !doc.body.classList.contains('chrome-hidden'));
+
+await goto('#/sights');
+await waitFor(() => doc.querySelectorAll('.list-item').length, 'sights list after scroll test');
+check('a new view scrolls back to the top', scrollTop === 0, String(scrollTop));
+check('a new view starts with the chrome visible', !doc.body.classList.contains('chrome-hidden'));
+
 /* ── russian locale ── */
 window.localStorage.setItem('lidagid_lang', 'ru');
 await goto('#/object/sights/lidski-zamak');
@@ -313,6 +496,10 @@ card = await waitFor(() => {
   const c = doc.getElementById('objectCard');
   return c && !c.hidden ? c : null;
 }, 'ru card');
+/* The Belarusian recordings have no ru/en translations yet, so the Russian
+   page must show no player and no placeholder text. */
+check('no audio player in the russian locale', !card.querySelector('audio'));
+check('no empty audio wrap in the russian locale', !card.querySelector('.object-card__audio-wrap'));
 check('ru quiz question',
   card.querySelector('.quiz__question').textContent === 'В каком году был возведён Лидский замок?',
   card.querySelector('.quiz__question').textContent);
@@ -344,6 +531,15 @@ check('ru enterprise quiz',
 
 /* ── english locale ── */
 window.localStorage.setItem('lidagid_lang', 'en');
+/* a sight that does have a Belarusian recording: the English page must still
+   show no player, proving the locales do not share the Belarusian files */
+await goto('#/object/sights/lidski-zamak');
+card = await waitFor(() => {
+  const c = doc.getElementById('objectCard');
+  return c && !c.hidden ? c : null;
+}, 'en castle card');
+check('no audio player in the english locale', !card.querySelector('audio'));
+
 await goto('#/object/sights/carkva-usich-sviatych');
 card = await waitFor(() => {
   const c = doc.getElementById('objectCard');

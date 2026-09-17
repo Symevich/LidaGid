@@ -15,10 +15,72 @@
   --surface:      #fff;
   --text:         #1a2233;
   --muted:        #58627a;
-  --shadow:       0 12px 30px rgba(16, 35, 74, 0.12);
-  --radius:       16px;
   /* Fix #1: was --color-border-tertiary which was never defined */
   --border-muted: rgba(88, 98, 122, 0.22);
+
+  /* ── Spacing ──
+     Every gap, padding and vertical step comes from this 4px grid. Nothing
+     outside it: a stray 14px here and a stray 18px there is how a layout
+     drifts out of alignment. */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+
+  /* ── Corner radii ── */
+  --radius-sm:   8px;   /* small chips, inline code */
+  --radius-md:  12px;   /* round-rect buttons, inner blocks */
+  --radius-lg:  16px;   /* the default card radius */
+  --radius-xl:  20px;   /* the share dialog */
+  --radius-pill: 999px; /* the floating controls and primary buttons */
+
+  /* ── Elevation ── */
+  --shadow:       0 12px 30px rgba(16, 35, 74, 0.12);
+  --shadow-hover: 0 20px 42px rgba(16, 35, 74, 0.24);
+  --shadow-menu:  0  8px 24px rgba(0, 0, 0, 0.22);
+  --shadow-modal: 0 24px 60px rgba(10, 20, 45, 0.35);
+
+  /* ── Focus ──
+     Sits 2px outside a dark pill on the light page, so it has to be dark
+     to be seen: a translucent white ring was invisible there. */
+  --focus-ring: rgba(26, 34, 51, 0.55);
+
+  /* ── Safe areas (notches, rounded corners, home indicator) ──
+     With viewport-fit=cover these stop being 0 and the fixed chrome has to
+     steer around them. */
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+
+  /* ── Floating chrome geometry ──
+     The chrome is fixed, so the first line of every view has to be pushed
+     below it by hand. Which makes the pills' own box part of the layout:
+     both numbers that describe it live here, the pills take their height
+     from --chrome-h and the clearance is computed from the pair. Changing a
+     padding or a font size in a control can therefore no longer leave a
+     stale gap under the heading. */
+  --chrome-inset: var(--space-4);  /* screen edge → nearest edge of a pill */
+  --chrome-h: 40px;                /* every pill is exactly this tall */
+
+  /* Distance from the top of a view's content to the lower edge of the
+     chrome, plus --space-1 of air. Only the inset is displaced by the safe
+     area, and that displacement is added back here, so the breathing gap is
+     identical on a notched screen. The mobile breakpoint tightens the inset
+     and this follows it. */
+  --chrome-clearance: calc(
+    var(--chrome-inset) + var(--chrome-h) + var(--space-1) + var(--safe-top)
+  );
+
+  /* Bottom margin of a view and of the map below it. Redefined per
+     breakpoint so the two never drift apart. */
+  --page-gap: var(--space-7);
+
+  /* Screen-edge gutter on phones, widened by the safe area in landscape. */
+  --gutter: var(--space-4);
 }
 
 /* ============================================================
@@ -35,6 +97,8 @@ body {
     radial-gradient(circle at 10% 15%, rgba(47, 109, 246, 0.12), transparent 30%),
     radial-gradient(circle at 90% 10%, rgba(106, 69, 255, 0.09), transparent 28%),
     var(--bg);
+  /* the last row of a list must not end up under the home indicator */
+  padding-bottom: var(--safe-bottom);
 }
 
 a {
@@ -71,14 +135,28 @@ img {
 
 .page {
   width: 70%;
-  margin: 24px auto 32px;
+  margin: 0 auto var(--page-gap);
+  /* The floating controls are fixed, so they sit on top of whatever comes
+     first. The clearance lives here rather than on the children: padding
+     cannot collapse with a child's margin, so the heading, the loading
+     banner and the object card all land at exactly the same distance from
+     the top. It is applied unconditionally, so nothing shifts when the
+     chrome slides away on scroll. */
+  padding-top: var(--chrome-clearance);
 }
 
 .page--section { width: 65%; }
-.page--object  { width: 60%; }
+
+/* The object page has no heading: its first element is the card itself. A
+   white block sitting right under the pill needs more air than a line of
+   text, whose glyphs already start a few pixels into their line box. */
+.page--object {
+  width: 60%;
+  padding-top: calc(var(--chrome-clearance) + var(--space-4));
+}
 
 .page__header {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 }
 
 .page__title {
@@ -96,20 +174,21 @@ img {
    switcher (DOM order inside .top-chrome decides the visual order). */
 .top-chrome {
   position: fixed;
-  top: 14px;
-  right: 14px;
+  /* the fixed chrome steers around the notch and the rounded screen corners */
+  top: calc(var(--chrome-inset) + var(--safe-top));
+  right: calc(var(--chrome-inset) + var(--safe-right));
   z-index: 50;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .share-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: var(--chrome-h);
+  height: var(--chrome-h);
   padding: 0;
   border: none;
   border-radius: 50%;
@@ -124,7 +203,7 @@ img {
 .share-button:focus-visible {
   background: rgba(26, 34, 51, 0.98);
   transform: translateY(-1px);
-  outline: 2px solid rgba(255, 255, 255, 0.4);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -141,10 +220,13 @@ img {
 .lang-switcher__trigger {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  /* --space-2 of padding would already add up to less than the pill height,
+     so the label ends up vertically centred whatever its line box does */
+  min-height: var(--chrome-h);
+  padding: var(--space-2) var(--space-4);
+  gap: var(--space-2);
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(26, 34, 51, 0.86);
   color: #fff;
   font-size: 0.9rem;
@@ -161,7 +243,7 @@ img {
 .lang-switcher__trigger:focus-visible {
   background: rgba(26, 34, 51, 0.98);
   transform: translateY(-1px);
-  outline: 2px solid rgba(255, 255, 255, 0.4);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -177,22 +259,22 @@ img {
 .lang-switcher__dropdown {
   display: none;
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + var(--space-2));
   right: 0;
   min-width: 148px;
   margin: 0;
-  padding: 4px 0;
+  padding: var(--space-1) 0;
   list-style: none;
   background: rgba(26, 34, 51, 0.97);
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-menu);
   overflow: hidden;
 }
 
 .lang-switcher__dropdown--open { display: block; }
 
 .lang-switcher__option {
-  padding: 9px 16px;
+  padding: var(--space-2) var(--space-4);
   font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
@@ -213,38 +295,90 @@ img {
   background: rgba(255, 255, 255, 0.08);
 }
 
-@media (max-width: 600px) {
-  .top-chrome { top: 10px; right: 10px; gap: 6px; }
-}
-
 /* ============================================================
    BACK BUTTON
    ============================================================ */
 
 .back-button {
   position: fixed;
-  top: 14px;
-  left: 14px;
+  top: calc(var(--chrome-inset) + var(--safe-top));
+  left: calc(var(--chrome-inset) + var(--safe-left));
   z-index: 50;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 999px;
+  /* same box as the language pill: the two sit on one line */
+  min-height: var(--chrome-h);
+  padding: var(--space-2) var(--space-4);
+  gap: var(--space-2);
+  /* the other two chrome buttons reset this; here the UA bevel survived,
+     adding 4px of phantom height and a visible edge on the dark pill */
+  border: none;
+  border-radius: var(--radius-pill);
   background: rgba(26, 34, 51, 0.86);
   color: #fff;
   font-family: "Roboto", sans-serif;
   font-size: 0.9rem;
   box-shadow: var(--shadow);
-  transition: background 0.25s, transform 0.25s;
 }
 
 .back-button[hidden] { display: none; }
 
+/* the transition is declared with the rest of the chrome, further down */
 .back-button:hover,
 .back-button:focus-visible {
   background: rgba(26, 34, 51, 0.98);
   transform: translateY(-1px);
+}
+
+.back-button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   SCROLL-AWARE CHROME (Safari-like)
+   The floating controls slide away while the page scrolls down and
+   come back on the first upward scroll — or as soon as the top of
+   the page is reached. app.js toggles the body class.
+   ============================================================ */
+
+.top-chrome,
+.back-button {
+  transition: transform 0.3s ease, opacity 0.3s ease,
+              background 0.25s, box-shadow 0.25s;
+}
+
+body.chrome-hidden .top-chrome,
+body.chrome-hidden .back-button {
+  transform: translateY(-140%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .top-chrome,
+  .back-button { transition: none; }
+
+  /* Decorative motion: the lift and the slow zoom carry no information. */
+  .card,
+  .list-item,
+  .card__bg,
+  .quiz__option,
+  .share-social__icon { transition: none; }
+
+  .card:hover,
+  .card:focus-visible,
+  .list-item:hover,
+  .list-item:focus-visible,
+  .card:hover .card__bg,
+  .card:focus-visible .card__bg { transform: none; }
+
+  /* the lift doubled as the focus cue, so put a ring back */
+  .card:focus-visible,
+  .list-item:focus-visible {
+    outline: 2px solid rgba(26, 34, 51, 0.6);
+    outline-offset: 3px;
+  }
 }
 
 /* ============================================================
@@ -254,14 +388,14 @@ img {
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .page--section .card-grid,
 .page--list .card-grid {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-4);
 }
 
 /* ============================================================
@@ -273,8 +407,8 @@ img {
   min-height: 260px;
   display: flex;
   align-items: flex-end;
-  padding: 16px;
-  border-radius: var(--radius);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   isolation: isolate;
   color: #fff;
@@ -298,7 +432,7 @@ img {
 .card:hover,
 .card:focus-visible {
   transform: translateY(-4px);
-  box-shadow: 0 20px 42px rgba(16, 35, 74, 0.24);
+  box-shadow: var(--shadow-hover);
   outline: none;
 }
 
@@ -329,19 +463,22 @@ img {
 .list-item {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: var(--space-5);
   width: 100%;
-  padding: 14px 18px;
+  padding: var(--space-4) var(--space-5);
   background: var(--surface);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   transition: transform 0.25s, box-shadow 0.25s;
 }
 
-.list-item:hover {
+.list-item:hover,
+.list-item:focus-visible {
   transform: translateY(-3px);
-  box-shadow: 0 18px 40px rgba(16, 35, 74, 0.22);
+  box-shadow: var(--shadow-hover);
 }
+
+.list-item:focus-visible { outline: none; }
 
 .list-item__image {
   width: 84px;
@@ -354,7 +491,7 @@ img {
 .list-item__body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .list-item__title {
@@ -371,32 +508,43 @@ img {
    OBJECT CARD
    ============================================================ */
 
+/* The floating controls sit above the very first element of every view. On
+   an object page that first element is the card itself — the heading lives
+   inside it, not in a .page__header — but .page already reserves the room
+   for both. */
 .object-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 20px;
+  gap: var(--space-4);
+  padding: var(--space-5);
   background: var(--surface);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
 }
+
+/* Without this the card shows as an empty white box while the data loads:
+   `display: flex` above beats the browser's own `[hidden] { display: none }`,
+   and the content then jumps up when the banner is dropped. */
+.object-card[hidden] { display: none; }
 
 .object-card__image {
   width: 100%;
   height: auto;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   object-fit: cover;
 }
 
-.object-card__audio-wrap { width: 100%; margin-top: 4px; }
+.object-card__audio-wrap { width: 100%; }
 .object-card__audio-player { width: 100%; }
 
 .object-card__text {
   font-size: clamp(15px, 1.6vw, 19px);
-  margin-top: 4px;
 }
 
-.object-card__text p { margin-bottom: 12px; }
+.object-card__text p { margin-bottom: var(--space-3); }
+
+/* the last paragraph would add its own margin on top of the card padding */
+.object-card__text p:last-child { margin-bottom: 0; }
 
 .object-card__meta {
   color: var(--muted);
@@ -409,9 +557,9 @@ img {
 
 .status {
   width: min(700px, 100%);
-  margin: 20px auto;
-  padding: 16px 18px;
-  border-radius: 14px;
+  margin: var(--space-5) auto;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow);
   text-align: center;
@@ -441,8 +589,8 @@ img {
 .map-section {
   width: 70%;
   height: 420px;
-  margin: 0 auto 24px;
-  border-radius: var(--radius);
+  margin: 0 auto var(--page-gap);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow);
 }
@@ -455,7 +603,7 @@ img {
 .map-popup {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 160px;
 }
 
@@ -463,7 +611,7 @@ img {
   width: 100%;
   height: 110px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .map-popup__title {
@@ -478,16 +626,16 @@ img {
 .map-popup__title:hover { text-decoration: underline; }
 
 .map-popup-wrap .leaflet-popup-content-wrapper {
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 0;
   overflow: hidden;
 }
 
-.map-popup-wrap .leaflet-popup-content { margin: 0; padding: 12px; }
+.map-popup-wrap .leaflet-popup-content { margin: 0; padding: var(--space-3); }
 
 .map-popup-wrap .leaflet-popup-close-button {
-  top: 8px !important;
-  right: 8px !important;
+  top: var(--space-2) !important;
+  right: var(--space-2) !important;
   width: 24px !important;
   height: 24px !important;
   line-height: 24px !important;
@@ -516,11 +664,14 @@ img {
    ============================================================ */
 
 @media (max-width: 800px) {
+  /* one step tighter, and the map below the view follows the same value */
+  :root { --page-gap: var(--space-6); }
+
   .page,
   .page--section,
   .page--object {
     width: 92%;
-    margin: 16px auto 24px;
+    margin: 0 auto var(--page-gap);
   }
 
   .map-section,
@@ -536,16 +687,25 @@ img {
 
 /* ============================================================
    RESPONSIVE — mobile (≤ 600px)
-   Fix #14: use body.has-back class instead of :has() for old Firefox
    ============================================================ */
 
 @media (max-width: 600px) {
+  :root {
+    --page-gap: var(--space-5);
+    /* the chrome hugs the corners a step tighter on a phone, and the
+       clearance below follows it down */
+    --chrome-inset: var(--space-3);
+  }
+
   .page,
   .page--section,
   .page--object {
     width: 100%;
-    margin: 12px auto 20px;
-    padding: 0 14px;
+    /* only the horizontal gutter changes here: the top clearance is left to
+       the base rules, so a phone cannot end up with a second top offset */
+    margin: 0 auto var(--page-gap);
+    padding-right: calc(var(--gutter) + var(--safe-right));
+    padding-left:  calc(var(--gutter) + var(--safe-left));
   }
 
   .map-section,
@@ -553,17 +713,13 @@ img {
     width: 100%;
     height: 280px;
     border-radius: 0;
-    margin-bottom: 16px;
+    margin-bottom: var(--page-gap);
   }
 
-  body.has-back,
-  body:has(.back-button:not([hidden])) { padding-top: 56px; }
-  body.no-has.has-back                  { padding-top: 56px; }
-
+  /* only the label shrinks — the pill keeps the height of the other two, so
+     the whole chrome row stays on one baseline */
   .back-button {
-    top: 10px;
-    left: 10px;
-    padding: 8px 12px;
+    padding: var(--space-2) var(--space-3);
     font-size: 0.82rem;
   }
 
@@ -572,10 +728,12 @@ img {
   .card__title { font-size: 1.1rem; }
 
   .list-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 12px 14px;
+    /* keep the round thumbnail on the left and the title beside it:
+       stacking them pushed the name under the fold on phones */
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
   }
 
   .list-item__image {
@@ -583,18 +741,20 @@ img {
     height: 56px;
   }
 
+  .list-item__body { min-width: 0; }
+
   .list-item__title { font-size: 1rem; }
 
   .object-card {
-    padding: 14px;
-    border-radius: 12px;
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
   }
 
-  .object-card__image { border-radius: 10px; }
+  .object-card__image { border-radius: var(--radius-md); }
 
   .status {
     font-size: 0.9rem;
-    padding: 12px 14px;
+    padding: var(--space-3) var(--space-4);
   }
 }
 
@@ -610,7 +770,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: var(--space-5);
 }
 
 .share-modal[hidden] { display: none; }
@@ -631,10 +791,10 @@ body.share-open { overflow: hidden; }
   max-width: 420px;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
-  padding: 22px 22px 20px;
-  border-radius: 20px;
+  padding: var(--space-6) var(--space-6) var(--space-5);
+  border-radius: var(--radius-xl);
   background: var(--surface);
-  box-shadow: 0 24px 60px rgba(10, 20, 45, 0.35);
+  box-shadow: var(--shadow-modal);
   animation: share-pop 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -650,8 +810,8 @@ body.share-open { overflow: hidden; }
 
 .share-modal__close {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: var(--space-4);
+  right: var(--space-4);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -682,7 +842,7 @@ body.share-open { overflow: hidden; }
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
 }
 
 .share-modal__error {
@@ -692,7 +852,7 @@ body.share-open { overflow: hidden; }
 }
 
 .share-modal__hint {
-  margin-top: 10px;
+  margin-top: var(--space-3);
   font-size: 0.82rem;
   color: var(--muted);
   text-align: center;
@@ -701,13 +861,13 @@ body.share-open { overflow: hidden; }
 
 .share-modal__divider {
   height: 0;
-  margin: 18px 0 14px;
+  margin: var(--space-5) 0 var(--space-4);
   border: 0;
   border-top: 1px solid var(--border-muted);
 }
 
 .share-modal__label {
-  margin-bottom: 14px;
+  margin-bottom: var(--space-4);
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text);
@@ -717,15 +877,15 @@ body.share-open { overflow: hidden; }
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px 10px;
-  margin-bottom: 18px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
 }
 
 .share-social {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   width: 66px;
   color: var(--muted);
   font-size: 0.72rem;
@@ -767,11 +927,11 @@ body.share-open { overflow: hidden; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: var(--space-3);
   width: 100%;
-  padding: 12px 18px;
+  padding: var(--space-3) var(--space-5);
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(26, 34, 51, 0.9);
   color: #fff;
   font-family: "Roboto", sans-serif;
@@ -797,11 +957,11 @@ body.share-open { overflow: hidden; }
 .toast {
   position: fixed;
   left: 50%;
-  bottom: 22px;
+  bottom: calc(var(--space-6) + var(--safe-bottom));
   z-index: 80;   /* above the share modal */
   max-width: min(92vw, 420px);
-  padding: 12px 20px;
-  border-radius: 999px;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill);
   background: rgba(26, 34, 51, 0.96);
   color: #fff;
   font-size: 0.9rem;
@@ -825,11 +985,11 @@ body.share-open { overflow: hidden; }
 .quiz {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 8px;
-  padding: 18px;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+  padding: var(--space-5);
   border: 1px solid var(--border-muted);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   background: var(--bg);
 }
 
@@ -850,14 +1010,14 @@ body.share-open { overflow: hidden; }
 .quiz__options {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .quiz__option {
   width: 100%;
-  padding: 12px 16px;
+  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--border-muted);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--text);
   font-family: "Roboto", sans-serif;
@@ -905,7 +1065,7 @@ body.share-open { overflow: hidden; }
 .quiz__feedback--wrong   { color: #8f2323; }
 
 .quiz__explanation {
-  padding-left: 12px;
+  padding-left: var(--space-3);
   border-left: 3px solid var(--border-muted);
   font-size: 0.9rem;
   color: var(--muted);
@@ -925,11 +1085,11 @@ body.share-open { overflow: hidden; }
   .share-modal__dialog {
     max-width: none;
     max-height: 88vh;
-    padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
-    border-radius: 20px 20px 0 0;
+    padding: var(--space-5) var(--space-5) calc(var(--space-5) + var(--safe-bottom));
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   }
 
-  .share-modal__close { top: 10px; right: 10px; }
+  .share-modal__close { top: var(--space-3); right: var(--space-3); }
 
   /* a bit smaller, so QR + targets fit a short screen without scrolling */
   .share-modal__qr { max-width: 200px; }
@@ -937,5 +1097,5 @@ body.share-open { overflow: hidden; }
   .share-social { width: 60px; }
   .share-social__icon { width: 42px; height: 42px; }
 
-  .quiz { padding: 14px; }
+  .quiz { padding: var(--space-4); }
 }

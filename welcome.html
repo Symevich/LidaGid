@@ -2,7 +2,7 @@
 <html lang="be">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="description" content="Аўдыёгід па горадзе Ліда — Аудиогид — Audio Guide" />
   <meta name="theme-color" content="#1a2233" />
   <title>Ліда · Аўдыёгід</title>
@@ -238,7 +238,7 @@
       <div class="welcome-card__hero-bg" id="heroBg"></div>
       <div class="welcome-card__city">
         <h1 class="welcome-card__city-name">Ліда</h1>
-        <p class="welcome-card__city-sub">Беларусь · ок. 1323</p>
+        <p class="welcome-card__city-sub" id="citySub">Беларусь · каля 1323</p>
       </div>
     </div>
 
@@ -274,23 +274,29 @@
       document.getElementById('heroBg').classList.add('animate');
     });
 
-    /* ── Tagline cycling ── */
-    const TAGLINES = {
-      be: 'Аўдыёгід па горадзе',
-      ru: 'Аудиогид по городу',
-      en: 'Audio guide to the city',
-    };
-    const ALL_TAGLINES = Object.values(TAGLINES);
+    /* ── Tagline cycling ──
+       The "founded around 1323" note under the city name changes together
+       with the tagline, so every language gets its own wording. */
+    const TAGLINES = [
+      { tagline: 'Аўдыёгід па горадзе',      citySub: 'Беларусь · каля 1323' },
+      { tagline: 'Аудиогид по городу',       citySub: 'Беларусь · около 1323' },
+      { tagline: 'Audio guide to the city',  citySub: 'Belarus · circa 1323' },
+    ];
     const taglineEl = document.getElementById('tagline');
+    const citySubEl = document.getElementById('citySub');
     let tlIdx = 0;
 
     setInterval(() => {
       taglineEl.style.opacity = '0';
+      citySubEl.style.opacity = '0';
       taglineEl.style.transition = 'opacity 0.3s ease';
+      citySubEl.style.transition = 'opacity 0.3s ease';
       setTimeout(() => {
-        tlIdx = (tlIdx + 1) % ALL_TAGLINES.length;
-        taglineEl.textContent = ALL_TAGLINES[tlIdx];
+        tlIdx = (tlIdx + 1) % TAGLINES.length;
+        taglineEl.textContent = TAGLINES[tlIdx].tagline;
+        citySubEl.textContent = TAGLINES[tlIdx].citySub;
         taglineEl.style.opacity = '1';
+        citySubEl.style.opacity = '1';
       }, 320);
     }, 2400);
 

@@ -48,6 +48,111 @@
   }
 
   /* ============================================================
+     SCROLL-AWARE CHROME (Safari-like)
+     The floating controls (back / share / language) slide away while
+     the page scrolls down and reappear on the first deliberate upward
+     scroll, so they never cover the content. `scroll` fires very often,
+     so the work is throttled with requestAnimationFrame.
+  ============================================================ */
+  const CHROME_HIDE_AFTER  = 80;   /* stay visible near the top of the page */
+  const CHROME_HIDE_STEP   = 6;    /* ignore jitter / rubber-band offsets    */
+  /* Hiding is cheap: the controls are in the way as soon as the page moves.
+     Coming back has to be deliberate. A fling that lands at the bottom of the
+     page springs back a little (iOS rubber-band, and Safari also resizes its
+     own toolbars there), and that spring-back looks like "the user scrolled
+     up" — which used to pop the chrome straight back in. */
+  const CHROME_REVEAL_STEP = 40;
+
+  let _lastScrollY     = 0;
+  let _deepestScrollY  = 0;
+  let _scrollScheduled = false;
+
+  /* How far the page can actually scroll. Overscroll reports positions past
+     the real end of the page. Under test stubs the metrics are missing, and
+     skipping the clamp there keeps the plain up/down behaviour intact. */
+  function maxScrollY() {
+    const scroller = document.scrollingElement || document.documentElement;
+    const total    = scroller.scrollHeight;
+    const view     = window.innerHeight;
+    if (!Number.isFinite(total) || !Number.isFinite(view) || total <= 0 || view <= 0) {
+      return Infinity;
+    }
+    return Math.max(0, total - view);
+  }
+
+  function applyScrollChrome() {
+    _scrollScheduled = false;
+    const y = window.scrollY || window.pageYOffset || 0;
+
+    /* Clamping the remembered depth to the end of the page means a bounce
+       past that point never counts as ground gained, so settling back from
+       it cannot be mistaken for a scroll upwards. */
+    _deepestScrollY = Math.min(Math.max(_deepestScrollY, y), maxScrollY());
+
+    /* An open dropdown or share modal owns the screen: leave the chrome
+       where it is until it is dismissed. */
+    if (document.body.classList.contains('share-open') ||
+        document.querySelector('.lang-switcher--open')) {
+      _lastScrollY = y;
+      return;
+    }
+
+    /* At the top of the page the chrome always belongs on screen. */
+    if (y <= CHROME_HIDE_AFTER) {
+      _lastScrollY    = y;
+      _deepestScrollY = y;
+      document.body.classList.remove('chrome-hidden');
+      return;
+    }
+
+    const delta = y - _lastScrollY;
+
+    if (delta >= CHROME_HIDE_STEP) {
+      if (!document.body.classList.contains('chrome-hidden')) {
+        /* a control scrolled off the screen must not keep keyboard focus */
+        const active = document.activeElement;
+        const chrome = document.querySelector('.top-chrome');
+        if (active && ((chrome && chrome.contains(active)) || (_back && _back.contains(active)))) {
+          active.blur();
+        }
+        document.body.classList.add('chrome-hidden');
+      }
+      _lastScrollY = y;
+      return;
+    }
+
+    /* Upward movement below the threshold is not dropped, it accumulates in
+       `delta` (which is why _lastScrollY stays put), and the reveal itself is
+       measured from the deepest point reached rather than from the previous
+       event — so a twitch of a few pixels changes nothing. */
+    if (delta <= -CHROME_HIDE_STEP && _deepestScrollY - y >= CHROME_REVEAL_STEP) {
+      _lastScrollY = y;
+      document.body.classList.remove('chrome-hidden');
+    }
+  }
+
+  function onScroll() {
+    if (_scrollScheduled) return;
+    _scrollScheduled = true;
+    requestAnimationFrame(applyScrollChrome);
+  }
+
+  /* Every view starts at the top with the chrome on screen. */
+  function resetScrollChrome() {
+    _lastScrollY    = window.scrollY || window.pageYOffset || 0;
+    _deepestScrollY = _lastScrollY;
+    document.body.classList.remove('chrome-hidden');
+  }
+
+  /* Hash navigation keeps the old scroll offset, which used to open an
+     object page halfway down when the link was tapped at the end of a
+     long list. */
+  function scrollToTop() {
+    const scroller = document.scrollingElement || document.documentElement;
+    if (scroller) scroller.scrollTop = 0;
+  }
+
+  /* ============================================================
      QUIZ PROGRESS — stored in localStorage, no backend needed.
      Entries are "<source>/<id>" so ids stay unique across files.
      Quizzes live on object pages only, so the record is used there
@@ -431,6 +536,10 @@
     if      (route.view === 'section') renderSection(app, route.name);
     else if (route.view === 'object')  renderObject(app, route.source, route.id);
     else                               renderHome(app);
+
+    /* a new view always starts at the top, with the chrome on screen */
+    scrollToTop();
+    resetScrollChrome();
   }
 
   /* ── Chrome ── */
@@ -440,7 +549,6 @@
     _back.hidden = isHome;
     /* Nothing to share on the start screen, so the button is hidden there. */
     if (_shareButton) _shareButton.hidden = isHome;
-    document.body.classList.toggle('has-back', !isHome);
     if (!isHome) {
       _back.textContent = I18N.t('back');
       _back.href = route.view === 'object' ? `#/${route.source}` : '#/';
@@ -619,14 +727,19 @@
     card.appendChild(h1);
 
     /*
-     * Audio — Fix #2: OGG + MP3 fallback for Safari/iOS
+     * Audio — each locale points at its own recording: the path comes from
+     * the language-specific data file, so sights.ru.json can use
+     * "…/lidski-zamak.ru.ogg" while the English one uses "….en.ogg".
+     * A record without an "audio" field simply gets no player at all — the
+     * wrap stays empty and is not added to the card, so nothing is shown.
+     * Fix #2: OGG + MP3 fallback for Safari/iOS
      * Fix #9: src set via DOM property, not innerHTML injection
      * Fix #12: controlslist="nodownload" kept (Chrome-only, harmless elsewhere)
      */
-    const audioWrap = document.createElement('div');
-    audioWrap.className = 'object-card__audio-wrap';
-
     if (obj.audio) {
+      const audioWrap = document.createElement('div');
+      audioWrap.className = 'object-card__audio-wrap';
+
       const audio = document.createElement('audio');
       audio.className = 'object-card__audio-player';
       audio.controls  = true;
@@ -636,19 +749,15 @@
       srcOgg.type  = 'audio/ogg';
       srcOgg.src   = fixPath(obj.audio);
 
+      /* the MP3 sibling shares the path, only the extension changes */
       const srcMp3 = document.createElement('source');
       srcMp3.type  = 'audio/mpeg';
       srcMp3.src   = fixPath(obj.audio).replace(/\.ogg$/i, '.mp3');
 
       audio.append(srcOgg, srcMp3, document.createTextNode(I18N.t('audioNotSupported')));
       audioWrap.appendChild(audio);
-    } else {
-      const p = document.createElement('p');
-      p.className   = 'object-card__meta';
-      p.textContent = I18N.t('noAudio');
-      audioWrap.appendChild(p);
+      card.appendChild(audioWrap);
     }
-    card.appendChild(audioWrap);
 
     /* Description — trusted CMS HTML, intentional innerHTML */
     const desc = document.createElement('div');
@@ -830,8 +939,11 @@
     _back.hidden    = true;
     document.body.appendChild(_back);
 
-    /* Fix #14: add class for browsers without :has() support */
-    if (!CSS.supports('selector(:has(*))')) document.body.classList.add('no-has');
+    /* Safari-like chrome: hide the floating controls while the page is
+       scrolled down, reveal them again on the first upward scroll. */
+    window.addEventListener('scroll', onScroll, { passive: true });
+    /* the SPA scrolls itself to the top on every route change */
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
     window.addEventListener('hashchange', () => navigate(parseRoute()));
     navigate(parseRoute());
