@@ -1,7 +1,11 @@
 # Installed dependencies of the tools/ scripts (see tools/package.json)
 node_modules/
 
-# Scratch space for throwaway experiments
+# Python bytecode of the tools/ scripts
+__pycache__/
+*.pyc
+
+# Scratch space for throwaway experiments (also holds API keys and raw TTS)
 tools/.tmp/
 
 # OS cruft

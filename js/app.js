@@ -618,7 +618,7 @@
             <h2 class="card__title">${esc(I18N.t('enterprises'))}</h2>
           </a>
           <a href="#/people" class="card">
-            <div class="card__bg" style="background-image: url('./assets/images/kamandzirovaczny.jpg')"></div>
+            <div class="card__bg" style="background-image: url('./assets/images/arkadz-migdal.jpg')"></div>
             <h2 class="card__title">${esc(I18N.t('people'))}</h2>
           </a>
         </section>
@@ -776,11 +776,12 @@
 
     /*
      * Audio — each locale points at its own recording: the path comes from
-     * the language-specific data file, so sights.ru.json can use
-     * "…/lidski-zamak.ru.ogg" while the English one uses "….en.ogg".
+     * the language-specific data file, so sights.ru.json uses
+     * "…/lidski-zamak.ru.mp3" while the English one uses "….en.mp3".
      * A record without an "audio" field simply gets no player at all — the
      * wrap stays empty and is not added to the card, so nothing is shown.
-     * Fix #2: OGG + MP3 fallback for Safari/iOS
+     * MP3 only: it plays in every browser including Safari/iOS, so keeping a
+     * second copy in another codec would only duplicate every recording.
      * Fix #9: src set via DOM property, not innerHTML injection
      * Fix #12: controlslist="nodownload" kept (Chrome-only, harmless elsewhere)
      */
@@ -793,16 +794,11 @@
       audio.controls  = true;
       audio.setAttribute('controlslist', 'nodownload');
 
-      const srcOgg = document.createElement('source');
-      srcOgg.type  = 'audio/ogg';
-      srcOgg.src   = fixPath(obj.audio);
+      const src = document.createElement('source');
+      src.type = 'audio/mpeg';
+      src.src  = fixPath(obj.audio);
 
-      /* the MP3 sibling shares the path, only the extension changes */
-      const srcMp3 = document.createElement('source');
-      srcMp3.type  = 'audio/mpeg';
-      srcMp3.src   = fixPath(obj.audio).replace(/\.ogg$/i, '.mp3');
-
-      audio.append(srcOgg, srcMp3, document.createTextNode(I18N.t('audioNotSupported')));
+      audio.append(src, document.createTextNode(I18N.t('audioNotSupported')));
       audioWrap.appendChild(audio);
       card.appendChild(audioWrap);
     }

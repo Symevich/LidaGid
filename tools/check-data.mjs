@@ -9,9 +9,10 @@ let problems = 0;
 const fail = (...args) => { problems++; console.log('PROBLEM', ...args); };
 
 /* A translation's recording must carry its own locale in the file name
-   ("…/lidski-zamak.ru.ogg"); the bare "…/lidski-zamak.ogg" is the Belarusian
-   original and must not be borrowed by ru/en. */
-const isLocalePath = (p, lang) => new RegExp(`\.${lang}\.(ogg|mp3)$`, 'i').test(p);
+   ("…/lidski-zamak.ru.mp3"); the bare "…/lidski-zamak.mp3" is the Belarusian
+   original and must not be borrowed by ru/en. MP3 is the only shipped format,
+   so an OGG reference would not play and is rejected. */
+const isLocalePath = (p, lang) => new RegExp(`\.${lang}\.mp3$`, 'i').test(p);
 
 for (const source of ['sights', 'enterprises', 'people']) {
   const be = load(source + '.json');
@@ -27,15 +28,20 @@ for (const source of ['sights', 'enterprises', 'people']) {
         if (JSON.stringify(o[key]) !== JSON.stringify(p[key])) fail(source, lang, o.id, key, o[key], p[key]);
       }
       /* Audio is locale-specific: each language may point at its own
-         recording (…/lidski-zamak.ru.ogg vs …/lidski-zamak.en.ogg), and a
+         recording (…/lidski-zamak.ru.mp3 vs …/lidski-zamak.en.mp3), and a
          language without a translated recording simply omits the field so
          the object page shows no player at all. Sharing one file across
          locales is therefore allowed, but the file must belong to that
          locale — the default (Belarusian) recordings live at
-         "…/<id>.ogg", the translations must not fall back to them by
+         "…/<id>.mp3", the translations must not fall back to them by
          accident, so a suffixed path is required once one is given. */
       if (p.audio && !isLocalePath(p.audio, lang)) {
         fail(source, lang, o.id, 'audio not locale-specific', p.audio);
+      }
+      /* The recording must belong to this very object: a copy-paste slip once
+         handed one sight the narration of another, and nothing caught it. */
+      if (p.audio && !p.audio.endsWith(`/${p.id}${lang === 'be' ? '' : '.' + lang}.mp3`)) {
+        fail(source, lang, o.id, 'audio named after another object', p.audio);
       }
       if (!p.quiz) { fail(source, lang, o.id, 'quiz missing'); return; }
       if (o.quiz.correctIndex !== p.quiz.correctIndex) fail(source, lang, o.id, 'correctIndex');

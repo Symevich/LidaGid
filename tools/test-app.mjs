@@ -212,7 +212,7 @@ check('the data files may point at locale-specific recordings',
 /* the original recordings belong to the Belarusian locale only */
 for (const lang of ['ru', 'en']) {
   const items = JSON.parse(read(`data/sights.${lang}.json`));
-  const borrowed = items.filter((it) => it.audio && !new RegExp(`\\.${lang}\\.(ogg|mp3)$`, 'i').test(it.audio));
+  const borrowed = items.filter((it) => it.audio && !new RegExp(`\.${lang}\.mp3$`, 'i').test(it.audio));
   check(`no Belarusian recording borrowed by the ${lang} locale`,
     borrowed.length === 0, borrowed.map((it) => it.audio).join(', '));
 }
@@ -297,13 +297,13 @@ check('chrome is visible again after navigating', !doc.body.classList.contains('
 check('audio player present', !!card.querySelector('audio'));
 check('the player points at the recording named in the data file',
   (card.querySelector('audio source') || {}).src ===
-    new URL('./assets/audio/lidski-zamak.ogg', window.location.href).href,
+    new URL('./assets/audio/lidski-zamak.mp3', window.location.href).href,
   (card.querySelector('audio source') || {}).src);
 check('object card has no share/QR buttons of its own', !card.querySelector('.btn-action'));
 check('no QR panel inside the object card', !doc.getElementById('qrPanel'));
 
 /* ── a record without audio shows nothing at all ── */
-await goto('#/object/sights/kamandzirovaczny');
+await goto('#/object/people/valiancin-taulai');
 const silentCard = await waitFor(() => {
   const c = doc.getElementById('objectCard');
   return c && !c.hidden && c.querySelector('h1') ? c : null;
@@ -496,10 +496,11 @@ check('an added person page has the full description',
 check('an added person page builds a four-option quiz',
   card.querySelectorAll('.quiz__option').length === 4,
   String(card.querySelectorAll('.quiz__option').length));
-/* the old recordings belong to the Belarusian objects only, and a record
-   without audio must leave no player and no placeholder behind */
-check('an added person page builds no audio player',
-  !card.querySelector('.object-card__audio-player'));
+/* Arkadz Migdal got his Belarusian recording, so the page now carries a
+   player; a record without one must still leave no player and no placeholder
+   behind, which the carousel page below checks. */
+check('an added person page builds the audio player',
+  !!card.querySelector('.object-card__audio-player'));
 
 /* ── a second photo turns the hero image into a carousel ── */
 const taulaj = JSON.parse(read('data/people.json')).find((p) => p.id === 'valiancin-taulai');

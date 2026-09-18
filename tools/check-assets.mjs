@@ -29,16 +29,6 @@ for (const file of fs.readdirSync(DATA).filter((f) => f.endsWith('.json'))) {
         }
       }
     }
-    /* the MP3 fallback is built from the OGG path by app.js */
-    if (item.audio && /\.ogg$/i.test(item.audio)) {
-      const mp3 = toLocal(item.audio.replace(/\.ogg$/i, '.mp3'));
-      if (!fs.existsSync(mp3)) {
-        perLang['mp3 missing'] = perLang['mp3 missing'] || [];
-        if (!perLang['mp3 missing'].some((e) => e.ref === item.audio)) {
-          perLang['mp3 missing'].push({ file, id: item.id, ref: item.audio.replace(/\.ogg$/i, '.mp3') });
-        }
-      }
-    }
   }
 }
 
