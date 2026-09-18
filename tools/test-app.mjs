@@ -217,7 +217,7 @@ for (const source of ['sights', 'enterprises', 'people']) {
   for (const lang of ['be', 'ru', 'en']) {
     const file = lang === 'be' ? source + '.json' : source + '.' + lang + '.json';
     for (const item of JSON.parse(read('data/' + file))) {
-      if (item.audio && item.audio !== `../assets/audio/${lang}/${item.id}.mp3`) {
+      if (item.audio && item.audio !== `../assets/audio/${lang}/${item.id}.${lang}.mp3`) {
         strayAudio.push(file + ': ' + item.audio);
       }
     }
@@ -306,7 +306,7 @@ check('chrome is visible again after navigating', !doc.body.classList.contains('
 check('audio player present', !!card.querySelector('audio'));
 check('the player points at the recording named in the data file',
   (card.querySelector('audio source') || {}).src ===
-    new URL('./assets/audio/be/lidski-zamak.mp3', window.location.href).href,
+    new URL('./assets/audio/be/lidski-zamak.be.mp3', window.location.href).href,
   (card.querySelector('audio source') || {}).src);
 check('object card has no share/QR buttons of its own', !card.querySelector('.btn-action'));
 check('no QR panel inside the object card', !doc.getElementById('qrPanel'));
@@ -666,12 +666,12 @@ card = await waitFor(() => {
   const c = doc.getElementById('objectCard');
   return c && !c.hidden ? c : null;
 }, 'ru card');
-/* The Belarusian recordings have no ru/en translations yet, so the Russian
-   page must show no player and no placeholder text. */
-check('no audio player in the russian locale', !card.querySelector('audio'));
-check('no empty audio wrap in the russian locale', !card.querySelector('.object-card__audio-wrap'));
-check('no placeholder text about a missing recording',
-  !/аўдыязапіс|аудиозапи|no audio/i.test(card.textContent), card.textContent.slice(0, 80));
+/* The castle now has a Russian recording, so the ru page must play it. */
+check('the russian locale has its own audio player', !!card.querySelector('audio'));
+check('the russian player points at the ru recording',
+  (card.querySelector('audio source') || {}).src ===
+    new URL('./assets/audio/ru/lidski-zamak.ru.mp3', window.location.href).href,
+  (card.querySelector('audio source') || {}).src);
 check('ru quiz question',
   card.querySelector('.quiz__question').textContent === 'В каком году был возведён Лидский замок?',
   card.querySelector('.quiz__question').textContent);
@@ -686,6 +686,17 @@ check('ru close button label',
 check('ru share targets describe the ru page',
   socialOf('Telegram').href.includes(encodeURIComponent(window.location.href)));
 doc.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+/* ── an object without a Russian recording shows nothing at all ── */
+await goto('#/object/sights/carkva-usich-sviatych');
+const ruSilent = await waitFor(() => {
+  const c = doc.getElementById('objectCard');
+  return c && !c.hidden && c.querySelector('h1') ? c : null;
+}, 'ru card without audio');
+check('no audio player where the ru recording is missing', !ruSilent.querySelector('audio'));
+check('no empty audio wrap left behind', !ruSilent.querySelector('.object-card__audio-wrap'));
+check('no placeholder text about a missing recording',
+  !/аўдыязапіс|аудиозапи|no audio/i.test(ruSilent.textContent), ruSilent.textContent.slice(0, 80));
 
 await goto('#/object/sights/does-not-exist');
 const err = await waitFor(() => doc.querySelector('.status--error'), 'error status');

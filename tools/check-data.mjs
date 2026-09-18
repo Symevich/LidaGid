@@ -8,11 +8,13 @@ const load = (f) => JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8'));
 let problems = 0;
 const fail = (...args) => { problems++; console.log('PROBLEM', ...args); };
 
-/* A recording lives in the folder of its own language — "…/assets/audio/be/
-   <id>.mp3" versus "…/assets/audio/ru/<id>.mp3" — so a Belarusian file can
-   never quietly serve the ru/en locales. MP3 is the only shipped format, so
-   an OGG reference would not play and is rejected. */
-const audioPath = (lang, id) => `../assets/audio/${lang}/${id}.mp3`;
+/* A recording lives in the folder of its own language and repeats that code
+   in its name — "…/assets/audio/be/<id>.be.mp3" versus
+   "…/assets/audio/ru/<id>.ru.mp3" — so a Belarusian file can never quietly
+   serve the ru/en locales, and stays recognisable away from its folder. MP3 is
+   the only shipped format, so an OGG reference would not play and is
+   rejected. */
+const audioPath = (lang, id) => `../assets/audio/${lang}/${id}.${lang}.mp3`;
 
 for (const source of ['sights', 'enterprises', 'people']) {
   const be = load(source + '.json');
@@ -30,9 +32,9 @@ for (const source of ['sights', 'enterprises', 'people']) {
       /* Audio is locale-specific: each language may point at its own
          recording, and a language without a translated recording simply omits
          the field so the object page shows no player at all. The path is
-         checked exactly — both language folder and file name — because a
-         copy-paste slip once handed one sight the narration of another and
-         nothing caught it. */
+         checked exactly — both folder and language code — because a copy-paste
+         slip once handed one sight the narration of another and nothing caught
+         it. */
       if (p.audio && p.audio !== audioPath(lang, p.id)) {
         fail(source, lang, o.id, 'audio path is not ' + audioPath(lang, p.id), p.audio);
       }

@@ -7,11 +7,12 @@ voice, encodes the result into the single format the site ships — MP3, which
 every browser plays including Safari/iOS — and finally points the `audio`
 field of the matching data file at the new recording.
 
-Every recording lives in the folder of its language, so the shipped tree
-mirrors the data files and a copied Belarusian file can never pass for a
-translation: `../assets/audio/be/<id>.mp3`, `../assets/audio/ru/<id>.mp3`,
-`../assets/audio/en/<id>.mp3`. The `audio` field of each data file holds that
-full path; app.js only has to put it on the player.
+Every recording lives in the folder of its language and carries that code in
+its name as well, so a file stays self-describing even once it is copied out
+of the tree: `../assets/audio/be/<id>.be.mp3`,
+`../assets/audio/ru/<id>.ru.mp3`, `../assets/audio/en/<id>.en.mp3`. The
+`audio` field of each data file holds that full path; app.js only has to put
+it on the player.
 
 Engines
   elevenlabs  ElevenLabs multilingual v2 (key, the default). One voice reads
@@ -87,7 +88,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
-# Recordings are grouped by language: assets/audio/<lang>/<id>.mp3.
+# Recordings are grouped by language: assets/audio/<lang>/<id>.<lang>.mp3.
 AUDIO = ROOT / "assets" / "audio"
 CACHE = ROOT / "tools" / ".tmp" / "tts"
 SECRETS = ROOT / "tools" / ".tmp" / "keys"
@@ -644,13 +645,13 @@ def data_file(source: str, lang: str) -> Path:
 
 
 def recording_path(obj_id: str, lang: str) -> Path:
-    """Where the recording of one object is shipped: <lang>/<id>.mp3."""
-    return AUDIO / lang / f"{obj_id}.mp3"
+    """Where the recording of one object is shipped: <lang>/<id>.<lang>.mp3."""
+    return AUDIO / lang / f"{obj_id}.{lang}.mp3"
 
 
 def audio_path(obj_id: str, lang: str) -> str:
     """The value of the "audio" field, as the data file spells it."""
-    return f"../assets/audio/{lang}/{obj_id}.mp3"
+    return f"../assets/audio/{lang}/{obj_id}.{lang}.mp3"
 
 
 def set_audio_field(path: Path, obj_id: str, value: str | None) -> bool:

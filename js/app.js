@@ -777,7 +777,8 @@
     /*
      * Audio — each locale points at its own recording: the path comes from
      * the language-specific data file, so sights.ru.json uses
-     * "…/lidski-zamak.ru.mp3" while the English one uses "….en.mp3".
+     * "…/audio/ru/lidski-zamak.ru.mp3" while the English one uses
+     * "…/audio/en/lidski-zamak.en.mp3".
      * A record without an "audio" field simply gets no player at all — the
      * wrap stays empty and is not added to the card, so nothing is shown.
      * MP3 only: it plays in every browser including Safari/iOS, so keeping a
