@@ -8,11 +8,11 @@ const load = (f) => JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8'));
 let problems = 0;
 const fail = (...args) => { problems++; console.log('PROBLEM', ...args); };
 
-/* A translation's recording must carry its own locale in the file name
-   ("…/lidski-zamak.ru.mp3"); the bare "…/lidski-zamak.mp3" is the Belarusian
-   original and must not be borrowed by ru/en. MP3 is the only shipped format,
-   so an OGG reference would not play and is rejected. */
-const isLocalePath = (p, lang) => new RegExp(`\.${lang}\.mp3$`, 'i').test(p);
+/* A recording lives in the folder of its own language — "…/assets/audio/be/
+   <id>.mp3" versus "…/assets/audio/ru/<id>.mp3" — so a Belarusian file can
+   never quietly serve the ru/en locales. MP3 is the only shipped format, so
+   an OGG reference would not play and is rejected. */
+const audioPath = (lang, id) => `../assets/audio/${lang}/${id}.mp3`;
 
 for (const source of ['sights', 'enterprises', 'people']) {
   const be = load(source + '.json');
@@ -28,20 +28,13 @@ for (const source of ['sights', 'enterprises', 'people']) {
         if (JSON.stringify(o[key]) !== JSON.stringify(p[key])) fail(source, lang, o.id, key, o[key], p[key]);
       }
       /* Audio is locale-specific: each language may point at its own
-         recording (…/lidski-zamak.ru.mp3 vs …/lidski-zamak.en.mp3), and a
-         language without a translated recording simply omits the field so
-         the object page shows no player at all. Sharing one file across
-         locales is therefore allowed, but the file must belong to that
-         locale — the default (Belarusian) recordings live at
-         "…/<id>.mp3", the translations must not fall back to them by
-         accident, so a suffixed path is required once one is given. */
-      if (p.audio && !isLocalePath(p.audio, lang)) {
-        fail(source, lang, o.id, 'audio not locale-specific', p.audio);
-      }
-      /* The recording must belong to this very object: a copy-paste slip once
-         handed one sight the narration of another, and nothing caught it. */
-      if (p.audio && !p.audio.endsWith(`/${p.id}${lang === 'be' ? '' : '.' + lang}.mp3`)) {
-        fail(source, lang, o.id, 'audio named after another object', p.audio);
+         recording, and a language without a translated recording simply omits
+         the field so the object page shows no player at all. The path is
+         checked exactly — both language folder and file name — because a
+         copy-paste slip once handed one sight the narration of another and
+         nothing caught it. */
+      if (p.audio && p.audio !== audioPath(lang, p.id)) {
+        fail(source, lang, o.id, 'audio path is not ' + audioPath(lang, p.id), p.audio);
       }
       if (!p.quiz) { fail(source, lang, o.id, 'quiz missing'); return; }
       if (o.quiz.correctIndex !== p.quiz.correctIndex) fail(source, lang, o.id, 'correctIndex');
@@ -53,6 +46,15 @@ for (const source of ['sights', 'enterprises', 'people']) {
       }
     });
   }
+
+  /* The Belarusian original is checked as well: it is the file the
+     translations must not borrow, so a typo in its own path would otherwise
+     never be noticed. */
+  be.forEach((o) => {
+    if (o.audio && o.audio !== audioPath('be', o.id)) {
+      fail(source, 'be', o.id, 'audio path is not ' + audioPath('be', o.id), o.audio);
+    }
+  });
 
   /* extra carousel photos: checked once, they are language-independent */
   be.forEach((o) => {

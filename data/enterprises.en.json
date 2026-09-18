@@ -23,7 +23,7 @@
     "title": "MiLida Dairy Plant",
     "description": "<p>This is one of the largest food enterprises in Lida. The plant processes milk and produces condensed and powdered milk, butter, and other dairy products. It cooperates with local agricultural farms and supplies its products to both the domestic market and for export.</p>",
     "image": "../assets/images/maloczny-zavod.jpg",
-    "audio": "../assets/audio/maloczny-zavod.en.mp3",
+    "audio": "../assets/audio/en/maloczny-zavod.mp3",
     "lat": 53.871183,
     "lng": 25.314976,
     "quiz": {

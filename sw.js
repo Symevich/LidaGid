@@ -24,7 +24,7 @@
    and `activate` deletes every cache that is not part of this version.
    ============================================================ */
 
-const VERSION = 'v24';
+const VERSION = 'v25';
 
 const SHELL_CACHE  = `lidagid-shell-${VERSION}`;
 const MEDIA_CACHE  = `lidagid-media-${VERSION}`;

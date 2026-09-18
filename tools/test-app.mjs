@@ -209,13 +209,22 @@ check('app.js has no "no audio" placeholder left', !/noAudio/.test(appJs));
 check('i18n has no unused noAudio string left', !/noAudio/.test(read('js/i18n.js')));
 check('the data files may point at locale-specific recordings',
   !/\['image', 'audio', 'lat', 'lng'\]/.test(read('tools/check-data.mjs')));
-/* the original recordings belong to the Belarusian locale only */
-for (const lang of ['ru', 'en']) {
-  const items = JSON.parse(read(`data/sights.${lang}.json`));
-  const borrowed = items.filter((it) => it.audio && !new RegExp(`\.${lang}\.mp3$`, 'i').test(it.audio));
-  check(`no Belarusian recording borrowed by the ${lang} locale`,
-    borrowed.length === 0, borrowed.map((it) => it.audio).join(', '));
+/* Recordings are grouped by language, and every data file must point into the
+   folder of its own language: that is what keeps a Belarusian recording from
+   quietly serving a translation. */
+const strayAudio = [];
+for (const source of ['sights', 'enterprises', 'people']) {
+  for (const lang of ['be', 'ru', 'en']) {
+    const file = lang === 'be' ? source + '.json' : source + '.' + lang + '.json';
+    for (const item of JSON.parse(read('data/' + file))) {
+      if (item.audio && item.audio !== `../assets/audio/${lang}/${item.id}.mp3`) {
+        strayAudio.push(file + ': ' + item.audio);
+      }
+    }
+  }
 }
+check('every data file only points into the folder of its own language',
+  strayAudio.length === 0, strayAudio.join(', '));
 
 /* ── DOM-level test ── */
 const dom = new JSDOM('<!doctype html><html lang="be"><body><main id="app"></main></body></html>', {
@@ -297,21 +306,18 @@ check('chrome is visible again after navigating', !doc.body.classList.contains('
 check('audio player present', !!card.querySelector('audio'));
 check('the player points at the recording named in the data file',
   (card.querySelector('audio source') || {}).src ===
-    new URL('./assets/audio/lidski-zamak.mp3', window.location.href).href,
+    new URL('./assets/audio/be/lidski-zamak.mp3', window.location.href).href,
   (card.querySelector('audio source') || {}).src);
 check('object card has no share/QR buttons of its own', !card.querySelector('.btn-action'));
 check('no QR panel inside the object card', !doc.getElementById('qrPanel'));
 
-/* ── a record without audio shows nothing at all ── */
-await goto('#/object/people/valiancin-taulai');
-const silentCard = await waitFor(() => {
-  const c = doc.getElementById('objectCard');
-  return c && !c.hidden && c.querySelector('h1') ? c : null;
-}, 'card without audio');
-check('no audio player when the record has no recording', !silentCard.querySelector('audio'));
-check('no empty audio wrap left behind', !silentCard.querySelector('.object-card__audio-wrap'));
-check('no placeholder text about missing audio',
-  !/аўдыязапіс|аудиозапи|no audio/i.test(silentCard.textContent), silentCard.textContent.slice(0, 80));
+/* ── the Belarusian set is complete ── */
+const silentObjects = ['sights', 'enterprises', 'people'].flatMap((source) =>
+  JSON.parse(read('data/' + source + '.json'))
+    .filter((item) => !item.audio)
+    .map((item) => source + '/' + item.id));
+check('every Belarusian object has a recording', silentObjects.length === 0,
+  silentObjects.join(', '));
 await goto('#/object/sights/lidski-zamak');
 card = await waitFor(() => {
   const c = doc.getElementById('objectCard');
@@ -664,6 +670,8 @@ card = await waitFor(() => {
    page must show no player and no placeholder text. */
 check('no audio player in the russian locale', !card.querySelector('audio'));
 check('no empty audio wrap in the russian locale', !card.querySelector('.object-card__audio-wrap'));
+check('no placeholder text about a missing recording',
+  !/аўдыязапіс|аудиозапи|no audio/i.test(card.textContent), card.textContent.slice(0, 80));
 check('ru quiz question',
   card.querySelector('.quiz__question').textContent === 'В каком году был возведён Лидский замок?',
   card.querySelector('.quiz__question').textContent);

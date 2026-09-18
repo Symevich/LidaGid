@@ -39,11 +39,15 @@ for (const [label, rows] of Object.entries(perLang)) {
 
 const imgDir = path.join(ROOT, 'assets', 'images');
 const audDir = path.join(ROOT, 'assets', 'audio');
-/* the folder name is used as-is, so "audio" does not become "audios" */
-const unused = (dir, kind) => {
-  const prefix = '../assets/' + path.basename(dir) + '/';
-  return fs.readdirSync(dir).filter((f) => !referenced[kind].has(prefix + f));
-};
+/* the recordings sit one folder deeper, under the name of their language, so
+   the comparison has to walk the whole tree instead of listing one directory */
+const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+  const full = path.join(dir, entry.name);
+  return entry.isDirectory() ? walk(full) : [full];
+});
+const unused = (dir, kind) => walk(dir)
+  .map((file) => '../' + path.relative(ROOT, file).split(path.sep).join('/'))
+  .filter((ref) => !referenced[kind].has(ref));
 console.log('== files on disk not referenced by any data file');
 console.log('   images: ' + (unused(imgDir, 'image').join(', ') || '-'));
 console.log('   audio:  ' + (unused(audDir, 'audio').join(', ') || '-'));

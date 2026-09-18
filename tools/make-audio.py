@@ -7,10 +7,11 @@ voice, encodes the result into the single format the site ships — MP3, which
 every browser plays including Safari/iOS — and finally points the `audio`
 field of the matching data file at the new recording.
 
-Naming follows the convention the app and tools/check-data.mjs already rely
-on: the Belarusian original is `../assets/audio/<id>.mp3`, a translation is
-`../assets/audio/<id>.<lang>.mp3`.
-data files; app.js derives it by swapping the extension.
+Every recording lives in the folder of its language, so the shipped tree
+mirrors the data files and a copied Belarusian file can never pass for a
+translation: `../assets/audio/be/<id>.mp3`, `../assets/audio/ru/<id>.mp3`,
+`../assets/audio/en/<id>.mp3`. The `audio` field of each data file holds that
+full path; app.js only has to put it on the player.
 
 Engines
   elevenlabs  ElevenLabs multilingual v2 (key, the default). One voice reads
@@ -32,7 +33,7 @@ Recording on the ElevenLabs website instead
                          exact text the API would send. An object whose
                          recording already exists in assets/audio is left out,
                          and a text left over from an earlier export is removed
-                         --file them with --force
+                         — re-file them with --force
     --import-audio DIR   take the downloads placed next to those texts as
                          <lang>/<id>.mp3 (wav/m4a/ogg also fine), encode the
                          shipped format, normalise loudness and point the data
@@ -86,6 +87,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
+# Recordings are grouped by language: assets/audio/<lang>/<id>.mp3.
 AUDIO = ROOT / "assets" / "audio"
 CACHE = ROOT / "tools" / ".tmp" / "tts"
 SECRETS = ROOT / "tools" / ".tmp" / "keys"
@@ -641,9 +643,14 @@ def data_file(source: str, lang: str) -> Path:
     return DATA / (f"{source}.json" if lang == "be" else f"{source}.{lang}.json")
 
 
+def recording_path(obj_id: str, lang: str) -> Path:
+    """Where the recording of one object is shipped: <lang>/<id>.mp3."""
+    return AUDIO / lang / f"{obj_id}.mp3"
+
+
 def audio_path(obj_id: str, lang: str) -> str:
-    suffix = "" if lang == "be" else f".{lang}"
-    return f"../assets/audio/{obj_id}{suffix}.mp3"
+    """The value of the "audio" field, as the data file spells it."""
+    return f"../assets/audio/{lang}/{obj_id}.mp3"
 
 
 def set_audio_field(path: Path, obj_id: str, value: str | None) -> bool:
@@ -736,8 +743,7 @@ def export_texts(target: Path, force: bool = False) -> int:
             for obj in load_objects(source, lang):
                 obj_id = obj["id"]
                 path = target / lang / f"{obj_id}.txt"
-                suffix = "" if lang == "be" else f".{lang}"
-                recorded = (AUDIO / f"{obj_id}{suffix}.mp3").exists()
+                recorded = recording_path(obj_id, lang).exists()
                 if recorded and not force:
                     skipped.append(f"{lang} {obj_id}")
                     if path.exists():
@@ -792,17 +798,16 @@ def import_audio(directory: Path) -> int:
                 if recording is None:
                     missing += 1
                     continue
-                suffix = "" if lang == "be" else f".{lang}"
-                target = AUDIO / f"{obj_id}{suffix}.mp3"
+                shipped = recording_path(obj_id, lang)
                 # Whatever the website gives us — mp3, wav, m4a — is encoded to
                 # the shipped format and levelled like the API path, so a
                 # hand-made recording is indistinguishable in the player.
-                encode(recording.read_bytes(), target, MP3_ARGS)
+                encode(recording.read_bytes(), shipped, MP3_ARGS)
                 set_audio_field(data_file(source, lang), obj_id,
                                 audio_path(obj_id, lang))
                 installed += 1
                 log(f"  ok    {lang} {source}/{obj_id}  from {recording.name}  "
-                    f"{target.stat().st_size // 1024} kB")
+                    f"{shipped.stat().st_size // 1024} kB")
     log(f"\n{installed} installed, {missing} objects still without a recording")
     if installed:
         log("now run: node tools/check-assets.mjs && node tools/check-data.mjs")
@@ -994,7 +999,7 @@ def main() -> int:
                 positions[lang] = index + 1
                 text = spoken_text(obj, lang)
                 suffix = "" if lang == "be" else f".{lang}"
-                recording = AUDIO / f"{obj['id']}{suffix}.mp3"
+                recording = recording_path(obj["id"], lang)
                 blocks = chunked(text, limit)
                 jobs.append({
                     "lang": lang,
