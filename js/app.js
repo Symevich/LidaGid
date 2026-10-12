@@ -10,10 +10,18 @@
   const SOURCES = ['sights', 'enterprises', 'people'];
 
   const META = {
-    sights:      { color: '#f5a623', titleKey: 'sightsTitle'      },
-    enterprises: { color: '#4a90d9', titleKey: 'enterprisesTitle' },
-    people:      { color: '#5cb85c', titleKey: 'peopleTitle'      },
+    sights:      { titleKey: 'sightsTitle'      },
+    enterprises: { titleKey: 'enterprisesTitle' },
+    people:      { titleKey: 'peopleTitle'      },
   };
+
+  /* Палоска-ручнік — адзін кампанент, некалькі месцаў. */
+  function ornamentEl() {
+    const el = document.createElement('span');
+    el.className = 'ornament';
+    el.setAttribute('aria-hidden', 'true');
+    return el;
+  }
 
   let _map    = null;
   let _back   = null;
@@ -345,9 +353,13 @@
     dialog.setAttribute('aria-modal', 'true');
     dialog.setAttribute('aria-labelledby', 'shareModalLabel');
 
+    const handle = document.createElement('span');
+    handle.className = 'sheet__handle';
+    handle.setAttribute('aria-hidden', 'true');
+
     const close = document.createElement('button');
     close.type = 'button';
-    close.className = 'share-modal__close';
+    close.className = 'share-modal__close icon-btn';
     close.innerHTML = CLOSE_ICON;
 
     const qr = document.createElement('div');
@@ -383,7 +395,7 @@
       }
     });
 
-    dialog.append(close, qr, hint, divider, label, socials, copy);
+    dialog.append(handle, close, qr, hint, divider, label, socials, copy);
     modal.append(backdrop, dialog);
     document.body.appendChild(modal);
 
@@ -576,8 +588,12 @@
     if (!_back) return;
     const isHome = route.view === 'home';
     _back.hidden = isHome;
-    /* Nothing to share on the start screen, so the button is hidden there. */
-    if (_shareButton) _shareButton.hidden = isHome;
+    /* Nothing to share on the start screen, so the button is hidden there.
+       A control that disappears must not keep keyboard focus. */
+    if (_shareButton) {
+      if (isHome && document.activeElement === _shareButton) _shareButton.blur();
+      _shareButton.hidden = isHome;
+    }
     if (!isHome) {
       _back.textContent = I18N.t('back');
       _back.href = route.view === 'object' ? `#/${route.source}` : '#/';
@@ -607,6 +623,7 @@
       <div class="page">
         <header class="page__header">
           <h1 class="page__title" id="appTitle">${esc(I18N.t('appTitle'))}</h1>
+          <span class="ornament" aria-hidden="true"></span>
         </header>
         <section class="card-grid" aria-label="${esc(I18N.t('appTitle'))}">
           <a href="#/sights" class="card">
@@ -643,6 +660,7 @@
       <div class="page page--section">
         <header class="page__header">
           <h1 class="page__title">${esc(I18N.t(meta.titleKey))}</h1>
+          <span class="ornament" aria-hidden="true"></span>
         </header>
         <div id="status" class="status" role="status" aria-live="polite">
           ${esc(I18N.t('loading'))}
@@ -679,11 +697,12 @@
     /* A row without a photo gets the first letter of its own title rather
        than a stand-in picture of a different object: a real photograph of
        the wrong thing reads as a mistake, a monogram reads as a choice. */
+    /* Рука рухаецца гэтага колеру не ведае: адценне раздзела жыве ў CSS
+       (--section-* на .list-item__monogram). */
     const makeMonogram = (title) => {
       const box = document.createElement('span');
       box.className = 'list-item__image list-item__monogram';
       box.setAttribute('aria-hidden', 'true');
-      if (meta.color) box.style.background = meta.color;
       box.textContent = firstGlyph(title);
       return box;
     };
@@ -773,6 +792,7 @@
     }
 
     card.appendChild(h1);
+    card.appendChild(ornamentEl());
 
     /*
      * Audio — each locale points at its own recording: the path comes from
@@ -935,7 +955,7 @@
     summary.className = 'quiz__summary';
 
     const title = document.createElement('h2');
-    title.className = 'quiz__title';
+    title.className = 'quiz__title eyebrow';
     title.textContent = I18N.t('quizTitle');
 
     const chevron = document.createElement('span');

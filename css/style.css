@@ -11,12 +11,43 @@
 }
 
 :root {
-  --bg:           #f3f6fb;
-  --surface:      #fff;
-  --text:         #1a2233;
-  --muted:        #58627a;
-  /* Fix #1: was --color-border-tertiary which was never defined */
-  --border-muted: rgba(88, 98, 122, 0.22);
+  /* ── Палітра «цэгла і ручнік» ──
+     Цёплая папера, адно моцнае акцэнтавае цэглавае чырвонае; бурштын —
+     толькі для дробязі (нумары, бэйджы, падкрэсленні). Усе колеры жывуць
+     тут: ні адзін кампанент не мае права на ўласны #hex. */
+  --bg:            #f6f0e4;
+  --surface:       #fffdf8;
+  --surface-2:     #f3e9d8;
+  --text:          #231d1a;
+  --muted:         #6b5f57;
+  --brick:         #9c3b2a;
+  --brick-dark:    #7a2a1d;
+  --amber:         #f5a623;
+  --ok:            #2f7d4a;
+  --bad:           #b3261e;
+  /* Тэкст на --brick: адзінае месца, дзе белы карэктны. */
+  --on-accent:     #fff;
+  --border-muted:  rgba(107, 95, 87, 0.28);
+  --hero-scrim:    rgba(30, 16, 10, 0.62);
+  --paper-line:    rgba(107, 95, 87, 0.14);
+
+  /* Адценне раздзела — толькі для монаграмы спісу. Гэта дробязь, таму яна
+     не канкуруе з адзіным моцным акцэнтам --brick. */
+  --section-sights:      var(--amber);
+  --section-enterprises: color-mix(in srgb, var(--brick) 78%, var(--amber));
+  --section-people:      var(--ok);
+
+  /* ── Шрыфты: Lora загалоўкам, Roboto інтэрфейсу ── */
+  --font-display: "Lora", Georgia, "Times New Roman", serif;
+  --font-ui:      "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* ── Арнамент «ручнік»: ромб з кропкаю і рыскамі па баках ──
+     Адзін паўтаральны матыў на ўвесь праект, таму ён у токене, а не
+     ў некалькіх правілах. Цёмная тэма пераазначае яго разам з палітрай. */
+  --ornament: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='12' viewBox='0 0 22 12'%3E%3Cpath d='M11 1l5 5-5 5-5-5z' fill='none' stroke='%239c3b2a' stroke-width='1.3'/%3E%3Ccircle cx='11' cy='6' r='1.5' fill='%239c3b2a'/%3E%3Cpath d='M0 6h3M19 6h3' stroke='%239c3b2a' stroke-width='1.3'/%3E%3C/svg%3E");
+
+  /* Каб форма элементаў і палосы пракруткі самі паварочваліся ў цёмную. */
+  color-scheme: light dark;
 
   /* ── Spacing ──
      Every gap, padding and vertical step comes from this 4px grid. Nothing
@@ -31,22 +62,23 @@
   --space-7: 32px;
 
   /* ── Corner radii ── */
-  --radius-sm:   8px;   /* small chips, inline code */
-  --radius-md:  12px;   /* round-rect buttons, inner blocks */
-  --radius-lg:  16px;   /* the default card radius */
-  --radius-xl:  20px;   /* the share dialog */
-  --radius-pill: 999px; /* the floating controls and primary buttons */
+  --radius-sm:   10px;  /* дробныя чыпы, радкі кода */
+  --radius-md:   10px;  /* кнопкі, унутраныя блокі */
+  --radius-lg:   14px;  /* картка па змаўчанні */
+  --radius-xl:   20px;  /* шторкі-вынікі */
+  --radius-pill: 999px; /* пілюлі і галоўныя кнопкі */
 
-  /* ── Elevation ── */
-  --shadow:       0 12px 30px rgba(16, 35, 74, 0.12);
-  --shadow-hover: 0 20px 42px rgba(16, 35, 74, 0.24);
-  --shadow-menu:  0  8px 24px rgba(0, 0, 0, 0.22);
-  --shadow-modal: 0 24px 60px rgba(10, 20, 45, 0.35);
+  /* ── Elevation ──
+     Цені цёплыя, на карычневай аснове: сіне-шэрая цень на цёплай паперы
+     выглядае як бруд. */
+  --shadow:       0 12px 30px rgba(60, 30, 15, 0.12);
+  --shadow-hover: 0 20px 42px rgba(60, 30, 15, 0.22);
+  --shadow-menu:  0  8px 24px rgba(60, 30, 15, 0.22);
+  --shadow-modal: 0 24px 60px rgba(40, 20, 10, 0.35);
 
   /* ── Focus ──
-     Sits 2px outside a dark pill on the light page, so it has to be dark
-     to be seen: a translucent white ring was invisible there. */
-  --focus-ring: rgba(26, 34, 51, 0.55);
+     Колца адносна цёмнае да цёплай паперы і бачнае на пілюлі --brick. */
+  --focus-ring: var(--brick);
 
   /* ── Safe areas (notches, rounded corners, home indicator) ──
      With viewport-fit=cover these stop being 0 and the fixed chrome has to
@@ -65,6 +97,12 @@
      stale gap under the heading. */
   --chrome-inset: var(--space-4);  /* screen edge → nearest edge of a pill */
   --chrome-h: 40px;                /* every pill is exactly this tall */
+
+  /* ── Каркас ──
+     Вышыні палос агалоўя і ніжняй навігацыі трымаюцца асобна ад --chrome-h:
+     гэта розныя па сэнсе элементы, хоць на вузкім экране яны супадаюць. */
+  --topbar-h:    56px;
+  --bottomnav-h: 64px;
 
   /* Distance from the top of a view's content to the lower edge of the
      chrome, plus --space-1 of air. Only the inset is displaced by the safe
@@ -91,6 +129,11 @@
   --section-max:  900px;  /* a section view and its map */
   --object-max:   760px;  /* one object: a narrower reading column */
 
+  /* Агульны столак для самай шырокай старонкі і для шырыні радка
+     артыкула (≈66 сімвалаў — колькасць, пры якой вока не губляе радок). */
+  --content-max: 1120px;
+  --read-max:    36rem;
+
   /* ── Photos ──
      A hero photo is bounded, never cropped: it keeps the proportions of its
      own file and is limited only by this ceiling. 480 px is the height a 3:2
@@ -99,20 +142,45 @@
   --photo-max-h: 480px;
 }
 
+/* ── Цёмная тэма ──
+   Не другая палітра, а пераазначэньне тых самых токенаў: кампаненты пра
+   колеры не ведаюць і таму цямнеюць самі. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:            #1b1512;
+    --surface:       #261e1a;
+    --surface-2:     #2f251f;
+    --text:          #f1e8da;
+    --muted:         #b6a595;
+    --brick:         #d2644f;
+    --brick-dark:    #e07a63;
+    --amber:         #f5b642;
+    --ok:            #59a878;
+    --bad:           #e06a63;
+    --border-muted:  rgba(241, 232, 218, 0.20);
+    --hero-scrim:    rgba(0, 0, 0, 0.66);
+    --paper-line:    rgba(241, 232, 218, 0.12);
+    --shadow:        0 12px 30px rgba(0, 0, 0, 0.45);
+    --shadow-hover:  0 20px 42px rgba(0, 0, 0, 0.55);
+    --shadow-menu:   0  8px 24px rgba(0, 0, 0, 0.55);
+    --shadow-modal:  0 24px 60px rgba(0, 0, 0, 0.65);
+    /* Арнамент — частка палітры, таму ў цёмнай ён перафарбоўваецца. */
+    --ornament: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='12' viewBox='0 0 22 12'%3E%3Cpath d='M11 1l5 5-5 5-5-5z' fill='none' stroke='%23d2644f' stroke-width='1.3'/%3E%3Ccircle cx='11' cy='6' r='1.5' fill='%23d2644f'/%3E%3Cpath d='M0 6h3M19 6h3' stroke='%23d2644f' stroke-width='1.3'/%3E%3C/svg%3E");
+  }
+}
+
 /* ============================================================
    BASE
    ============================================================ */
 
 body {
   min-height: 100vh;
-  font-family: "Roboto", sans-serif;
+  font-family: var(--font-ui);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--text);
-  background:
-    radial-gradient(circle at 10% 15%, rgba(47, 109, 246, 0.12), transparent 30%),
-    radial-gradient(circle at 90% 10%, rgba(106, 69, 255, 0.09), transparent 28%),
-    var(--bg);
+  /* Цёплая папера: фон нясе --bg, ніякіх халодных градыентаў. */
+  background: var(--bg);
   /* the last row of a list must not end up under the home indicator */
   padding-bottom: var(--safe-bottom);
 }
@@ -125,6 +193,90 @@ a {
 img {
   display: block;
   max-width: 100%;
+}
+
+/* ── Тыпаграфія ──
+   Загалоўкі — Lora: яна трымае той друкарскі тон, без якога гэтая
+   палітра выглядае як звычайны вэб. Інтэрфейс застаецца на Roboto. */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* ── Арнамент «ручнік» ──
+   Акцэнт, а не дэкор: палоска пад загалоўкам, раздзяляльнік, верх шторкі.
+   Больш за два ўжыванні на экран — ужо шум. */
+.ornament {
+  /* Радковы span не бачыць width/height — палоска павінна быць блокам. */
+  display: block;
+  height: 12px;
+  background-image: var(--ornament);
+  background-repeat: repeat-x;
+  background-position: center;
+  opacity: 0.9;
+}
+
+.ornament--divider {
+  margin: var(--space-5) 0;
+}
+
+/* На ўсю шырыню экрана — калі палоска стаіць на мяжы панэлі. */
+.ornament--bleed {
+  margin-inline: calc(-1 * var(--gutter));
+}
+
+/* ── Надзагаловак ── */
+.eyebrow {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--brick);
+}
+
+/* ── Круглая іконка-кнопка ── */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+
+.icon-btn:hover { box-shadow: var(--shadow); }
+
+/* ── Бэйджы і чыпы ── */
+.badge {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Бачны фокус на ўсім, што можна націснуць або зафакусіць з клавіятуры.
+   Кампанент можа дадаць сваё, але забіраць колца яму нельга. */
+:focus-visible {
+  outline: 2px solid var(--brick);
+  outline-offset: 2px;
 }
 
 /* ============================================================
@@ -185,9 +337,21 @@ img {
 }
 
 .page__title {
-  font-size: clamp(22px, 3.2vw, 42px);
-  line-height: 1.15;
+  font-size: clamp(30px, 6vw, 48px);
+  line-height: 1.2;
   text-align: center;
+}
+
+/* Палоска-ручнік пад загалоўкам старонкі ці ўнутры карткі аб'екта —
+   адзінае месца арнаменту на версе экрана. */
+.page__header .ornament {
+  width: 88px;
+  margin: var(--space-3) auto 0;
+}
+
+.object-card .ornament {
+  width: 88px;
+  margin-inline: auto;
 }
 
 /* ============================================================
@@ -215,18 +379,22 @@ img {
   width: var(--chrome-h);
   height: var(--chrome-h);
   padding: 0;
-  border: none;
+  border: 1px solid var(--border-muted);
   border-radius: 50%;
-  background: rgba(26, 34, 51, 0.86);
-  color: #fff;
+  /* Папера, а не чарніла: прыбор ціхі, фотаздымак пад ім галоўны. */
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--text);
   cursor: pointer;
   box-shadow: var(--shadow);
-  transition: background 0.25s, transform 0.25s;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
 }
 
 .share-button:hover,
 .share-button:focus-visible {
-  background: rgba(26, 34, 51, 0.98);
+  background: color-mix(in srgb, var(--surface) 98%, transparent);
+  box-shadow: var(--shadow-hover);
   transform: translateY(-1px);
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
@@ -239,7 +407,7 @@ img {
 
 .lang-switcher {
   position: relative;
-  font-family: "Roboto", sans-serif;
+  font-family: var(--font-ui);
 }
 
 .lang-switcher__trigger {
@@ -250,14 +418,16 @@ img {
   min-height: var(--chrome-h);
   padding: var(--space-2) var(--space-4);
   gap: var(--space-2);
-  border: none;
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius-pill);
-  background: rgba(26, 34, 51, 0.86);
-  color: #fff;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--text);
   font-size: 0.9rem;
   cursor: pointer;
   box-shadow: var(--shadow);
-  transition: background 0.25s, transform 0.25s;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
   user-select: none;
   white-space: nowrap;
   -webkit-appearance: none;
@@ -266,17 +436,18 @@ img {
 
 .lang-switcher__trigger:hover,
 .lang-switcher__trigger:focus-visible {
-  background: rgba(26, 34, 51, 0.98);
+  background: color-mix(in srgb, var(--surface) 98%, transparent);
+  box-shadow: var(--shadow-hover);
   transform: translateY(-1px);
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
-.lang-switcher__globe  { flex-shrink: 0; color: #fff; }
-.lang-switcher__label  { color: #fff; }
+.lang-switcher__globe  { flex-shrink: 0; color: var(--brick); }
+.lang-switcher__label  { color: var(--text); }
 .lang-switcher__caret  {
   flex-shrink: 0;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--muted);
   transition: transform 0.25s;
 }
 .lang-switcher--open .lang-switcher__caret { transform: rotate(180deg); }
@@ -290,7 +461,8 @@ img {
   margin: 0;
   padding: var(--space-1) 0;
   list-style: none;
-  background: rgba(26, 34, 51, 0.97);
+  background: var(--surface);
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-menu);
   overflow: hidden;
@@ -301,23 +473,22 @@ img {
 .lang-switcher__option {
   padding: var(--space-2) var(--space-4);
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--muted);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
-  outline: none;
 }
 
 .lang-switcher__option:hover,
-.lang-switcher__option:focus {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+.lang-switcher__option:focus-visible {
+  background: var(--surface-2);
+  color: var(--text);
 }
 
 .lang-switcher__option--active {
-  color: #fff;
+  color: var(--brick);
   font-weight: 600;
   cursor: default;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-2);
 }
 
 /* ============================================================
@@ -336,14 +507,16 @@ img {
   padding: var(--space-2) var(--space-4);
   gap: var(--space-2);
   /* the other two chrome buttons reset this; here the UA bevel survived,
-     adding 4px of phantom height and a visible edge on the dark pill */
-  border: none;
+     adding 4px of phantom height and a visible edge on the pill */
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius-pill);
-  background: rgba(26, 34, 51, 0.86);
-  color: #fff;
-  font-family: "Roboto", sans-serif;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--text);
+  font-family: var(--font-ui);
   font-size: 0.9rem;
   box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .back-button[hidden] { display: none; }
@@ -351,7 +524,8 @@ img {
 /* the transition is declared with the rest of the chrome, further down */
 .back-button:hover,
 .back-button:focus-visible {
-  background: rgba(26, 34, 51, 0.98);
+  background: color-mix(in srgb, var(--surface) 98%, transparent);
+  box-shadow: var(--shadow-hover);
   transform: translateY(-1px);
 }
 
@@ -407,7 +581,7 @@ body.chrome-hidden .back-button {
   /* the lift doubled as the focus cue, so put a ring back */
   .card:focus-visible,
   .list-item:focus-visible {
-    outline: 2px solid rgba(26, 34, 51, 0.6);
+    outline: 2px solid var(--brick);
     outline-offset: 3px;
   }
 }
@@ -442,7 +616,7 @@ body.chrome-hidden .back-button {
   border-radius: var(--radius-lg);
   overflow: hidden;
   isolation: isolate;
-  color: #fff;
+  color: var(--on-accent);
   box-shadow: var(--shadow);
   transition: transform 0.3s, box-shadow 0.3s;
 }
@@ -452,11 +626,12 @@ body.chrome-hidden .back-button {
   position: absolute;
   inset: 0;
   z-index: 1;
+  /* Цёплая заслона: загаловак чытаецца на любым фота. */
   background: linear-gradient(
     to top,
-    rgba(6, 10, 25, 0.82),
-    rgba(6, 10, 25, 0.15) 55%,
-    rgba(6, 10, 25, 0.03)
+    var(--hero-scrim),
+    color-mix(in srgb, var(--hero-scrim) 24%, transparent) 55%,
+    transparent
   );
 }
 
@@ -464,7 +639,6 @@ body.chrome-hidden .back-button {
 .card:focus-visible {
   transform: translateY(-4px);
   box-shadow: var(--shadow-hover);
-  outline: none;
 }
 
 .card__bg {
@@ -482,9 +656,11 @@ body.chrome-hidden .back-button {
 .card__title {
   position: relative;
   z-index: 2;
+  font-family: var(--font-display);
   font-size: clamp(18px, 2.1vw, 26px);
   font-weight: 700;
-  text-shadow: 0 3px 14px rgba(0, 0, 0, 0.35);
+  /* Цень цёплая, з токена заслоны: над фота яна чытаецца як глыбіня. */
+  text-shadow: 0 3px 14px var(--hero-scrim);
 }
 
 /* ============================================================
@@ -498,6 +674,7 @@ body.chrome-hidden .back-button {
   width: 100%;
   padding: var(--space-4) var(--space-5);
   background: var(--surface);
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   transition: transform 0.25s, box-shadow 0.25s;
@@ -509,8 +686,6 @@ body.chrome-hidden .back-button {
   box-shadow: var(--shadow-hover);
 }
 
-.list-item:focus-visible { outline: none; }
-
 .list-item__image {
   width: 84px;
   height: 84px;
@@ -519,23 +694,27 @@ body.chrome-hidden .back-button {
   object-fit: cover;
 }
 
-/* Stands in for a photo: the first letter of the title, on the section's own
-   colour. Decorative — the title sits right beside it, so it is hidden from
-   assistive technology. */
+/* Па змаўчанні монаграма нейтральная; раздзел падфарбоўвае сваю ніжэй. */
 .list-item__monogram {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--border-muted);
+  background: var(--surface-2);
   color: var(--text);
+  font-family: var(--font-display);
   font-size: 1.7rem;
   font-weight: 700;
   user-select: none;
 }
 
-/* A person's photo is a portrait, and a round crop taken from the middle of
-   a portrait keeps the chest and loses the face. The other sections hold
-   landscapes, where the middle is the right place to take it from. */
+/* Кожны раздзел падфарбоўвае сваю монаграму. Колеры — токены, таму
+   разметка пра іх не ведае, а цёмная тэма атрымлівае іх бясплатна. */
+.card-grid--sights .list-item__monogram      { background: var(--section-sights); }
+.card-grid--enterprises .list-item__monogram { background: var(--section-enterprises); }
+.card-grid--people .list-item__monogram      { background: var(--section-people); }
+
+/* Партрэтнае фота ў круглым абрэзе бярэ верх кадра, а не сярэдзіну:
+   на партрэце сярэдзіна — гэта грудзі без твару. */
 .card-grid--people .list-item__image { object-position: center 30%; }
 
 .list-item__body {
@@ -568,6 +747,7 @@ body.chrome-hidden .back-button {
   gap: var(--space-4);
   padding: var(--space-5);
   background: var(--surface);
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
 }
@@ -630,7 +810,7 @@ body.chrome-hidden .back-button {
   flex: 0 0 100%;
   aspect-ratio: 3 / 2;
   object-fit: contain;
-  background: var(--bg);
+  background: var(--surface-2);
   scroll-snap-align: start;
 }
 
@@ -691,17 +871,18 @@ body.chrome-hidden .back-button {
   height: var(--chrome-h);
   border: 0;
   border-radius: var(--radius-pill);
-  background: rgba(26, 34, 51, 0.6);
-  color: #fff;
+  /* Цёплая заслона: пад arrow можа быць фота любога колеру. */
+  background: var(--hero-scrim);
+  color: var(--on-accent);
   transform: translateY(-50%);
   cursor: pointer;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .gallery__arrow--prev { left: var(--space-2); }
 .gallery__arrow--next { right: var(--space-2); }
 
-.gallery__arrow:hover { background: rgba(26, 34, 51, 0.92); }
+.gallery__arrow:hover { transform: translateY(-50%) scale(1.06); }
 
 /* A faded arrow still tells the reader there is a carousel here, which a
    hidden one would not. */
@@ -719,6 +900,9 @@ body.chrome-hidden .back-button {
 .object-card__audio-player { width: 100%; }
 
 .object-card__text {
+  /* Кароткі радок — гэта чытэльнасць: ≈66 сімвалаў, не больш. */
+  max-width: var(--read-max);
+  margin-inline: auto;
   font-size: clamp(15px, 1.6vw, 19px);
 }
 
@@ -742,14 +926,15 @@ body.chrome-hidden .back-button {
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-lg);
   background: var(--surface);
+  border: 1px solid var(--border-muted);
   box-shadow: var(--shadow);
   text-align: center;
   color: var(--muted);
 }
 
 .status--error {
-  border: 1px solid rgba(224, 78, 78, 0.35);
-  color: #8f2323;
+  border: 1px solid color-mix(in srgb, var(--bad) 40%, transparent);
+  color: var(--bad);
 }
 
 .status--empty {
@@ -800,10 +985,10 @@ body.chrome-hidden .back-button {
 }
 
 .map-popup__title {
-  font-family: "Roboto", sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.95rem;
   font-weight: 700;
-  color: #1a2233;
+  color: var(--text);
   text-decoration: none;
   line-height: 1.3;
 }
@@ -825,9 +1010,9 @@ body.chrome-hidden .back-button {
   height: 24px !important;
   line-height: 24px !important;
   font-size: 18px !important;
-  background: rgba(255, 255, 255, 0.85) !important;
+  background: color-mix(in srgb, var(--surface) 85%, transparent) !important;
   border-radius: 50% !important;
-  color: #1a2233 !important;
+  color: var(--text) !important;
   z-index: 10;
 }
 
@@ -876,10 +1061,30 @@ body.chrome-hidden .back-button {
 
 @media (max-width: 600px) {
   :root {
-    --page-gap: var(--space-5);
     /* the chrome hugs the corners a step tighter on a phone, and the
        clearance below follows it down */
     --chrome-inset: var(--space-3);
+    /* Мэта націску на мабільным — не менш за 44px. */
+    --chrome-h: 44px;
+    /* На тэлефоне хрома стаіць знізу (гл. ніжэй), таму запас зверху больш
+       не патрэбны, а знізу з'яўляецца месца пад самімі кнопкамі. */
+    --chrome-clearance: var(--space-5);
+    --page-gap: calc(
+      var(--chrome-inset) + var(--chrome-h) + var(--space-7) + var(--safe-bottom)
+    );
+  }
+
+  /* Тыя самыя кнопкі, але пад вялікі палец: кіраванне сыходзіць уніз. */
+  .top-chrome,
+  .back-button {
+    top: auto;
+    bottom: calc(var(--chrome-inset) + var(--safe-bottom));
+  }
+
+  /* І хаваецца яно цяпер уніз, а не ўверх. */
+  body.chrome-hidden .top-chrome,
+  body.chrome-hidden .back-button {
+    transform: translateY(140%);
   }
 
   .page,
@@ -970,7 +1175,7 @@ body.share-open { overflow: hidden; }
 .share-modal__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(10, 16, 30, 0.55);
+  background: var(--hero-scrim);
   animation: share-fade 0.2s ease both;
 }
 
@@ -981,6 +1186,7 @@ body.share-open { overflow: hidden; }
   max-height: calc(100vh - 40px);
   overflow-y: auto;
   padding: var(--space-6) var(--space-6) var(--space-5);
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius-xl);
   background: var(--surface);
   box-shadow: var(--shadow-modal);
@@ -997,27 +1203,19 @@ body.share-open { overflow: hidden; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Кнопка закрыцця бярэ форму ў .icon-btn, тут застаюцца толькі месца
+   і колер. */
 .share-modal__close {
   position: absolute;
   top: var(--space-4);
   right: var(--space-4);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: var(--bg);
+  background: var(--surface-2);
   color: var(--muted);
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
 }
 
 .share-modal__close:hover,
 .share-modal__close:focus-visible {
-  background: #e9eef8;
+  background: var(--surface);
   color: var(--text);
 }
 
@@ -1036,7 +1234,7 @@ body.share-open { overflow: hidden; }
 
 .share-modal__error {
   font-size: 0.88rem;
-  color: #8f2323;
+  color: var(--bad);
   text-align: center;
 }
 
@@ -1089,7 +1287,8 @@ body.share-open { overflow: hidden; }
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  color: #fff;
+  /* Колер кожнай сеткі прыходзіць інляйнам — гэта брэнд. */
+  color: var(--on-accent);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -1099,8 +1298,6 @@ body.share-open { overflow: hidden; }
   box-shadow: var(--shadow);
 }
 
-.share-social:focus-visible { outline: none; }
-
 .share-social__name { overflow-wrap: anywhere; }
 
 /* The "more" target is a <button>, the rest are links */
@@ -1108,7 +1305,7 @@ body.share-open { overflow: hidden; }
   padding: 0;
   border: none;
   background: none;
-  font-family: "Roboto", sans-serif;
+  font-family: var(--font-ui);
   cursor: pointer;
 }
 
@@ -1119,11 +1316,11 @@ body.share-open { overflow: hidden; }
   gap: var(--space-3);
   width: 100%;
   padding: var(--space-3) var(--space-5);
-  border: none;
+  border: 1px solid var(--brick);
   border-radius: var(--radius-pill);
-  background: rgba(26, 34, 51, 0.9);
-  color: #fff;
-  font-family: "Roboto", sans-serif;
+  background: var(--brick);
+  color: var(--on-accent);
+  font-family: var(--font-ui);
   font-size: 0.92rem;
   font-weight: 700;
   cursor: pointer;
@@ -1133,7 +1330,8 @@ body.share-open { overflow: hidden; }
 
 .share-modal__copy:hover,
 .share-modal__copy:focus-visible {
-  background: rgba(26, 34, 51, 0.98);
+  background: var(--brick-dark);
+  border-color: var(--brick-dark);
   transform: translateY(-1px);
 }
 
@@ -1151,8 +1349,9 @@ body.share-open { overflow: hidden; }
   max-width: min(92vw, 420px);
   padding: var(--space-3) var(--space-5);
   border-radius: var(--radius-pill);
-  background: rgba(26, 34, 51, 0.96);
-  color: #fff;
+  /* У цёмнай тэме --text светлы, таму подпіс бярэ --bg: інвэрсія сама. */
+  background: var(--text);
+  color: var(--bg);
   font-size: 0.9rem;
   text-align: center;
   box-shadow: var(--shadow);
@@ -1179,7 +1378,7 @@ body.share-open { overflow: hidden; }
   padding: var(--space-5);
   border: 1px solid var(--border-muted);
   border-radius: var(--radius-lg);
-  background: var(--bg);
+  background: var(--surface-2);
 }
 
 .quiz__summary {
@@ -1219,15 +1418,10 @@ body.share-open { overflow: hidden; }
   padding-top: var(--space-4);
 }
 
-.quiz__title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
+/* Надпіс квіза («Праверце сябе») бярэ форму ў .eyebrow, а сваёй рэакцыі на
+   навядзенне не мае — яна ўжо вышэй, на .quiz__summary. */
 .quiz__question {
+  font-family: var(--font-display);
   font-size: 1.05rem;
   font-weight: 700;
   line-height: 1.35;
@@ -1246,7 +1440,7 @@ body.share-open { overflow: hidden; }
   border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--text);
-  font-family: "Roboto", sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.95rem;
   text-align: left;
   cursor: pointer;
@@ -1255,25 +1449,25 @@ body.share-open { overflow: hidden; }
 
 .quiz__option:hover:not(:disabled),
 .quiz__option:focus-visible:not(:disabled) {
-  border-color: rgba(47, 109, 246, 0.45);
+  border-color: var(--brick);
   transform: translateY(-1px);
 }
 
 .quiz__option:disabled { cursor: default; }
 
 .quiz__option--correct {
-  background: #e8f7ec;
-  border-color: #3f9c58;
-  color: #1d5c30;
+  background: color-mix(in srgb, var(--ok) 14%, var(--surface));
+  border-color: var(--ok);
+  color: var(--ok);
   font-weight: 700;
 }
 
 .quiz__option--correct::after { content: " ✓"; }
 
 .quiz__option--wrong {
-  background: #fdeceb;
-  border-color: #d9534f;
-  color: #8f2323;
+  background: color-mix(in srgb, var(--bad) 12%, var(--surface));
+  border-color: var(--bad);
+  color: var(--bad);
   font-weight: 700;
 }
 
@@ -1287,12 +1481,14 @@ body.share-open { overflow: hidden; }
 /* stays out of the layout until an answer is given */
 .quiz__feedback:empty { display: none; }
 
-.quiz__feedback--correct { color: #1d5c30; }
-.quiz__feedback--wrong   { color: #8f2323; }
+.quiz__feedback--correct { color: var(--ok); }
+.quiz__feedback--wrong   { color: var(--bad); }
 
+/* Тлумачэнне — гэта выдзелены тэкст, а не другасная дробязь: яго трымае
+   бурштынная мяжа, адзінае ўжыванне --amber па-за бэйджамі. */
 .quiz__explanation {
   padding-left: var(--space-3);
-  border-left: 3px solid var(--border-muted);
+  border-left: 3px solid var(--amber);
   font-size: 0.9rem;
   color: var(--muted);
 }
@@ -1317,11 +1513,30 @@ body.share-open { overflow: hidden; }
 
   .share-modal__close { top: var(--space-3); right: var(--space-3); }
 
-  /* a bit smaller, so QR + targets fit a short screen without scrolling */
   .share-modal__qr { max-width: 200px; }
 
   .share-social { width: 60px; }
   .share-social__icon { width: 42px; height: 42px; }
 
   .quiz { padding: var(--space-4); }
+
+  /* На мабільным мэта націску галоўнай кнопкі дарастае да 44px. */
+  .share-modal__copy { min-height: 44px; }
+}
+
+/* Ручка шторкі: палоска 44×5 зверху дыялога, толькі там, дзе ён
+   прыходзіць знізу. */
+.sheet__handle {
+  display: none;
+  width: 44px;
+  height: 5px;
+  margin-inline: auto;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--border-muted);
+}
+
+/* Шторка прыходзіць знізу толькі на мабільным — там і паказваем ручку. */
+@media (max-width: 600px) {
+  .sheet__handle { display: block; }
 }

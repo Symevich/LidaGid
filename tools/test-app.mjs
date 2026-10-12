@@ -89,9 +89,30 @@ check('reduced motion keeps focus visible',
 check('the spacing scale is declared',
   /--space-1:\s*4px/.test(styleCss) && /--space-7:\s*32px/.test(styleCss));
 check('the radius scale is declared',
-  /--radius-sm:\s*8px/.test(styleCss) && /--radius-pill:\s*999px/.test(styleCss));
+  /--radius-sm:\s*10px/.test(styleCss) && /--radius-pill:\s*999px/.test(styleCss));
 check('the elevation scale is declared',
   /--shadow-hover:/.test(styleCss) && /--shadow-modal:/.test(styleCss));
+
+/* ── Дызайн-мова «цэгла і ручнік» ──
+   Гэтыя праверкі трымаюць тое, што лёгка размываецца: адзін набор токенаў,
+   адсутнасць жорсткіх колераў у кампанентах і адзін матыў-арнамент. */
+check('the palette and the two fonts live in tokens',
+  /--brick:\s*#9c3b2a/.test(styleCss) && /--amber:\s*#f5a623/.test(styleCss) &&
+  /--font-display:\s*"Lora"/.test(styleCss) && /--font-ui:\s*"Roboto"/.test(styleCss));
+check('the ornament motif lives in a token, not in the components',
+  /--ornament:\s*url\("data:image\/svg\+xml,/.test(styleCss));
+check('no component declares a hard-coded colour any more',
+  !/#[0-9a-fA-F]{3,8}\b/.test(styleCss.slice(styleCss.indexOf('.noscript-msg'))));
+check('the dark theme redefines the same palette instead of adding a second one',
+  /prefers-color-scheme: dark[\s\S]{0,600}?--bg:\s*#1b1512/.test(styleCss) &&
+  /prefers-color-scheme: dark[\s\S]{0,600}?--brick:\s*#d2644f/.test(styleCss));
+check('no component takes the focus ring away',
+  !/:focus-visible[^{]*\{[^}]*outline:\s*none/.test(styleCss));
+check('the ornament is a block, so its height and width apply to it',
+  /\.ornament\s*\{[^}]*display:\s*block[^}]*height:\s*12px/s.test(styleCss));
+check('a page title puts one ornament under itself',
+  (appJs.match(/class="ornament"/g) || []).length === 2 &&
+  /card\.appendChild\(ornamentEl\(\)\)/.test(appJs));
 check('nothing declares a raw spacing value any more',
   !/(margin|padding|gap)[a-z-]*:[^;]*\d+px/.test(styleCss));
 check('no raw radius value leaks through',
@@ -177,8 +198,12 @@ check('mobile list rows keep the round icon beside the title',
 /* Every view reserves the same room for the floating controls. The offset
    lives on .page so padding cannot collapse with a child's margin — that is
    what used to leave the object card tucked under the buttons. */
-check('the clearance is defined once',
-  (styleCss.match(/--chrome-clearance:/g) || []).length === 1);
+/* Адно вызначэнне на аснове плюс пераазначэнне ў мабільным :root — гэта
+   той самы прынцып, што й у --chrome-inset. Дубляванне ў кампанентах
+   забаронена: менавіта яно й раз'язджалася раней. */
+check('the clearance is not duplicated per component',
+  (styleCss.match(/--chrome-clearance:/g) || []).length === 2 &&
+  /@media \(max-width: 600px\)[\s\S]*?--chrome-clearance:/.test(styleCss));
 check('the page reserves room for the floating controls',
   /\.page \{[\s\S]*?padding-top: var\(--chrome-clearance\)/.test(styleCss));
 check('no per-child offset duplicates the clearance',
@@ -369,6 +394,14 @@ check('page behind the modal is scroll-locked', doc.body.classList.contains('sha
 const dialog = modal.querySelector('.share-modal__dialog');
 check('modal is a dialog', dialog.getAttribute('role') === 'dialog' && dialog.getAttribute('aria-modal') === 'true');
 check('focus moves into the modal', doc.activeElement === modal.querySelector('.share-modal__close'));
+
+/* Ручка шторкі: элемент ёсць у дыялогу, але паказваецца толькі там, дзе
+   дыялог прыходзіць знізу. */
+check('the share dialog carries a sheet handle as its first child',
+  modal.querySelector('.share-modal__dialog').firstElementChild.className === 'sheet__handle');
+check('the sheet handle only shows where the dialog rises from the bottom',
+  /\.sheet__handle\s*\{[^}]*display:\s*none/.test(styleCss) &&
+  /\.sheet__handle \{ display: block; \}/.test(styleCss));
 
 const qrSvgEl = modal.querySelector('.share-modal__qr svg');
 check('modal shows the QR code', !!qrSvgEl && (qrSvgEl.querySelector('path').getAttribute('d') || '').length > 500,
@@ -586,9 +619,9 @@ check('the monogram keeps the round thumbnail box',
   monogram.classList.contains('list-item__image'));
 check('the monogram is hidden from assistive technology',
   monogram.getAttribute('aria-hidden') === 'true');
-check('the monogram is tinted with the section colour',
-  /#5cb85c|rgb\(92,\s*184,\s*92\)/i.test(monogram.style.background),
-  monogram.style.background);
+check('the monogram is tinted with its own section colour',
+  /\.card-grid--people \.list-item__monogram\s*\{[^}]*background:\s*var\(--section-people\)/.test(styleCss) &&
+  !!monogram.closest('.card-grid--people'));
 check('section has no quiz progress badge', !doc.getElementById('quizBadge'));
 check('share button visible on a section page', shareBtn.hidden === false);
 check('list items carry no quiz marker', !doc.querySelector('.list-item__badge'));
